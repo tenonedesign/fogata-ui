@@ -1,9 +1,10 @@
 <script>
-	import logo from '$lib/images/logo.svg';
+	import logo from '$lib/images/fogata.svg';
 	import Provider from '$lib/Provider.svelte';
   import { SettingsSharp } from 'svelte-ionicons';
 
   export let name = ""
+
 </script>
 
    <!-- relative z-0 before:bg-gradient-to-r before:from-error before:to-warning before:absolute before:left-0 before:top-0 before:w-full before:h-full before:z-[-1] before:[transform:translate3d(0px,14px,0)_scale(0.97)] before:blur-[9px] before:opacity-70 before:transition-opacity before:duration-300 before:[border-radius:inherit]
