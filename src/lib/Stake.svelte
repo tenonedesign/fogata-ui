@@ -5,6 +5,7 @@
 	import logo from '$lib/images/logo.svg';
 	import github from '$lib/images/github.svg';
   import { SettingsSharp } from 'svelte-ionicons';
+	import WalletView from './WalletView.svelte';
 
   let depositCheckbox: any = null;
   let withdrawCheckbox: any = null;
@@ -22,9 +23,9 @@
 </script>
 
     <Card>
-      <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold tooltip" data-tip="{tFormat($wallet.balances.mana)}">{format($wallet.balances.mana)}</h1>
+      <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold tooltip tooltip-secondary" data-tip="{tFormat($wallet.balances.mana)} VHP">{format($wallet.balances.mana)}</h1>
       <h2 class="text-sm text-center max-w-2xl mt-4 mx-auto opacity-75 uppercase">Your stake (VHP)</h2>
-      <div class="flex justify-center gap-4 mt-8">
+      <div class="flex justify-center gap-4 mt-8 flex-1">
         <!-- <button on:click={showDeposit} class="btn btn-outline">Deposit</button> -->
 
         <label for="modal-deposit" class="btn btn-outline">Deposit</label>
@@ -38,6 +39,7 @@
             <p class="py-4">Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time.</p>
             <div class="flex items-center">
               <input type="number" placeholder="0" class="input input-bordered input-primary max-w-xs flex-1" />
+              <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
               <div class="dropdown dropdown-end flex-none">
                 <label tabindex="0" class="btn btn-outline m-1">{depositToken}</label>
                 <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
@@ -55,7 +57,6 @@
 
         {#if $wallet.balances.mana > 0}
           <label for="modal-withdraw" class="btn btn-outline">Withdraw</label>
-
           <!-- Put this part before </body> tag -->
           <input bind:this={withdrawCheckbox} type="checkbox" id="modal-withdraw" class="modal-toggle" />
           <div class="modal">
@@ -73,13 +74,11 @@
             </div>
           </div>
         {/if}
+
       </div>
-      <div class="flex flex-col gap-0 mt-8">
-        <h2 class="text-sm font-semibold mb-1">Your wallet:</h2>
-        <h2 class="text-sm opacity-75 uppercase">Liquid Koin: <span class="tooltip" data-tip="{tFormat($wallet.balances.mana)}">{format($wallet.balances.mana)}</span></h2>
-        <h2 class="text-sm opacity-75 uppercase">Total Koin: <span class="tooltip" data-tip="{tFormat($wallet.balances.koin)}">{format($wallet.balances.koin)}</span></h2>
-        <h2 class="text-sm opacity-75 uppercase">VHP: <span class="tooltip" data-tip="{tFormat($wallet.balances.vhp)}">{format($wallet.balances.vhp)}</span></h2>
-      </div> 
+      <div class="flex justify-center mt-10">
+        <WalletView wallet={$wallet} title="Your wallet:" />
+      </div>
 	</Card>
 
 <style></style>

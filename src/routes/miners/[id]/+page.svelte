@@ -5,11 +5,17 @@
 	import Stats from '$lib/Stats.svelte';
 	import { address } from '$lib/stores.js';
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
-	import { pools } from '$lib/stores';
+	import { pools, wallet, selectedRpc, customRpc, pool } from '$lib/stores';
 	import { page, getStores } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { Pool } from '$lib/types';
 	
-	let pool: any;
-
+	onMount(async () => {
+		
+		$pool.wallet.getBalances("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", $selectedRpc || $customRpc).then(() => {
+			pool.set($pool);
+		});	
+	});
 </script>
 
 <svelte:head>
