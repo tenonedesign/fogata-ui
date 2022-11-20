@@ -4,7 +4,7 @@
 	import Stake from '$lib/Stake.svelte';
 	import Stats from '$lib/Stats.svelte';
 	import Card from '$lib/Card.svelte';
-	import { address, pools } from '$lib/stores.js';
+	import { pools } from '$lib/stores.js';
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import PoolList from '$lib/PoolList.svelte';
 

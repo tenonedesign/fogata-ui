@@ -1,21 +1,37 @@
 <script lang="ts">
-	import Counter from '$lib/Counter.svelte';
 	import Header from '$lib/Header.svelte';
 	import Stake from '$lib/Stake.svelte';
 	import Stats from '$lib/Stats.svelte';
-	import { address } from '$lib/stores.js';
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
-	import { pools, wallet, selectedRpc, customRpc, pool } from '$lib/stores';
+	import { pools, wallet, pool, user } from '$lib/stores';
 	import { page, getStores } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { Pool } from '$lib/types';
+	import { errorToast } from '$lib/utils';
 	
+
 	onMount(async () => {
-		
-		$pool.wallet.getBalances("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", $selectedRpc || $customRpc).then(() => {
-			pool.set($pool);
-		});	
+		load();
+		setInterval(() => {
+			load();
+		}, 5000);
 	});
+
+	function load() {
+
+		$pool.wallet.loadBalances($pool.address, $user.selectedRpc || $user.customRpc).then(() => {
+			pool.set($pool);
+		}).catch(err => {
+			errorToast("","Error reading pool token balance");
+		});
+
+		if ($user.address) {
+			$wallet.loadBalances($user.address, $user.selectedRpc || $user.customRpc).then(() => {
+				wallet.set($wallet);
+			}).catch(err => {
+				errorToast("","Error reading wallet token balance");
+			});
+		}
+	}
 </script>
 
 <svelte:head>

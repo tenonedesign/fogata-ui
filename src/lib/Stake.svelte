@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { address, language, wallet, balanceDisplayFormat as format, balanceTooltipFormat as tFormat } from './stores';
+	import { user, wallet, pool } from './stores';
+  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, poolOperation } from './utils';
 	import Card from '$lib/Card.svelte';
 	import { page } from '$app/stores';
 	import logo from '$lib/images/logo.svg';
@@ -9,17 +10,23 @@
 
   let depositCheckbox: any = null;
   let withdrawCheckbox: any = null;
-  let depositToken: string = "KOIN";
+  let depositInput: any = null;
+  let withdrawInput: any = null;
+  let depositTokenName: string = "KOIN";
 
-  function initiateDeposit() {
+  async function initiateDeposit() {
     depositCheckbox.checked = false;
+    poolOperation("deposit_"+depositTokenName.toLowerCase(), depositTokenName, depositInput.value * 100000000, $pool, $user.selectedRpc || $user.customRpc);
+    depositInput.value = "";
   }
+
   function initiateWithdrawal() {
     withdrawCheckbox.checked = false;
+    depositTokenName = "VHP";
+    poolOperation("withdraw_"+depositTokenName.toLowerCase(), depositTokenName, withdrawInput.value * 100000000, $pool, $user.selectedRpc || $user.customRpc);
+    withdrawInput.value = "";
   }
-  function tooltipNumber(input: number): string {
-    return (input / 100000000).toLocaleString($language, {minimumFractionDigits:8})
-  }
+
 </script>
 
     <Card>
@@ -38,19 +45,19 @@
             <h3 class="text-lg font-bold">Deposit KOIN or VHP</h3>
             <p class="py-4">Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time.</p>
             <div class="flex items-center">
-              <input type="number" placeholder="0" class="input input-bordered input-primary max-w-xs flex-1" />
+              <input bind:this={depositInput} type="number" placeholder="0" class="input input-bordered input-primary max-w-xs min-w-[150px] flex-1" />
               <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
               <div class="dropdown dropdown-end flex-none">
-                <label tabindex="0" class="btn btn-outline m-1">{depositToken}</label>
+                <label tabindex="0" class="btn btn-outline m-1">{depositTokenName}</label>
                 <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                  <li><a on:click={() => (depositToken="KOIN")}>KOIN</a></li>
-                  <li><a on:click={() => (depositToken="VHP")}>VHP</a></li>
+                  <li><a on:click={() => (depositTokenName="KOIN")}>KOIN</a></li>
+                  <li><a on:click={() => (depositTokenName="VHP")}>VHP</a></li>
                 </ul>
               </div>
             </div>
             <div class="mt-4">
               <label for="modal-deposit" class="btn btn-outline">Cancel</label>
-              <button on:click={initiateDeposit} class="btn btn-primary ml-2">Deposit {depositToken}</button>
+              <button on:click={initiateDeposit} class="btn btn-primary ml-2">Deposit {depositTokenName}</button>
             </div>
           </div>
         </div>
@@ -65,7 +72,7 @@
               <h3 class="text-lg font-bold">Withdraw VHP</h3>
               <p class="py-4">Enter the amount of VHP to withdraw.</p>
               <div>
-                <input type="number" placeholder="0" class="input input-bordered input-primary w-full max-w-xs" />
+                <input bind:this={withdrawInput} type="number" placeholder="0" class="input input-bordered input-primary w-full max-w-xs min-w-[150px]" />
               </div>
               <div class="mt-4">
                 <label for="modal-withdraw" class="btn btn-outline">Cancel</label>
@@ -77,7 +84,7 @@
 
       </div>
       <div class="flex justify-center mt-10">
-        <WalletView wallet={$wallet} title="Your wallet:" />
+        <WalletView wallet={$wallet} connected="{$user.address}" title="Your wallet:" />
       </div>
 	</Card>
 

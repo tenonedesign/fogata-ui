@@ -1,4 +1,5 @@
 <script>
+	import Toasts from "$lib/Toasts.svelte";
 	import "../app.postcss";
     import './styles.css';
 </script>
@@ -10,6 +11,8 @@
 
 	<footer>
 	</footer>
+
+	<Toasts />
 </div>
 
 <style>
