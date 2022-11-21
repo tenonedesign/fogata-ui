@@ -9,6 +9,7 @@ export class Pool {
     public logo = "",
     public apy = 0,
     public wallet: Wallet = new Wallet(),
+    public userBalance = 0,
   ) { }
 }
 

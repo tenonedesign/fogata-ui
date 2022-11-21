@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { wallet, user } from '$lib/stores';
+	import { wallet, user, pool } from '$lib/stores';
 	import * as kondor from "kondor-js";
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import {onMount, onDestroy} from 'svelte';
 	import { Balances, Wallet } from '$lib/types';
-	import { errorToast, tokenBalance } from '$lib/utils';
+	import { errorToast, hideConnectionToast, showConnectionToast, tokenBalance } from '$lib/utils';
 	import type { Writable } from 'svelte/store';
 
 	const connect = async () => {
@@ -17,8 +17,10 @@
 			$user.address = accounts[0].address;
 			$wallet.loadBalances(accounts[0].address, $user.selectedRpc || $user.customRpc).then(() => {
 				wallet.set($wallet);
+				hideConnectionToast();
 			}).catch(err => {
-				errorToast("","Error reading token balance");
+				// errorToast("","Error reading token balance");
+				showConnectionToast();
 			});
 		}
 		return !!accounts[0].address;
@@ -27,6 +29,7 @@
 	const disconnect = async() => {
 		// retain user api preferences, but clear wallet address
 		$user.address = ""
+		$pool.userBalance = 0;
 		wallet.set(new Wallet());
 	}
 

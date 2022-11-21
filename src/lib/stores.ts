@@ -8,7 +8,6 @@ export const user = persistable("user", new User());
 export const rpcs = writable(["api.koinos.io","harbinger-api.koinos.io","api.koinosblocks.com"]);
 export const wallet = writable(new Wallet());
 export const pool = writable(new Pool());
-export const apy = writable(0);
 export const pools = writable(examplePools());
 export const toasts: Writable<Toast[]> = writable([]);
 
