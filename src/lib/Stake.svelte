@@ -16,14 +16,14 @@
 
   async function initiateDeposit() {
     depositCheckbox.checked = false;
-    poolOperation("deposit_"+depositTokenName.toLowerCase(), depositTokenName, depositInput.value * 100000000, $pool, $user.selectedRpc || $user.customRpc);
+    poolOperation($pool, "deposit_"+depositTokenName.toLowerCase(), depositTokenName, depositInput.value * 100000000);
     depositInput.value = "";
   }
 
   function initiateWithdrawal() {
     withdrawCheckbox.checked = false;
     depositTokenName = "VHP";
-    poolOperation("withdraw_"+depositTokenName.toLowerCase(), depositTokenName, withdrawInput.value * 100000000, $pool, $user.selectedRpc || $user.customRpc);
+    poolOperation($pool, "withdraw_"+depositTokenName.toLowerCase(), depositTokenName, withdrawInput.value * 100000000);
     withdrawInput.value = "";
   }
 

@@ -14,8 +14,8 @@ export const toasts: Writable<Toast[]> = writable([]);
 
 function examplePools(): Pool[] {
   return [
-    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 1", "exampleId1", logo, 4.10),
-    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 2", "exampleId2", logo, 4.20),
-    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 3", "exampleId3", logo, 4.30),
+    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 1", "exampleId1", logo, .0000),
+    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 2", "exampleId2", logo, .0000),
+    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 3", "exampleId3", logo, .0000),
   ]
 }

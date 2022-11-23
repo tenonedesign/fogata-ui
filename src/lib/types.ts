@@ -1,4 +1,4 @@
-import { tokenBalance } from "$lib/utils";
+import { tokenBalanceOf } from "$lib/utils";
 import * as kondor from "kondor-js";
 
 export class Pool {
@@ -27,9 +27,9 @@ export class Wallet {
     public balances: Balances = new Balances(),
   ) { }
 
-  public loadBalances = async (address: string, rpc: string) => {
-		this.balances.koin = await tokenBalance("15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL", address, rpc);
-		this.balances.vhp = await tokenBalance("1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9", address, rpc);
+  public loadBalances = async (address: string) => {
+		this.balances.koin = await tokenBalanceOf("15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL", address);
+		this.balances.vhp = await tokenBalanceOf("1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9", address);
 		this.balances.mana = parseInt(await kondor.provider.getAccountRc(address)) || 0;
 		Promise.resolve();
 	}

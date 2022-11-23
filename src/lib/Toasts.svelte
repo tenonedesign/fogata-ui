@@ -26,8 +26,8 @@
         {#if toast.type == "alert-warning"} <WarnIcon size="24" /> {/if}
         {#if toast.type == "alert-error"} <ErrorIcon size="24" /> {/if}
         <div class="flex flex-col flex-1 gap-0 items-start max-w-md">
-          <div class="text font-semibold">{toast.title}</div>
-          <div>{toast.message}</div>
+          <div class="text font-semibold">{@html toast.title}</div>
+          <div class="break-words">{@html toast.message}</div>
         </div>
 
         <div class="flex-none">

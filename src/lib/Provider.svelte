@@ -4,7 +4,7 @@
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import {onMount, onDestroy} from 'svelte';
 	import { Balances, Wallet } from '$lib/types';
-	import { errorToast, hideConnectionToast, showConnectionToast, tokenBalance } from '$lib/utils';
+	import { errorToast, hideConnectionToast, showConnectionToast } from '$lib/utils';
 	import type { Writable } from 'svelte/store';
 
 	const connect = async () => {
@@ -15,7 +15,7 @@
 
 		if (accounts[0].address) {
 			$user.address = accounts[0].address;
-			$wallet.loadBalances(accounts[0].address, $user.selectedRpc || $user.customRpc).then(() => {
+			$wallet.loadBalances(accounts[0].address).then(() => {
 				wallet.set($wallet);
 				hideConnectionToast();
 			}).catch(err => {

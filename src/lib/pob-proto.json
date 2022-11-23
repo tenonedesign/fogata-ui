@@ -1,0 +1,257 @@
+{
+    "methods": {
+        "get_consensus_parameters": {
+            "argument": "pob.get_consensus_parameters_arguments",
+            "return": "pob.get_consensus_parameters_result",
+            "description": "get_consensus_parameters",
+            "entry_point": 1607969807,
+            "read_only": true
+        },
+        "get_metadata": {
+            "argument": "pob.get_metadata_arguments",
+            "return": "pob.get_metadata_result",
+            "description": "get_metadata",
+            "entry_point": 4244088463,
+            "read_only": true
+        }
+    },
+    "types": {
+        "nested": {
+          "pob": {
+            "options": {
+              "go_package": "github.com/koinos/koinos-proto-golang/koinos/contracts/pob"
+            },
+            "nested": {
+              "consensus_parameters": {
+                "fields": {
+                  "target_annual_inflation_rate": {
+                    "type": "uint32",
+                    "id": 1
+                  },
+                  "target_burn_percent": {
+                    "type": "uint32",
+                    "id": 2
+                  },
+                  "target_block_interval": {
+                    "type": "uint32",
+                    "id": 3
+                  },
+                  "quantum_length": {
+                    "type": "uint32",
+                    "id": 4
+                  }
+                }
+              },
+              "public_key_record": {
+                "fields": {
+                  "public_key": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "set_block_height": {
+                    "type": "uint64",
+                    "id": 2,
+                    "options": {
+                      "jstype": "JS_STRING"
+                    }
+                  }
+                }
+              },
+              "metadata": {
+                "fields": {
+                  "seed": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "difficulty": {
+                    "type": "bytes",
+                    "id": 2,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "last_block_time": {
+                    "type": "uint64",
+                    "id": 3,
+                    "options": {
+                      "jstype": "JS_STRING"
+                    }
+                  }
+                }
+              },
+              "signature_data": {
+                "fields": {
+                  "vrf_proof": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "vrf_hash": {
+                    "type": "bytes",
+                    "id": 2,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "signature": {
+                    "type": "bytes",
+                    "id": 3,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  }
+                }
+              },
+              "vrf_payload": {
+                "fields": {
+                  "seed": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "block_time": {
+                    "type": "uint64",
+                    "id": 2,
+                    "options": {
+                      "jstype": "JS_STRING"
+                    }
+                  }
+                }
+              },
+              "register_public_key_arguments": {
+                "fields": {
+                  "producer": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "ADDRESS"
+                    }
+                  },
+                  "public_key": {
+                    "type": "bytes",
+                    "id": 2,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  }
+                }
+              },
+              "register_public_key_result": {
+                "fields": {}
+              },
+              "burn_arguments": {
+                "fields": {
+                  "token_amount": {
+                    "type": "uint64",
+                    "id": 1,
+                    "options": {
+                      "jstype": "JS_STRING"
+                    }
+                  },
+                  "burn_address": {
+                    "type": "bytes",
+                    "id": 2,
+                    "options": {
+                      "(btype)": "ADDRESS"
+                    }
+                  },
+                  "vhp_address": {
+                    "type": "bytes",
+                    "id": 3,
+                    "options": {
+                      "(btype)": "ADDRESS"
+                    }
+                  }
+                }
+              },
+              "burn_result": {
+                "fields": {}
+              },
+              "get_consensus_parameters_arguments": {
+                "fields": {}
+              },
+              "get_consensus_parameters_result": {
+                "fields": {
+                  "value": {
+                    "type": "consensus_parameters",
+                    "id": 1
+                  }
+                }
+              },
+              "get_metadata_arguments": {
+                "fields": {}
+              },
+              "get_metadata_result": {
+                "fields": {
+                  "value": {
+                    "type": "metadata",
+                    "id": 1
+                  }
+                }
+              },
+              "register_public_key_event": {
+                "fields": {
+                  "public_key": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  },
+                  "address": {
+                    "type": "bytes",
+                    "id": 2,
+                    "options": {
+                      "(btype)": "ADDRESS"
+                    }
+                  }
+                }
+              },
+              "get_public_key_arguments": {
+                "fields": {
+                  "producer": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "ADDRESS"
+                    }
+                  }
+                }
+              },
+              "get_public_key_result": {
+                "fields": {
+                  "value": {
+                    "type": "bytes",
+                    "id": 1,
+                    "options": {
+                      "(btype)": "BASE64"
+                    }
+                  }
+                }
+              },
+              "update_consensus_parameters_arguments": {
+                "fields": {
+                  "value": {
+                    "type": "consensus_parameters",
+                    "id": 1
+                  }
+                }
+              },
+              "update_consensus_parameters_result": {
+                "fields": {}
+              }
+            }
+          }
+        }
+      }
+}
