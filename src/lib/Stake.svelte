@@ -12,18 +12,22 @@
   let withdrawCheckbox: any = null;
   let depositInput: any = null;
   let withdrawInput: any = null;
-  let depositTokenName: string = "KOIN";
+  let tokenName: string = "KOIN";
 
   async function initiateDeposit() {
     depositCheckbox.checked = false;
-    poolOperation($pool, "deposit_"+depositTokenName.toLowerCase(), depositTokenName, depositInput.value * 100000000);
+    let koinAmount = (tokenName == "KOIN") ? depositInput.value * 100000000 : 0;
+    let vhpAmount = (tokenName == "VHP") ? depositInput.value * 100000000 : 0;
+    poolOperation($pool, "stake", koinAmount, vhpAmount);
     depositInput.value = "";
   }
 
   function initiateWithdrawal() {
     withdrawCheckbox.checked = false;
-    depositTokenName = "VHP";
-    poolOperation($pool, "withdraw_"+depositTokenName.toLowerCase(), depositTokenName, withdrawInput.value * 100000000);
+    tokenName = "VHP";
+    let koinAmount = (tokenName == "KOIN") ? withdrawInput.value * 100000000 : 0;
+    let vhpAmount = (tokenName == "VHP") ? withdrawInput.value * 100000000 : 0;
+    poolOperation($pool, "unstake", koinAmount, vhpAmount);
     withdrawInput.value = "";
   }
 
@@ -51,16 +55,16 @@
                 <input bind:this={depositInput} type="number" placeholder="0" class="input input-bordered input-primary max-w-xs min-w-[150px] flex-1" />
                 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div class="dropdown dropdown-end flex-none">
-                  <label tabindex="0" class="btn btn-outline m-1">{depositTokenName}</label>
+                  <label tabindex="0" class="btn btn-outline m-1">{tokenName}</label>
                   <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a on:click={() => (depositTokenName="KOIN")}>KOIN</a></li>
-                    <li><a on:click={() => (depositTokenName="VHP")}>VHP</a></li>
+                    <li><a on:click={() => (tokenName="KOIN")}>KOIN</a></li>
+                    <li><a on:click={() => (tokenName="VHP")}>VHP</a></li>
                   </ul>
                 </div>
               </div>
               <div class="mt-4">
                 <label for="modal-deposit" class="btn btn-outline">Cancel</label>
-                <button on:click={initiateDeposit} class="btn btn-primary ml-2">Deposit {depositTokenName}</button>
+                <button on:click={initiateDeposit} class="btn btn-primary ml-2">Deposit {tokenName}</button>
               </div>
             </div>
           </div>

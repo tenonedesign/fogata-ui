@@ -1,0 +1,258 @@
+{
+  "methods": {
+    "balance_of": {
+      "argument": "common.address",
+      "return": "fogata.balance",
+      "description": "koin/vhp balance of an account",
+      "entry_point": 1550980247,
+      "read_only": true
+    },
+    "compute_koin_balances": {
+      "argument": "",
+      "return": "common.boole",
+      "description": "Function to be called periodically by anyone to define the distribution of Koins during the next period",
+      "entry_point": 3698187625,
+      "read_only": false
+    },
+    "stake": {
+      "argument": "fogata.stake_args",
+      "return": "common.boole",
+      "description": "Deposit koin or vhp into the pool",
+      "entry_point": 4106941695,
+      "read_only": false
+    },
+    "unstake": {
+      "argument": "fogata.stake_args",
+      "return": "common.boole",
+      "description": "Withdraw koin or vhp from the pool",
+      "entry_point": 1161580635,
+      "read_only": false
+    }
+  },
+  "types": {
+    "nested": {
+      "common": {
+        "nested": {
+          "boole": {
+            "fields": {
+              "value": {
+                "type": "bool",
+                "id": 1
+              }
+            }
+          },
+          "uint64": {
+            "fields": {
+              "value": {
+                "type": "uint64",
+                "id": 1,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              }
+            }
+          },
+          "address": {
+            "fields": {
+              "account": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              }
+            }
+          }
+        }
+      },
+      "fogata": {
+        "nested": {
+          "stake_args": {
+            "fields": {
+              "account": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              },
+              "koin_amount": {
+                "type": "uint64",
+                "id": 2,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "vhp_amount": {
+                "type": "uint64",
+                "id": 3,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              }
+            }
+          },
+          "stake_event": {
+            "fields": {
+              "account": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              },
+              "koin_amount": {
+                "type": "uint64",
+                "id": 2,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "vhp_amount": {
+                "type": "uint64",
+                "id": 3,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "stake": {
+                "type": "uint64",
+                "id": 4,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              }
+            }
+          },
+          "previous_stake": {
+            "fields": {
+              "stake": {
+                "type": "uint64",
+                "id": 1,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "time": {
+                "type": "uint64",
+                "id": 2,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "koin_withdrawn": {
+                "type": "uint64",
+                "id": 3
+              }
+            }
+          },
+          "balance": {
+            "fields": {
+              "koin_amount": {
+                "type": "uint64",
+                "id": 1,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "vhp_amount": {
+                "type": "uint64",
+                "id": 2,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              }
+            }
+          },
+          "beneficiary": {
+            "fields": {
+              "address": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              },
+              "percentage": {
+                "type": "uint32",
+                "id": 2
+              }
+            }
+          },
+          "pool_params": {
+            "fields": {
+              "name": {
+                "type": "string",
+                "id": 1
+              },
+              "image": {
+                "type": "string",
+                "id": 2
+              },
+              "description": {
+                "type": "string",
+                "id": 3
+              },
+              "beneficiaries": {
+                "rule": "repeated",
+                "type": "beneficiary",
+                "id": 4
+              },
+              "payment_period": {
+                "type": "uint64",
+                "id": 5
+              }
+            }
+          },
+          "pool_state": {
+            "fields": {
+              "stake": {
+                "type": "uint64",
+                "id": 1
+              },
+              "virtual": {
+                "type": "uint64",
+                "id": 2
+              },
+              "previous_stake": {
+                "type": "uint64",
+                "id": 3
+              },
+              "previous_koin": {
+                "type": "uint64",
+                "id": 4
+              },
+              "current_payment_time": {
+                "type": "uint64",
+                "id": 5
+              },
+              "next_payment_time": {
+                "type": "uint64",
+                "id": 6
+              },
+              "koin_withdrawn": {
+                "type": "uint64",
+                "id": 7
+              }
+            }
+          }
+        }
+      },
+      "ownable": {
+        "nested": {
+          "owner": {
+            "fields": {
+              "account": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

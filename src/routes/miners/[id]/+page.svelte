@@ -2,10 +2,10 @@
 	import Header from '$lib/Header.svelte';
 	import Stake from '$lib/Stake.svelte';
 	import Stats from '$lib/Stats.svelte';
-	import { pools, wallet, pool, user } from '$lib/stores';
+	import { pools, wallet, pool, user, env } from '$lib/stores';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { balanceDisplayFormat, hideConnectionToast, pobRead, showConnectionToast, tokenBalanceOf, tokenTotalSupply } from '$lib/utils';
+	import { balanceDisplayFormat, hideConnectionToast, pobRead, poolRead, showConnectionToast, tokenBalanceOf, tokenTotalSupply } from '$lib/utils';
 	import { Pool } from '$lib/types';
 	import { Serializer, utils } from 'koilib';
 
@@ -65,14 +65,15 @@
 				// errorToast("","Error reading wallet token balance");
 				showConnectionToast();
 			});
-			tokenBalanceOf($pool.address, $user.address).then((balance) => {
-				$pool.userBalance = balance;
+
+			poolRead($pool, "balance_of", { account: $user.address }).then((value) => {
+				$pool.userBalance = parseInt(value.vhp_amount ?? 0) + parseInt(value.koin_amount ?? 0);
 			});
 		}
 		
 
-		let totalKoin = await tokenTotalSupply("15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL");
-		let totalVhp = await tokenTotalSupply("1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9");
+		let totalKoin = await tokenTotalSupply($env.koin_address);
+		let totalVhp = await tokenTotalSupply($env.vhp_address);
 
 		// from pob_producer.cpp:
 		// .quanta_per_block_interval = consensus_params.target_block_interval() / consensus_params.quantum_length()
@@ -104,6 +105,9 @@
 		let currentPoolAssets = $pool.wallet.balances.koin + $pool.wallet.balances.vhp;	// should include koin, too?  assumption of impending burn?
 		let yearlyMinedByPool = yearlyMinedGlobal * (currentPoolAssets / vhpProducingGlobal);
 		let totalApy = yearlyMinedByPool / currentPoolAssets;
+		if ($pool.wallet.balances.vhp == 0) {
+			totalApy = 0;	// don’t show apy if pool has no VHP (this should probably trigger a message somewhere with instructions how to make first deposit)
+		}
 		let participantApy = 0.95 * totalApy;
 
 		// console.log("vhpProducingGlobal: "+balanceDisplayFormat(vhpProducingGlobal));

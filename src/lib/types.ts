@@ -1,5 +1,7 @@
-import { tokenBalanceOf } from "$lib/utils";
+import { getAccountRc, tokenBalanceOf } from "$lib/utils";
 import * as kondor from "kondor-js";
+import { env } from "$lib/stores";
+import { get } from "svelte/store";
 
 export class Pool {
   constructor(
@@ -28,9 +30,9 @@ export class Wallet {
   ) { }
 
   public loadBalances = async (address: string) => {
-		this.balances.koin = await tokenBalanceOf("15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL", address);
-		this.balances.vhp = await tokenBalanceOf("1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9", address);
-		this.balances.mana = parseInt(await kondor.provider.getAccountRc(address)) || 0;
+		this.balances.koin = await tokenBalanceOf(get(env).koin_address, address);
+		this.balances.vhp = await tokenBalanceOf(get(env).vhp_address, address);
+		this.balances.mana = parseInt(await getAccountRc(address)) || 0;
 		Promise.resolve();
 	}
 }
