@@ -1,5 +1,4 @@
 import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply } from "$lib/utils";
-import * as kondor from "kondor-js";
 import { env } from "$lib/stores";
 import { get } from "svelte/store";
 import { utils } from "koilib";
@@ -11,11 +10,11 @@ export class Pool {
     public description = "",
     public logo = "",
     public name = "",
-    public beneficiaries = {},
+    public beneficiaries = [],
     public paymentPeriod = "",
-    public userBalance = 0n,
-    public userBalanceKoin = 0n,
-    public userBalanceVhp = 0n,
+    public userBalance = BigInt(0),
+    public userBalanceKoin = BigInt(0),
+    public userBalanceVhp = BigInt(0),
     public wallet: Wallet = new Wallet()
   ) { }
   public refresh = async () => {
@@ -58,10 +57,15 @@ export class Pool {
 		let currentPoolAssets = balanceToFloat(this.wallet.balances.koin + this.wallet.balances.vhp);	// should include koin, too?  assumption of impending burn?
 		let yearlyMinedByPool =  yearlyMinedGlobal * (currentPoolAssets / vhpProducingGlobal);
 		let totalApy = yearlyMinedByPool /  currentPoolAssets;
-		if (this.wallet.balances.vhp == 0n) {
+		if (this.wallet.balances.vhp == BigInt(0)) {
 			totalApy = 0;	// don’t show apy if pool has no VHP (this should probably trigger a message somewhere with instructions how to make first deposit)
 		}
-		let participantApy = 0.95 * totalApy;
+    let combinedBeneficiaryPercentage = 0;
+    this.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
+      combinedBeneficiaryPercentage += beneficiary.percentage;
+    });
+    let poolPercentage = combinedBeneficiaryPercentage / 100000;
+		let participantApy = (1 - poolPercentage) * totalApy;
 
 		// console.log("vhpProducingGlobal: "+ vhpProducingGlobal);
 		// console.log("virtual supply: "+ balanceToFloat(totalKoin + totalVhp));
@@ -105,16 +109,16 @@ export class Wallet {
   public loadBalances = async (address: string) => {
 		this.balances.koin = await tokenBalanceOf(get(env).koin_address, address);
 		this.balances.vhp = await tokenBalanceOf(get(env).vhp_address, address);
-		this.balances.mana = BigInt(await getAccountRc(address)) || 0n;
+		this.balances.mana = BigInt(await getAccountRc(address)) || BigInt(0);
 		Promise.resolve();
 	}
 }
 
 export class Balances {
   constructor(
-    public koin: bigint = 0n,
-    public mana: bigint = 0n,
-    public vhp: bigint = 0n,
+    public koin: bigint = BigInt(0),
+    public mana: bigint = BigInt(0),
+    public vhp: bigint = BigInt(0),
   ) { }
 }
 

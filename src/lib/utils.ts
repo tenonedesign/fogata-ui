@@ -5,7 +5,6 @@ import { env, rcLimit, toasts, user } from "$lib/stores";
 import { Pool, Toast } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/pool-proto.json";
-import burnKoinPoolAbiJson from "$lib/burnkoin_pool_abi_js.json";
 import pobAbiJson from "$lib/pob-proto.json";
 import type { Abi, TransactionJsonWait } from "koilib/lib/interface";
 
@@ -26,9 +25,9 @@ export const pobRead = async (methodName: string): Promise<any> => {
 export const poolOperation = async (pool: Pool, methodName: string, koinAmount: bigint, vhpAmount: bigint) => {
   let opName = (methodName.substring(0, 5) == "stake") ? "deposit" : "withdrawal";
   let tokenName = "KOIN";
-  if (koinAmount > 0n && vhpAmount > 0n) { tokenName = "KOIN and VHP"; }
-  if (koinAmount > 0n && vhpAmount == 0n) { tokenName = "KOIN"; }
-  if (vhpAmount > 0n && koinAmount == 0n) { tokenName = "VHP"; }
+  if (koinAmount > BigInt(0) && vhpAmount > BigInt(0)) { tokenName = "KOIN and VHP"; }
+  if (koinAmount > BigInt(0) && vhpAmount == BigInt(0)) { tokenName = "KOIN"; }
+  if (vhpAmount > BigInt(0) && koinAmount == BigInt(0)) { tokenName = "VHP"; }
   let timeout = 30000;
   return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }).then((transaction: TransactionJsonWait) => {
     let toastId = infoToast(tokenName + " " + opName + " submitted", "The transaction containing your " + tokenName + " " + opName + " is being processed.  This may take some time.", 0).id;
@@ -56,12 +55,12 @@ export const poolRead = async (pool: Pool, methodName: string, args: any) => {
 
 export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || 0n);
+    return Promise.resolve(BigInt(result.value) || BigInt(0));
   });
 }
 export const tokenTotalSupply = async (contractAddress: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || 0n);
+    return Promise.resolve(BigInt(result.value) || BigInt(0));
   });
 }
 
@@ -141,12 +140,12 @@ export function balanceToFloat(balance: bigint): number {
 }
 export function balanceDisplayFormat(balance: bigint, language: string = "en-US"): string {
   let dec = balanceToFloat(balance);
-  if (balance == 0n) { return "0"; }
-  if (balance <= 10000n) { return dec.toLocaleString(language, {minimumFractionDigits:8}); }
-  if (balance <= 100000000n) { return dec.toLocaleString(language, {minimumFractionDigits:5}); }
-  if (balance <= 10000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:3}); } // less than 100
-  if (balance <= 100000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:2}); }  // less than 1k
-  if (balance <= 100000000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:2}); } // less than 1M
+  if (dec == 0) { return "0"; }
+  if (dec <= 0.0001) { return dec.toLocaleString(language, {minimumFractionDigits:8}); }
+  if (dec <= 1) { return dec.toLocaleString(language, {minimumFractionDigits:5}); }
+  if (dec <= 100) { return dec.toLocaleString(language, {minimumFractionDigits:3}); } // less than 100
+  if (dec <= 1000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); }  // less than 1k
+  if (dec <= 1000000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); } // less than 1M
   return dec.toLocaleString(language, {minimumFractionDigits:0}); // over 1M
 }
 export function balanceTooltipFormat(balance: bigint, language: string = "en-US"): string {

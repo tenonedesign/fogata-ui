@@ -13,16 +13,16 @@
 
   async function initiateDeposit() {
     depositCheckbox.checked = false;
-    let koinAmount = (tokenName == "KOIN") ? BigInt(utils.parseUnits(depositInput.value, 8)) : 0n;
-    let vhpAmount = (tokenName == "VHP") ? BigInt(utils.parseUnits(depositInput.value, 8)) : 0n;
+    let koinAmount = (tokenName == "KOIN") ? BigInt(utils.parseUnits(depositInput.value, 8)) : BigInt(0);
+    let vhpAmount = (tokenName == "VHP") ? BigInt(utils.parseUnits(depositInput.value, 8)) : BigInt(0);
     poolOperation($pool, "stake", koinAmount, vhpAmount);
     depositInput.value = "";
   }
 
   function initiateWithdrawal() {
     withdrawCheckbox.checked = false;
-    let koinAmount = (tokenName == "KOIN") ? BigInt(utils.parseUnits(withdrawInput.value, 8)) : 0n;
-    let vhpAmount = (tokenName == "VHP") ? BigInt(utils.parseUnits(withdrawInput.value, 8)) : 0n;
+    let koinAmount = (tokenName == "KOIN") ? BigInt(utils.parseUnits(withdrawInput.value, 8)) : BigInt(0);
+    let vhpAmount = (tokenName == "VHP") ? BigInt(utils.parseUnits(withdrawInput.value, 8)) : BigInt(0);
     poolOperation($pool, "unstake", koinAmount, vhpAmount);
     withdrawInput.value = "";
   }
