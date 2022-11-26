@@ -1,14 +1,29 @@
 <script lang="ts">
-	import Counter from '$lib/Counter.svelte';
 	import Header from '$lib/Header.svelte';
-	import Stake from '$lib/Stake.svelte';
-	import Stats from '$lib/Stats.svelte';
 	import Card from '$lib/Card.svelte';
 	import { pools } from '$lib/stores.js';
-	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import PoolList from '$lib/PoolList.svelte';
+	import { onDestroy, onMount } from 'svelte';
 
-	
+	let timer: NodeJS.Timer;
+
+	onMount(async () => {
+		load();
+		timer = setInterval(() => {
+			load();
+		}, 30000);
+	});
+	onDestroy(async () => {
+		clearInterval(timer);
+	});
+
+	async function load() {
+		$pools.forEach(pool => {
+			pool.refresh().then(() => {
+				$pools = $pools;
+			});
+		});
+	}
   
 </script>
 
@@ -19,10 +34,10 @@
 
 <div class="px-4">
 
-  <Header />
+  <Header pool={null} />
 
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20 pb-60">
-  	<PoolList miners={$pools} title="Join a mining pool" />
+  	<PoolList pools={$pools} title="Join a mining pool" />
 	<Card>
 		<div class="text-lg font-semibold">Create a mining pool</div>
 		<div class="mt-4">

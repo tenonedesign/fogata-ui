@@ -8,7 +8,7 @@ export const user = persistable("user", new User());
 export const rpcs = writable(["api.koinos.io","harbinger-api.koinos.io","api.koinosblocks.com"]);
 export const wallet = writable(new Wallet());
 export const pool = writable(new Pool());
-export const pools = writable(examplePools());
+export const pools = writable(participatingPools());
 export const toasts: Writable<Toast[]> = writable([]);
 export const rcLimit = writable("500000000");
 export const env = derived(
@@ -34,10 +34,10 @@ export const env = derived(
 );
 
 
-function examplePools(): Pool[] {
+function participatingPools(): Pool[] {
   return [
-    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP", "Example Pool 1", "exampleId1", logo, .0000),
-    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP", "Example Pool 2", "exampleId2", logo, .0000),
-    new Pool("1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS", "Example Pool 3", "exampleId3", logo, .0000),
+    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
+    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
+    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
   ]
 }

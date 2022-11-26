@@ -7,7 +7,7 @@
 	import type { Writable } from 'svelte/store';
 	import type { Pool } from '$lib/types';
 
-  export let pool: Writable<Pool>;
+  export let pool: Writable<Pool> | null;
 
   // $: console.log('user: ', $user);
 
@@ -16,17 +16,12 @@
 
    <div class="pt-4">
 
-    {#if $pool?.name}
-      <div class="">Pool name: {$pool?.name}</div>
-    {/if}
-
-
     <div class="navbar max-w-[1300px] px-4 py-3 sm:px-6 sm:py-4 lg:py-4 mx-auto rounded-[20px] bg-base-100 shadow-red-100 dark:shadow-red-500/30 shadow-md">
 		  <div class="flex flex-wrap w-full gap-4 justify-between items-center">
 
         <div class="flex items-center gap-4">
-          <span class="sr-only">{$pool?.name}</span>
-          <img src={logo} alt="VHP Miner" class="h-10 w-auto sm:h-14 relative -top-1"/>
+          <img src={$pool?.logo ?? "https://cdn.pixabay.com/photo/2012/04/12/19/11/fire-30231_1280.png"} alt="Miner logo" class="h-10 w-auto sm:h-14 relative -top-1"/>
+          <span class="ml-2 text-3xl font-semibold">{$pool?.name ?? "Fogata Mining Pools"}</span>
         </div>
 
         <div class="flex gap-4">

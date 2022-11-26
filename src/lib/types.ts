@@ -1,19 +1,92 @@
-import { getAccountRc, tokenBalanceOf } from "$lib/utils";
+import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply } from "$lib/utils";
 import * as kondor from "kondor-js";
 import { env } from "$lib/stores";
 import { get } from "svelte/store";
+import { utils } from "koilib";
 
 export class Pool {
   constructor(
     public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
-    public name = "",
-    public id = "",
-    public logo = "",
     public apy = 0,
-    public wallet: Wallet = new Wallet(),
-    public userBalance = 0,
+    public description = "",
+    public logo = "",
+    public name = "",
+    public beneficiaries = {},
+    public paymentPeriod = "",
+    public userBalance = 0n,
+    public userBalanceKoin = 0n,
+    public userBalanceVhp = 0n,
+    public wallet: Wallet = new Wallet()
   ) { }
+  public refresh = async () => {
+    await this.wallet.loadBalances(this.address);
+    await this.loadParameters();
+    await this.calculateApy();
+  }
+  public calculateApy = async () => {
+    // calculate apy
+		let totalKoin = await tokenTotalSupply(get(env).koin_address);
+		let totalVhp = await tokenTotalSupply(get(env).vhp_address);
+
+		// from pob_producer.cpp:
+		// .quanta_per_block_interval = consensus_params.target_block_interval() / consensus_params.quantum_length()
+		// auto vhp = difficulty / _auxiliary_data->quanta_per_block_interval;
+		let pobConsensusParams = await pobRead("get_consensus_parameters");
+		let pobMetadata = await pobRead("get_metadata");
+		let difficultyHexString = "0x"+utils.toHexString(utils.decodeBase64url(pobMetadata.difficulty));
+		let difficulty = BigInt(difficultyHexString);
+		let quantaPerBlockInterval = BigInt(pobConsensusParams.target_block_interval / pobConsensusParams.quantum_length);
+		let vhpProducingGlobal =  balanceToFloat(difficulty / quantaPerBlockInterval);
+
+		// is this too clever?
+		// if (totalVhp < vhpProducingGlobal) {
+		// 	vhpProducingGlobal = totalVhp;
+		// }
+		// console.log(vhpProducingGlobal);
+
+		// burnkoin calculation
+		// const virtualSupply = (koinTotalSupply.data || 0) + (vhpTotalSupply.data || 0);
+		// const yearlyInflationAmount = virtualSupply * Math.pow(Math.E, 0.019802) - virtualSupply;
+		// const apy = (currentApy = 0.95 * (100 * yearlyInflationAmount) / (vhpTotalSupply.data || 1));
+
+		// CALCULATE POOL APY
+		// strategy is 0.95 * (yearlyMinedByPool / currentPoolAssets).
+		// expected koin mined by pool is yearlyMinedGlobal * (currentPoolAssets / vhpProducing)
+		// note that 0.05 taken after the year is done differs from 0.05 taken from each mined reward, thereby preventing its use in future mining.
+		// however, the effective difference is very small (on the order of 0.001% apy difference)
+		let yearlyMinedGlobal = 0.019999360139121 * balanceToFloat(totalKoin + totalVhp);	// would be 0.02, but simulated output of pob contract is slightly less
+		let currentPoolAssets = balanceToFloat(this.wallet.balances.koin + this.wallet.balances.vhp);	// should include koin, too?  assumption of impending burn?
+		let yearlyMinedByPool =  yearlyMinedGlobal * (currentPoolAssets / vhpProducingGlobal);
+		let totalApy = yearlyMinedByPool /  currentPoolAssets;
+		if (this.wallet.balances.vhp == 0n) {
+			totalApy = 0;	// don’t show apy if pool has no VHP (this should probably trigger a message somewhere with instructions how to make first deposit)
+		}
+		let participantApy = 0.95 * totalApy;
+
+		// console.log("vhpProducingGlobal: "+ vhpProducingGlobal);
+		// console.log("virtual supply: "+ balanceToFloat(totalKoin + totalVhp));
+		// console.log("yearlyMinedGlobal: "+ yearlyMinedGlobal);
+		// console.log("currentPoolAssets: "+ currentPoolAssets);
+		// console.log("yearlyMinedByPool: "+ yearlyMinedByPool);
+		// console.log("totalApy: "+totalApy);
+		// console.log("participantApy: "+participantApy);
+		this.apy = participantApy;
+  }
+  public loadParameters = async () => {
+
+    let params = await poolRead(this, "get_pool_params", {});
+    this.name = params.name;
+    this.logo = params.image;
+    this.description = params.description;
+    this.paymentPeriod = params.payment_period;
+    this.beneficiaries = params.beneficiaries;
+
+    Promise.resolve();
+	}
 }
+
+
+
 
 export class User {
   constructor(
@@ -32,16 +105,16 @@ export class Wallet {
   public loadBalances = async (address: string) => {
 		this.balances.koin = await tokenBalanceOf(get(env).koin_address, address);
 		this.balances.vhp = await tokenBalanceOf(get(env).vhp_address, address);
-		this.balances.mana = parseInt(await getAccountRc(address)) || 0;
+		this.balances.mana = BigInt(await getAccountRc(address)) || 0n;
 		Promise.resolve();
 	}
 }
 
 export class Balances {
   constructor(
-    public koin: number = 0,
-    public mana: number = 0,
-    public vhp: number = 0,
+    public koin: bigint = 0n,
+    public mana: bigint = 0n,
+    public vhp: bigint = 0n,
   ) { }
 }
 

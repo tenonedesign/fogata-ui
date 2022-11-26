@@ -1,11 +1,32 @@
 {
   "methods": {
+    "get_pool_params": {
+      "argument": "",
+      "return": "fogata.pool_params",
+      "description": "Get mining pool parameters",
+      "entry_point": 2396056273,
+      "read_only": true
+    },
     "balance_of": {
       "argument": "common.address",
       "return": "fogata.balance",
       "description": "koin/vhp balance of an account",
       "entry_point": 1550980247,
       "read_only": true
+    },
+    "get_owner": {
+      "argument": "",
+      "return": "ownable.owner",
+      "description": "Get owner",
+      "entry_point": 3970686139,
+      "read_only": true
+    },
+    "set_pool_params": {
+      "argument": "fogata.pool_params",
+      "return": "common.boole",
+      "description": "Set mining pool parameters",
+      "entry_point": 1227684861,
+      "read_only": false
     },
     "compute_koin_balances": {
       "argument": "",
@@ -26,6 +47,13 @@
       "return": "common.boole",
       "description": "Withdraw koin or vhp from the pool",
       "entry_point": 1161580635,
+      "read_only": false
+    },
+    "set_owner": {
+      "argument": "ownable.owner",
+      "return": "common.boole",
+      "description": "Set owner",
+      "entry_point": 238845787,
       "read_only": false
     }
   },

@@ -23,14 +23,14 @@ export const pobRead = async (methodName: string): Promise<any> => {
 }
 
 
-export const poolOperation = async (pool: Pool, methodName: string, koinAmount: number, vhpAmount: number) => {
+export const poolOperation = async (pool: Pool, methodName: string, koinAmount: bigint, vhpAmount: bigint) => {
   let opName = (methodName.substring(0, 5) == "stake") ? "deposit" : "withdrawal";
   let tokenName = "KOIN";
-  if (koinAmount > 0 && vhpAmount > 0) { tokenName = "KOIN and VHP"; }
-  if (koinAmount > 0 && vhpAmount == 0) { tokenName = "KOIN"; }
-  if (vhpAmount > 0 && koinAmount == 0) { tokenName = "VHP"; }
+  if (koinAmount > 0n && vhpAmount > 0n) { tokenName = "KOIN and VHP"; }
+  if (koinAmount > 0n && vhpAmount == 0n) { tokenName = "KOIN"; }
+  if (vhpAmount > 0n && koinAmount == 0n) { tokenName = "VHP"; }
   let timeout = 30000;
-  return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount, vhp_amount: vhpAmount }).then((transaction: TransactionJsonWait) => {
+  return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }).then((transaction: TransactionJsonWait) => {
     let toastId = infoToast(tokenName + " " + opName + " submitted", "The transaction containing your " + tokenName + " " + opName + " is being processed.  This may take some time.", 0).id;
     transaction.wait("byBlock", timeout).then((blockInfo) => {
       removeToastWithId(toastId);
@@ -50,19 +50,18 @@ export const poolOperation = async (pool: Pool, methodName: string, koinAmount: 
 
 export const poolRead = async (pool: Pool, methodName: string, args: any) => {
   return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, args).then((result) => {
-    // console.log(result);
     return Promise.resolve(result);
   });
 }
 
-export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<number> => {
+export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}).then((result) => {
-    return Promise.resolve(parseInt(result.value) || 0);
+    return Promise.resolve(BigInt(result.value) || 0n);
   });
 }
-export const tokenTotalSupply = async (contractAddress: string): Promise<number> => {
+export const tokenTotalSupply = async (contractAddress: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}).then((result) => {
-    return Promise.resolve(parseInt(result.value) || 0);
+    return Promise.resolve(BigInt(result.value) || 0n);
   });
 }
 
@@ -102,12 +101,15 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
     signer: signer,
   });
 
+  let availableRc = await provider.getAccountRc(storedUser.address);
+  let rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
+
   // console.log(methodName);
   // console.log(args);
-  // return;
+  // console.log(contract.functions);
 
   let result;
-  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: get(rcLimit), chainId: get(env).chain_id });
+  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, chainId: get(env).chain_id });
   if (result.transaction) {
     result = await provider.sendTransaction(result.transaction!);
     return Promise.resolve(result.transaction);
@@ -134,19 +136,22 @@ export function addHttps(url: string): string {
   return url;
 }
 
-export function balanceDisplayFormat(balance: number, language: string = "en-US"): string {
-  let num = balance;
-  let dec = (num / 100000000);
-  if (num == 0) { return "0"; }
-  if (num <= 10000) { return dec.toLocaleString(language, {minimumFractionDigits:8}); }
-  if (num <= 100000000) { return dec.toLocaleString(language, {minimumFractionDigits:5}); }
-  if (num <= 10000000000) { return dec.toLocaleString(language, {minimumFractionDigits:3}); } // less than 100
-  if (num <= 100000000000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); }  // less than 1k
-  if (num <= 100000000000000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); } // less than 1M
+export function balanceToFloat(balance: bigint): number {
+  return parseFloat(utils.formatUnits(balance, 8));
+}
+export function balanceDisplayFormat(balance: bigint, language: string = "en-US"): string {
+  let dec = balanceToFloat(balance);
+  if (balance == 0n) { return "0"; }
+  if (balance <= 10000n) { return dec.toLocaleString(language, {minimumFractionDigits:8}); }
+  if (balance <= 100000000n) { return dec.toLocaleString(language, {minimumFractionDigits:5}); }
+  if (balance <= 10000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:3}); } // less than 100
+  if (balance <= 100000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:2}); }  // less than 1k
+  if (balance <= 100000000000000n) { return dec.toLocaleString(language, {minimumFractionDigits:2}); } // less than 1M
   return dec.toLocaleString(language, {minimumFractionDigits:0}); // over 1M
 }
-export function balanceTooltipFormat(balance: number, language: string = "en-US"): string {
-  return (balance / 100000000).toLocaleString(language, {minimumFractionDigits:8});
+export function balanceTooltipFormat(balance: bigint, language: string = "en-US"): string {
+  let dec = balanceToFloat(balance);
+  return dec.toLocaleString(language, {minimumFractionDigits:8});
 }
 
 
@@ -229,27 +234,54 @@ export function removeToastWithId(id: string) {
 
 
 
+	// block simulator to verify assumptions on inflation and apy calculations
+	// 0% take -> 1.9999360139121
+	// 5% take each block -> 1.89899585612153 (1.899%)
+	// 5% take at the end -> 1.89993921322 (1.900%)
+	// function runBlockSimulation(count: number): number {
+	// 	let take = 0;
+	// 	let takeAmount = 0.0;
+	// 	let supply = 100000000;
+	// 	let percent = 0.019802;	// produces 1.9999360139121% inflation (simulated output of pob contract minting with this value)
+	// 	// let percent = .019802625;	// closer to producing exactly 2%
+	// 	for (let i = 0; i < count; i++) {
+	// 		let newSupply = block(supply, percent);
+	// 		let reward = newSupply - supply;
+	// 		let thisTake = reward * takeAmount;
+	// 		supply = newSupply - thisTake;
+	// 		take += thisTake;
+	// 		// supply = block(supply, percent);
+	// 	}
+	// 	console.log("take: "+take);
+	// 	return supply;
+	// }
+	// function block(supply: number, percent: number): number {
+	// 	let yearlyInflationTokens = supply * percent;
+	// 	let blocksPerYear = 31536000000 / 3000;
+	// 	let blockReward = yearlyInflationTokens / blocksPerYear;
+	// 	return supply + blockReward;
+	// }
+	// runBlockSimulation(10512000);
 
 
 
-
-export const burnKoinPoolOperation = async (pool: Pool, methodName: string, token: string, amount: number) => {
-  let opType = (methodName.substring(0, 5) == "depos") ? "deposit" : "withdrawal";
-  let timeout = 30000;
-  return contractOperation(pool.address, koilibAbi(burnKoinPoolAbiJson), methodName, { account: get(user).address, value: amount }).then((transaction: TransactionJsonWait) => {
-    let toastId = infoToast(token + " " + opType + " submitted", "The transaction containing your " + token + " " + opType + " is being processed.  This may take some time.", 0).id;
-    transaction.wait("byBlock", timeout).then((blockInfo) => {
-      removeToastWithId(toastId);
-      successToast("Transaction is complete","This transaction was completed successfully. View transaction on <a style=\"text-decoration: underline;\" target=\"_blank\" rel=\"noopener\" href=\"https://koinosblocks.com/tx/"+transaction.id+"\">Koinos Blocks</a>.", 6000);
-    })
-    .catch((error) => {
-      removeToastWithId(toastId);
-      warningToast("The transaction is taking a while", "The transaction was not included in a block after "+timeout / 1000+" seconds.  It may yet complete, but you will not be further notified.")
-    });
-    return Promise.resolve(transaction);
-  })
-  .catch((error) => {
-    errorToast(token + " " + opType + " transaction failed","The transaction will not be processed. "+error, 5000);
-    Promise.reject(error);
-  });
-}
+// export const burnKoinPoolOperation = async (pool: Pool, methodName: string, token: string, amount: number) => {
+//   let opType = (methodName.substring(0, 5) == "depos") ? "deposit" : "withdrawal";
+//   let timeout = 30000;
+//   return contractOperation(pool.address, koilibAbi(burnKoinPoolAbiJson), methodName, { account: get(user).address, value: amount }).then((transaction: TransactionJsonWait) => {
+//     let toastId = infoToast(token + " " + opType + " submitted", "The transaction containing your " + token + " " + opType + " is being processed.  This may take some time.", 0).id;
+//     transaction.wait("byBlock", timeout).then((blockInfo) => {
+//       removeToastWithId(toastId);
+//       successToast("Transaction is complete","This transaction was completed successfully. View transaction on <a style=\"text-decoration: underline;\" target=\"_blank\" rel=\"noopener\" href=\"https://koinosblocks.com/tx/"+transaction.id+"\">Koinos Blocks</a>.", 6000);
+//     })
+//     .catch((error) => {
+//       removeToastWithId(toastId);
+//       warningToast("The transaction is taking a while", "The transaction was not included in a block after "+timeout / 1000+" seconds.  It may yet complete, but you will not be further notified.")
+//     });
+//     return Promise.resolve(transaction);
+//   })
+//   .catch((error) => {
+//     errorToast(token + " " + opType + " transaction failed","The transaction will not be processed. "+error, 5000);
+//     Promise.reject(error);
+//   });
+// }
