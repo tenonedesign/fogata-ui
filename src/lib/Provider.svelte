@@ -29,7 +29,9 @@
 	const disconnect = async() => {
 		// retain user api preferences, but clear wallet address
 		$user.address = ""
-		$pool.userBalance = 0;
+		$pool.userBalance = BigInt(0);
+		$pool.userBalanceKoin = BigInt(0);
+		$pool.userBalanceVhp = BigInt(0);
 		wallet.set(new Wallet());
 	}
 

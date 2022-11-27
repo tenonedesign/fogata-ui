@@ -90,17 +90,26 @@ export class Pool {
 }
 
 
-
+export enum TokenName {
+  KOIN = "KOIN",
+  VHP = "VHP",
+}
 
 export class User {
   constructor(
     public address: string = "",
     public language: string = "en-US",
-    public selectedRpc: string = "api.koinos.io",
-    public customRpc: string = "",
+    public selectedRpcUrl: string = "api.koinos.io",
+    public customRpc: Endpoint = new Endpoint(""),
   ) { }
 }
 
+export class Endpoint {
+  constructor(
+    public url: string,
+    public isTestnet: boolean = false
+  ) { }
+}
 export class Wallet {
   constructor(
     public balances: Balances = new Balances(),

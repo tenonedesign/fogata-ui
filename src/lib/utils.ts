@@ -70,7 +70,7 @@ export const tokenTotalSupply = async (contractAddress: string): Promise<bigint>
 
 export const getAccountRc = (account: string): Promise<string> => {
   const storedUser = get(user);
-  const rpc = storedUser.selectedRpc || storedUser.customRpc;
+  const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   const provider = new Provider([addHttps(rpc)]);
   return provider.getAccountRc(account);
 }
@@ -88,7 +88,7 @@ export const koilibAbi = (abiJson: {methods: any, types: any}): Abi => {
 }
 export const contractOperation = async (contractAddress: string, abi: any, methodName: string, args: any): Promise<any> => {
   const storedUser = get(user);
-  const rpc = storedUser.selectedRpc || storedUser.customRpc;
+  const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   const provider = new Provider([addHttps(rpc)]);
   const signerAddress = storedUser.address;
   const signer = signerAddress ? kondor.getSigner(signerAddress) as Signer : undefined;
@@ -100,15 +100,20 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
     signer: signer,
   });
 
-  let availableRc = await provider.getAccountRc(storedUser.address);
-  let rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
+  let rcLimitString = "0";
+  let nextNonce = "";
+  if (abi.methods[methodName]?.read_only === false) {
+    const availableRc = await provider.getAccountRc(storedUser.address);
+    rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
+    nextNonce = await provider.getNextNonce(storedUser.address);
+  }
 
   // console.log(methodName);
   // console.log(args);
   // console.log(contract.functions);
 
   let result;
-  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, chainId: get(env).chain_id });
+  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id });
   if (result.transaction) {
     result = await provider.sendTransaction(result.transaction!);
     return Promise.resolve(result.transaction);

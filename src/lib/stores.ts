@@ -1,11 +1,11 @@
-import { writable, derived, type Writable } from 'svelte/store';
+import { writable, derived, type Writable, get } from 'svelte/store';
 import { writable as persistable } from 'svelte-local-storage-store'
 import logo from '$lib/images/logo.svg';
-import { Pool, Wallet, User, Toast} from '$lib/types'
+import { Pool, Wallet, User, Toast, Endpoint} from '$lib/types'
 
 
 export const user = persistable("user", new User());
-export const rpcs = writable(["api.koinos.io","harbinger-api.koinos.io","api.koinosblocks.com"]);
+export const rpcs = writable([new Endpoint("api.koinos.io"),new Endpoint("harbinger-api.koinos.io", true),new Endpoint("api.koinosblocks.com")]);
 export const wallet = writable(new Wallet());
 export const pool = writable(new Pool());
 export const pools = writable(participatingPools());
@@ -14,7 +14,8 @@ export const rcLimit = writable("500000000");
 export const env = derived(
 	user,
 	$user => {
-    if ($user.selectedRpc == "harbinger-api.koinos.io") {
+    let currentRpc: Endpoint = get(rpcs).find(x => x.url == $user.selectedRpcUrl) || $user.customRpc;
+    if (currentRpc.isTestnet) {
       return {
         "koin_address": "19JntSm8pSNETT9aHTwAUHC5RMoaSmgZPJ",
         "vhp_address": "1JZqj7dDrK5LzvdJgufYBJNUFo88xBoWC8",
