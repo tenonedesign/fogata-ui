@@ -6,7 +6,7 @@
 
 <svelte:head>
 	<title>Pools</title>
-	<meta name="description" content="List of miners" />
+	<meta name="description" content="List of pools" />
 </svelte:head>
 
 <div class="px-4">

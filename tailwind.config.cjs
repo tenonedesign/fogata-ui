@@ -36,7 +36,7 @@ const config = {
           "primary": "#809aff", // blue
           "primary-focus": "#7088ed",
           "primary-content": "#ffffff",
-          "secondary": "#e0e7ff", // secondary is unused
+          "secondary": "#e0e7ff", // light blue
           "secondary-focus": "#c7d2fe",
           "secondary-content": "#153ab3",
           "accent": "#2ee362",

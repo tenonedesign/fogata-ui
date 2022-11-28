@@ -165,7 +165,7 @@ let position = "toast-start";
 
 export function showConnectionToast() {
   if (toastsContainId("connection-message")) { return; }
-  let toast = new Toast("alert-warning", "", "Connection attempts recently failed", 0, position);
+  let toast = new Toast("warning", "", "Connection attempts recently failed", 0, position);
   toast.id = "connection-message";
   addToast(toast);
   return toast;
@@ -174,22 +174,22 @@ export function hideConnectionToast() {
   removeToastWithId("connection-message");
 }
 export function successToast(title: string, message: string, duration: number = 0): Toast {
-  let toast = new Toast("alert-success", title, message, duration, position);
+  let toast = new Toast("success", title, message, duration, position);
   addToast(toast);
   return toast;
 }
 export function infoToast(title: string, message: string, duration: number = 0): Toast {
-  let toast = new Toast("alert-info", title, message, duration, position);
+  let toast = new Toast("info", title, message, duration, position);
   addToast(toast);
   return toast;
 }
 export function warningToast(title: string, message: string, duration: number = 0): Toast {
-  let toast = new Toast("alert-warning", title, message, duration, position);
+  let toast = new Toast("warning", title, message, duration, position);
   addToast(toast);
   return toast;
 }
 export function errorToast(title: string, message: string, duration: number = 0): Toast {
-  let toast = new Toast("alert-error", title, message, duration, position);
+  let toast = new Toast("error", title, message, duration, position);
   addToast(toast);
   return toast;
 }

@@ -2,7 +2,7 @@
   import Card from '$lib/Card.svelte';
   import PoolListElement from '$lib/PoolListElement.svelte';
   export let pools: any;
-  export let title: string = "Active miners";
+  export let title: string = "Active pools";
 </script>
 
 <Card>

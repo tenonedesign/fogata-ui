@@ -7,7 +7,7 @@
 	import PoolActionButton from '$lib/PoolActionButton.svelte';
 	import { TokenName } from './types';
 
-  let activeToken: string = TokenName.KOIN;
+  let activeToken: string = TokenName.VHP;
   let depositValue: string = "";
   let withdrawalValue: string = "";
 
@@ -28,8 +28,14 @@
 </script>
 
     <Card>
-      <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalance)} VHP">{format($pool.userBalance)}</h1>
-      <h2 class="text-sm text-center max-w-2xl mt-4 mx-auto opacity-75">YOUR STAKE (Includes {format($pool.userBalanceKoin)} liquid KOIN)</h2>
+      <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold">
+        <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalance)}">
+          {format($pool.userBalance)}
+        </span>
+      </h1>
+      <h2 class="text-sm text-center max-w-2xl mt-4 mx-auto opacity-75">
+        YOUR STAKE (Includes <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN)
+      </h2>
       <div class="flex justify-center gap-4 mt-8 flex-1">
 
         {#if $wallet.balances.mana > 0}
@@ -38,6 +44,7 @@
             title="Deposit KOIN or VHP"
             message="Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time."
             maximums={{koin: $wallet.balances.koin, vhp: $wallet.balances.vhp}}
+            burnWarning="Depositing KOIN will permanently convert it to VHP. You will only be able to withdraw it as VHP."
             buttonAction={initiateDeposit}
             bind:activeToken={activeToken}
             bind:value={depositValue}>Deposit</PoolActionButton>

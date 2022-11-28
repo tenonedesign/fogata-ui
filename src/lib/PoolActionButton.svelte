@@ -7,6 +7,7 @@
   export let actionName: string = "";
   export let title: string = "";
   export let message: string = "";
+  export let burnWarning: string = "";
   export let activeToken: string;
   export let buttonAction: () => {};
   export let value: string = "";
@@ -51,6 +52,9 @@
         </ul>
       </div>
     </div>
+    {#if burnWarning !== "" && activeToken == TokenName.KOIN && actionName == "Deposit"}
+      <p class="text-error text-sm mt-4">{burnWarning}</p>
+    {/if}
     <div class="mt-4">
       <label for="modal-{instanceId}" class="btn btn-outline">Cancel</label>
       <button on:click={_buttonAction} class="btn btn-primary ml-2">{actionName} {activeToken}</button>

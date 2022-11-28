@@ -19,12 +19,11 @@
 
 <div class="toast toast-start gap-0">
   {#each $toasts as toast, i (toast)}
-      <!-- <div transition:slide class="alert gap-0 p-2 md:gap-4 md:p-4 {toast.type}"> -->
-      <div transition:slide={{duration:500}} class="flex rounded-2xl mt-2 items-center text-sm gap-1 p-2 md:gap-4 md:p-4 md:text-base {toast.type}">
-        {#if toast.type == "alert-success"} <SuccessIcon size="24" /> {/if}
-        {#if toast.type == "alert-info"} <InfoIcon size="24" /> {/if}
-        {#if toast.type == "alert-warning"} <WarnIcon size="24" /> {/if}
-        {#if toast.type == "alert-error"} <ErrorIcon size="24" /> {/if}
+      <div transition:slide={{duration:500}} class="flex rounded-2xl mt-2 items-center text-sm gap-1 p-2 md:gap-4 md:p-4 md:text-base {toast.classes()}">
+        {#if toast.type == "success"} <SuccessIcon size="24" /> {/if}
+        {#if toast.type == "info"} <InfoIcon size="24" /> {/if}
+        {#if toast.type == "warning"} <WarnIcon size="24" /> {/if}
+        {#if toast.type == "error"} <ErrorIcon size="24" /> {/if}
         <div class="flex flex-col flex-1 gap-0 items-start max-w-md">
           <div class="w-full break-words text font-semibold">{@html toast.title}</div>
           <div class="w-full break-words">{@html toast.message}</div>

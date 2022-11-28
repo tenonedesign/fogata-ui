@@ -10,7 +10,9 @@
 </script>
 
     <Card>
-      <h1 class:opacity-0={$pool.apy == 0} class="text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold tooltip tooltip-secondary flex-none" data-tip="{($pool.apy * 100).toLocaleString($user.language, {minimumFractionDigits:8})}%">{($pool.apy * 100).toFixed(2)}%</h1>
+      <h1 class:opacity-0={$pool.apy == 0} class="text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold">
+		<span class="tooltip tooltip-secondary flex-none" data-tip="{($pool.apy * 100).toLocaleString($user.language, {minimumFractionDigits:8})}%">{($pool.apy * 100).toFixed(2)}%</span>
+		</h1>
       <h2 class="text-sm text-center max-w-2xl mt-4 mx-auto opacity-75 uppercase">Estimated pool APY</h2>
 
 	  <div class="flex-1"></div>

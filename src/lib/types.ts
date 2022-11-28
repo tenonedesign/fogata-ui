@@ -133,11 +133,20 @@ export class Balances {
 
 export class Toast {
   constructor(
-    public type: string = "alert-info", // alert-info, alert-success, alert-error
+    public type: string = "info", // info, success, error
     public title: string = "",
     public message: string = "",
     public duration: number = 0,
     public position: string = "toast-start",
     public id: string = Math.random().toString(36).substring(2),
   ) { }
+  public classes() {
+    switch (this.type) {
+      case "success": return "bg-success text-success-content";
+      case "info": return "bg-secondary text-secondary-content";
+      case "warning": return "bg-warning text-warning-content";
+      case "error": return "bg-error text-error-content";
+      default: return "bg-secondary text-secondary-content";
+    }
+  }
 }
