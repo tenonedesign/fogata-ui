@@ -20,6 +20,7 @@ export const env = derived(
         "koin_address": "19JntSm8pSNETT9aHTwAUHC5RMoaSmgZPJ",
         "vhp_address": "1JZqj7dDrK5LzvdJgufYBJNUFo88xBoWC8",
         "pob_address": "198RuEouhgiiaQm7uGfaXS6jqZr6g6nyoR",
+        "community_address": "15a6ZZR9M52Vt5ppW4iqoQEUfuNxrasgjf",
         "chain_id": "EiAAKqFi-puoXnuJTdn7qBGGJa8yd-dcS2P0ciODe4wupQ=="
       }
     }
@@ -28,6 +29,7 @@ export const env = derived(
         "koin_address": "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
         "vhp_address": "1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9",
         "pob_address": "159myq5YUhhoVWu3wsHKHiJYKPKGUrGiyv",
+        "community_address": "15a6ZZR9M52Vt5ppW4iqoQEUfuNxrasgjf",
         "chain_id": "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA=="
       }
     }

@@ -150,3 +150,19 @@ export class Toast {
     }
   }
 }
+
+export class PoolParams {
+  constructor(
+    public name: string = "",
+    public image: string = "",
+    public description: string = "",
+    public beneficiaries: Beneficiary[] = [new Beneficiary("", 5000)],
+    public payment_period: number = 0,
+  ) { }
+}
+export class Beneficiary {
+  constructor(
+    public address: string = "",
+    public percentage: number = 0,
+  ) { }
+}

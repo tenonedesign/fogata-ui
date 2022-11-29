@@ -4,6 +4,7 @@
 	import { pools } from '$lib/stores.js';
 	import PoolList from '$lib/PoolList.svelte';
 	import { onDestroy, onMount } from 'svelte';
+	import PoolCreator from '$lib/PoolCreator.svelte';
 
 	let timer: NodeJS.Timer;
 
@@ -39,11 +40,19 @@
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20 pb-60">
   	<PoolList pools={$pools} title="Join a mining pool" />
 	<Card>
-		<div class="text-lg font-semibold">Create a mining pool</div>
+		<div class="text-lg font-semibold">Start your own pool</div>
 		<div class="mt-4">
-			TODO: Add mining pool contract config and deployment
-			<br />
-			TODO: Add setup instructions for running a node (mac, linux, pc)
+			If you run a node, you can easily turn it into a mining pool.  The first step is to create and start your node, then copy its public key.
+		</div>
+		<div class="float mt-4">
+			<button class="btn btn-secondary">Show me how</button>
+		</div>
+		<div class="mt-8">
+			Once your node is running, deploy a mining pool on Koinos in just a few steps.  Your pool will be listed here on Fogata if it qualifies.
+		</div>
+		<div class="float mt-4">
+			<!-- <button class="btn btn-secondary">Create pool</button> -->
+			<PoolCreator>Create pool</PoolCreator>
 		</div>
 	</Card>
   </section>
