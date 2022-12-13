@@ -1,8 +1,8 @@
 
 import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 import * as kondor from "kondor-js";
-import { env, rcLimit, toasts, user } from "$lib/stores";
-import { Pool, PoolParams, Toast } from "$lib/types";
+import { env, ownedPools, rcLimit, toasts, user } from "$lib/stores";
+import { Pool, PoolParams, Toast, User } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/pool-proto.json";
 import pobAbiJson from "$lib/pob-proto.json";
@@ -10,7 +10,16 @@ import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/inter
 import crypto from "crypto";
 
 
-
+export const updateStoredObjects = () => {
+   user.set({...new User(), ...get(user)});
+}
+export const populateOwnedPools = () => {
+  let pools: Pool[] = [];
+  get(user).ownedPools.forEach(poolAddress => {
+    pools.push(new Pool(poolAddress));
+  });
+  ownedPools.set(pools)
+}
 
 export const pobRead = async (methodName: string): Promise<any> => {
   return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, {}).then((result) => {
@@ -124,15 +133,14 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
   }
 }
 
-export const uploadPoolContract = async (contractWasmBase64: string, poolParams: PoolParams): Promise<any> => {
+export const uploadPoolContract = async (contractWasmBase64: string, poolParams: PoolParams): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   const provider = new Provider([addHttps(rpc)]);
-  const signerAddress = storedUser.address;
-  if (!signerAddress) {
+  if (!storedUser.address) {
     return Promise.reject(new Error("No wallet connected."));
   }
-  const signer = kondor.getSigner(signerAddress);
+  const signer = kondor.getSigner(storedUser.address);
   signer.provider = provider;
 
   // New disposable account for contract
@@ -140,7 +148,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   self.crypto.getRandomValues(privateKeyBytes);
   const contractSigner = new Signer({
     privateKey: utils.toHexString(privateKeyBytes),
-    provider,
+    provider: provider,
   });
 
   const contract = new Contract({
@@ -152,8 +160,8 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
     options: {
       payer: signer.getAddress(),
       beforeSend: async (tx: TransactionJson) => {
-        await signer.signTransaction(tx);
-        await contractSigner.signTransaction(tx);
+        const transaction = await signer.signTransaction(tx);
+        tx.signatures = transaction.signatures;
       },
     }
   });
@@ -165,9 +173,9 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
 
   let rcLimitString = "0";
   let nextNonce = "";
-  const availableRc = await provider.getAccountRc(storedUser.address);
+  const availableRc = await provider.getAccountRc(signer.getAddress());
   rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
-  nextNonce = await provider.getNextNonce(storedUser.address);
+  nextNonce = await provider.getNextNonce(signer.getAddress());
 
   const { receipt, transaction } = await contract.deploy({
     abi: JSON.stringify(poolAbiJson),
@@ -181,6 +189,8 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   });
 
   if (transaction) {
+    console.log(contractSigner.address);
+    console.log(transaction);
     return Promise.resolve(transaction);
   }
   return Promise.reject(new Error("Deploy transaction did not succeed"));

@@ -99,8 +99,9 @@ export class User {
   constructor(
     public address: string = "",
     public language: string = "en-US",
-    public selectedRpcUrl: string = "api.koinos.io",
+    public selectedRpcUrl: string = "api.koinos.io",  // "" indicates use of customRpc
     public customRpc: Endpoint = new Endpoint(""),
+    public ownedPools: string[] = [],
   ) { }
 }
 

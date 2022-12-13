@@ -1,12 +1,12 @@
 import { writable, derived, type Writable, get } from 'svelte/store';
 import { writable as persistable } from 'svelte-local-storage-store'
-import logo from '$lib/images/logo.svg';
 import { Pool, Wallet, User, Toast, Endpoint} from '$lib/types'
 
 
 export const user = persistable("user", new User());
 export const rpcs = writable([new Endpoint("api.koinos.io"),new Endpoint("harbinger-api.koinos.io", true),new Endpoint("api.koinosblocks.com")]);
 export const wallet = writable(new Wallet());
+export const ownedPools: Writable<Pool[]> = writable([]);
 export const pool = writable(new Pool());
 export const pools = writable(participatingPools());
 export const toasts: Writable<Toast[]> = writable([]);
@@ -42,5 +42,6 @@ function participatingPools(): Pool[] {
     new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
     new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
     new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
+    new Pool("1DKLhNVtKfHZa6LJ6guYKTiDKfkVujzyPa")
   ]
 }
