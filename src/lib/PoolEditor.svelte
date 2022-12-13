@@ -7,8 +7,8 @@
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
   // init
-  let contributionBeneficiary: Beneficiary = poolParams.beneficiaries.find(x => x.address == $env.community_address) ?? new Beneficiary($env.community_address, 5000);
-  let otherBeneficiaries: Beneficiary[] = poolParams.beneficiaries.filter(x => x.address != $env.community_address);
+  let contributionBeneficiary: Beneficiary = poolParams.beneficiaries.find(x => x.address == $env.sponsors_address) ?? new Beneficiary($env.sponsors_address, 5000);
+  let otherBeneficiaries: Beneficiary[] = poolParams.beneficiaries.filter(x => x.address != $env.sponsors_address);
   if (otherBeneficiaries.length == 0) {
     otherBeneficiaries = [new Beneficiary($user.address, 15000)];
   }
@@ -78,7 +78,7 @@
         </label>
         <div class=" bg-base-200 rounded-2xl p-4 flex flex-col gap-2">
           {#each otherBeneficiaries as beneficiary, index}
-            {#if beneficiary.address != $env.community_address}
+            {#if beneficiary.address != $env.sponsors_address}
               <div class="bg-base-100 rounded-xl p-2 shadow-md relative">
                 <button on:click={() => {removeBeneficiary(index)}} disabled={otherBeneficiaries.length == 1} class="btn btn-circle btn-ghost absolute right-1 top-1 min-h-0 h-7 w-7 max-w-none"><CloseOutline size="24" /></button>
                 <label for="poolContribution-{instanceId}{index}" class="label">

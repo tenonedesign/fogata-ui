@@ -8,6 +8,9 @@
 
 	let timer: NodeJS.Timer;
 
+	// data from the load function in +page.ts
+	export let data: any;
+
 	onMount(async () => {
 		load();
 		timer = setInterval(() => {
@@ -52,7 +55,7 @@
 		</div>
 		<div class="float mt-4">
 			<!-- <button class="btn btn-secondary">Create pool</button> -->
-			<PoolCreator>Create pool</PoolCreator>
+			<PoolCreator contractWasmBase64={data.contractWasmBase64}>Create pool</PoolCreator>
 		</div>
 	</Card>
   </section>

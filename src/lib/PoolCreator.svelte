@@ -1,10 +1,20 @@
 <script lang="ts">
 	import PoolEditor from '$lib/PoolEditor.svelte';
 	import { PoolParams } from '$lib/types';
+	import { errorToast, infoToast, removeToastWithId, uploadPoolContract } from '$lib/utils';
   export let title: string = "Pool designer";
+  export let contractWasmBase64: string;
 
   const deployPool = async (): Promise<any> => {
-    step++;
+    let toastId = infoToast("Creating pool", "Your pool is being created.  This may take some time.", 0).id;
+    uploadPoolContract(contractWasmBase64, poolParams).then(() => {
+      removeToastWithId(toastId);
+      step++;
+    })
+    .catch((error) => {
+      removeToastWithId(toastId);
+      errorToast("Pool creation failed", "There was an error creating the pool. "+error)
+    });
   }
   const linkPool = async (): Promise<any> => {
     step++;
@@ -15,9 +25,7 @@
   let poolPrivateKey = "";
   let poolAddress = "";
   let nodePublicKey = "";
-
   let step = 0;
-  let stepOneComplete = false;
 
 
   $: stepOneComplete = poolParams.name != "" && poolParams.image != "" && poolParams.description != "" && poolParams.payment_period > 0;
