@@ -1,10 +1,25 @@
+<svelte:options accessors={true}/>
 <script lang="ts">
 	import PoolEditor from '$lib/PoolEditor.svelte';
-	import { PoolParams } from '$lib/types';
-	import { errorToast, infoToast, populateOwnedPools, removeToastWithId, successToast, uploadPoolContract, warningToast } from '$lib/utils';
-	import { user } from '$lib/stores';
+	import { Pool, PoolParams } from '$lib/types';
+	import { contractOperation, errorToast, infoToast, koilibAbi, poolOperation, poolWrite, populateOwnedPools, removeToastWithId, successToast, uploadPoolContract, warningToast } from '$lib/utils';
+	import { pool, user } from '$lib/stores';
   export let title: string = "Pool designer";
   export let contractWasmBase64: string;
+  export let visibleButton: boolean = true;
+  export let poolParams = new PoolParams();
+  export let mode: string = "create"; // or edit
+  export let address = "";
+
+  export let show = () => {
+    (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = true;
+    step = 0;
+  }
+
+  let instanceId = Math.random().toString(36).substring(2);
+  let poolAddress = "";
+  let nodePublicKey = "";
+  let step = 0;
 
   const deployPool = async (): Promise<any> => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
@@ -18,6 +33,7 @@
           poolAddress = newAddress;
           if (!$user.ownedPools.includes(newAddress)) {
             $user.ownedPools.push(newAddress);
+            $user = $user;
             populateOwnedPools();
           }
         }
@@ -32,15 +48,16 @@
       errorToast("Pool creation failed", "There was an error creating the pool. "+error)
     });
   }
+
+  const updatePool = async (): Promise<any> => {
+    (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
+    poolWrite(address, "set_pool_params", poolParams, "pool update");
+  }
+
   const linkPool = async (): Promise<any> => {
     step++;
   }
-  let poolParams = new PoolParams();
-  let instanceId = Math.random().toString(36).substring(2);
 
-  let poolAddress = "";
-  let nodePublicKey = "";
-  let step = 0;
 
 
   $: stepOneComplete = poolParams.name != "" && poolParams.image != "" && poolParams.description != "" && poolParams.payment_period > 0;
@@ -50,10 +67,11 @@
 </script>
 
 
-
-<label for="modal-{instanceId}" class="btn btn-secondary">
-  <slot></slot>
-</label>
+{#if visibleButton}
+  <label for="modal-{instanceId}" class="btn btn-secondary">
+    <slot></slot>
+  </label>
+{/if}
 
 <!-- Put this part before </body> tag -->
 <input type="checkbox" id="modal-{instanceId}" class="modal-toggle" />
@@ -63,7 +81,11 @@
     <ul class="steps">
       <li class="step" class:step-primary="{step >= 0}">Basic info</li>
       <li class="step" class:step-primary="{step >= 1}">Beneficiaries</li>
-      <li class="step" class:step-primary="{step >= 2}">Upload</li>
+      {#if mode == "create"}
+        <li class="step" class:step-primary="{step >= 2}">Upload</li>
+      {:else}
+        <li class="step" class:step-primary="{step >= 2}">Save</li>
+      {/if}
     </ul>
 
     {#if step==0}
@@ -86,11 +108,20 @@
     {/if}
     {#if step==2}
       <div>
-        <div class="font-semibold mt-8">Your pool is ready to upload</div>
-        <div class="mt-4">Uploading will create your mining pool smart contract on the Koinos chain.  This operation will consume mana.</div>
+        {#if mode == "create"}
+          <div class="font-semibold mt-8">Your pool is ready to upload</div>
+          <div class="mt-4">Uploading will create your mining pool smart contract on the Koinos chain.  This operation will consume mana.</div>
+        {:else}
+          <div class="font-semibold mt-8">Your pool is ready to save</div>
+          <div class="mt-4">Saving will update your mining pool parameters.  This operation will consume mana.</div>
+        {/if}
         <div class="flex justify-between mt-4">
           <button on:click={() => {step--}} class="btn btn-outline mt-4 min-w-[112px]">Previous</button>
-          <button on:click={deployPool} disabled={!stepThreeComplete} class="btn btn-primary mt-4 min-w-[112px]">Upload Pool</button>
+          {#if mode == "create"}
+            <button on:click={deployPool} disabled={!stepThreeComplete} class="btn btn-primary mt-4 min-w-[112px]">Upload Pool</button>
+          {:else}
+            <button on:click={updatePool} disabled={!stepThreeComplete} class="btn btn-primary mt-4 min-w-[112px]">Save Pool</button>
+          {/if}
         </div>
       </div>
     {/if}

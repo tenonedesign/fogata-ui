@@ -6,15 +6,12 @@ import { utils } from "koilib";
 export class Pool {
   constructor(
     public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
+    public parameters: PoolParams = new PoolParams(),
     public apy = 0,
-    public description = "",
-    public logo = "",
-    public name = "",
-    public beneficiaries = [],
-    public paymentPeriod = "",
     public userBalance = BigInt(0),
     public userBalanceKoin = BigInt(0),
     public userBalanceVhp = BigInt(0),
+    public userBalanceVapor = BigInt(0),
     public wallet: Wallet = new Wallet()
   ) { }
   public refresh = async () => {
@@ -22,6 +19,10 @@ export class Pool {
     await this.loadParameters();
     await this.calculateApy();
   }
+  public loadParameters = async () => {
+    this.parameters = await poolRead(this.address, "get_pool_params", {});
+    Promise.resolve();
+	}
   public calculateApy = async () => {
     // calculate apy
 		let totalKoin = await tokenTotalSupply(get(env).koin_address);
@@ -61,7 +62,7 @@ export class Pool {
 			totalApy = 0;	// don’t show apy if pool has no VHP (this should probably trigger a message somewhere with instructions how to make first deposit)
 		}
     let combinedBeneficiaryPercentage = 0;
-    this.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
+    this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
       combinedBeneficiaryPercentage += beneficiary.percentage;
     });
     let poolPercentage = combinedBeneficiaryPercentage / 100000;
@@ -76,17 +77,6 @@ export class Pool {
 		// console.log("participantApy: "+participantApy);
 		this.apy = participantApy;
   }
-  public loadParameters = async () => {
-
-    let params = await poolRead(this, "get_pool_params", {});
-    this.name = params.name;
-    this.logo = params.image;
-    this.description = params.description;
-    this.paymentPeriod = params.payment_period;
-    this.beneficiaries = params.beneficiaries;
-
-    Promise.resolve();
-	}
 }
 
 

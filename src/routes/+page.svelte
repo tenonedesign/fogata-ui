@@ -10,6 +10,7 @@
 	import { Pool } from '$lib/types';
 
 	let timer: NodeJS.Timer;
+  let poolEditor: any = null;
 
 	// data from the load function in +page.ts
 	export let data: any;
@@ -38,6 +39,14 @@
 			});
     });
 	}
+
+  function editPool(address: string) {
+    const p = $ownedPools.find(x => x.address == address);
+    poolEditor.poolParams = p?.parameters;
+    poolEditor.address = p?.address;
+    poolEditor.step = 0;
+    poolEditor.show();
+  }
   
 </script>
 
@@ -56,12 +65,13 @@
       <Card>
         <div class="text-lg font-semibold">Your mining pools</div>
         {#each $ownedPools as pool}
-          <PoolListElement pool={pool} />
+          <PoolListElement pool={pool} owned={true} editAction={editPool} />
         {/each}
         <div class="mt-8">
         </div>
         <div class="float mt-4">
           <PoolCreator contractWasmBase64={data.contractWasmBase64}>Add another pool</PoolCreator>
+          <PoolCreator visibleButton={false} mode={"edit"} bind:this={poolEditor} contractWasmBase64={data.contractWasmBase64}>Edit pool</PoolCreator>
         </div>
       </Card>				
     {:else}

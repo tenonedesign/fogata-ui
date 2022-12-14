@@ -2,19 +2,21 @@
 	import Header from '$lib/Header.svelte';
 	import Stake from '$lib/Stake.svelte';
 	import Stats from '$lib/Stats.svelte';
-	import { pools, wallet, pool, user, env } from '$lib/stores';
+	import { pools, wallet, pool, user, env, ownedPools } from '$lib/stores';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { balanceDisplayFormat, balanceToFloat, hideConnectionToast, pobRead, poolRead, showConnectionToast, tokenBalanceOf, tokenTotalSupply } from '$lib/utils';
+	import { balanceDisplayFormat, balanceToFloat, hideConnectionToast, pobRead, poolRead, populateOwnedPools, showConnectionToast, tokenBalanceOf, tokenTotalSupply, updateStoredObjects } from '$lib/utils';
 	import { Pool } from '$lib/types';
 	import { Serializer, utils } from 'koilib';
 
-	pool.set($pools.find(x => x.address == $page.params.id) || new Pool());
+	updateStoredObjects();
+	populateOwnedPools();
+	pool.set($pools.find(x => x.address == $page.params.id) || $ownedPools.find(x => x.address == $page.params.id) || new Pool());
 
 	let timer: NodeJS.Timer;
 	onMount(async () => {
 		load();
-		setInterval(() => {
+		timer = setInterval(() => {
 			load();
 		}, 5000);
 	});
@@ -26,6 +28,7 @@
 
 		$pool.refresh().then(() => {
 			pool.set($pool);
+			$pool = $pool;
 			hideConnectionToast();
 		}).catch(err => {
 			showConnectionToast();
@@ -37,7 +40,7 @@
 			}).catch(err => {
 			});
 
-			poolRead($pool, "balance_of", { account: $user.address }).then((value) => {
+			poolRead($pool.address, "balance_of", { account: $user.address }).then((value) => {
 				$pool.userBalanceKoin = BigInt(value?.koin_amount ?? "0");
 				$pool.userBalanceVhp = BigInt(value?.vhp_amount ?? "0");
 				$pool.userBalance = $pool.userBalanceKoin + $pool.userBalanceVhp;

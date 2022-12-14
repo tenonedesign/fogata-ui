@@ -10,7 +10,7 @@ export const ownedPools: Writable<Pool[]> = writable([]);
 export const pool = writable(new Pool());
 export const pools = writable(participatingPools());
 export const toasts: Writable<Toast[]> = writable([]);
-export const rcLimit = writable("500000000");
+export const rcLimit = writable("5000000000");
 export const env = derived(
 	user,
 	$user => {
@@ -40,8 +40,7 @@ export const env = derived(
 function participatingPools(): Pool[] {
   return [
     new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
-    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
-    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
-    new Pool("1DKLhNVtKfHZa6LJ6guYKTiDKfkVujzyPa")
+    new Pool("13MpmCsnaPeFBxNpfXtMYKRAR68QgAacr9"),
+    new Pool("1AKkJ2ULDQrkTgnJznL3nWayRhrdqRLTyP")
   ]
 }

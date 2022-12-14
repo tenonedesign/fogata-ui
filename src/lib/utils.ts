@@ -38,9 +38,19 @@ export const poolOperation = async (pool: Pool, methodName: string, koinAmount: 
   if (koinAmount > BigInt(0) && vhpAmount > BigInt(0)) { tokenName = "KOIN and VHP"; }
   if (koinAmount > BigInt(0) && vhpAmount == BigInt(0)) { tokenName = "KOIN"; }
   if (vhpAmount > BigInt(0) && koinAmount == BigInt(0)) { tokenName = "VHP"; }
+  return poolWrite(pool.address, methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }, tokenName + " " + opName);
+}
+
+export const poolRead = async (address: string, methodName: string, args: any) => {
+  return contractOperation(address, koilibAbi(poolAbiJson), methodName, args).then((result) => {
+    return Promise.resolve(result);
+  });
+}
+
+export const poolWrite = async (address: string, methodName: string, args: any, description: string) => {
   let timeout = 30000;
-  return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }).then((transaction: TransactionJsonWait) => {
-    let toastId = infoToast(tokenName + " " + opName + " submitted", "The transaction containing your " + tokenName + " " + opName + " is being processed.  This may take some time.", 0).id;
+  return contractOperation(address, koilibAbi(poolAbiJson), methodName, args).then((transaction: TransactionJsonWait) => {
+    let toastId = infoToast("Transaction submitted", "The transaction containing your " + description + " is being processed.  This may take some time.", 0).id;
     transaction.wait("byBlock", timeout).then((blockInfo) => {
       removeToastWithId(toastId);
       successToast("Transaction is complete","This transaction was completed successfully. View transaction on <a style=\"text-decoration: underline;\" target=\"_blank\" rel=\"noopener\" href=\"https://koinosblocks.com/tx/"+transaction.id+"\">Koinos Blocks</a>.", 10000);
@@ -52,14 +62,8 @@ export const poolOperation = async (pool: Pool, methodName: string, koinAmount: 
     return Promise.resolve(transaction);
   })
   .catch((error) => {
-    errorToast(tokenName + " " + opName + " transaction failed","The transaction will not be processed. "+error, 0);
+    errorToast("Your "+ description + " transaction failed","The transaction will not be processed. "+error, 0);
     Promise.reject(error);
-  });
-}
-
-export const poolRead = async (pool: Pool, methodName: string, args: any) => {
-  return contractOperation(pool.address, koilibAbi(poolAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result);
   });
 }
 
@@ -160,14 +164,16 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
     options: {
       payer: signer.getAddress(),
       beforeSend: async (tx: TransactionJson) => {
-        const transaction = await signer.signTransaction(tx);
-        tx.signatures = transaction.signatures;
+        const abis: any = {};
+        abis[contractSigner.address] = poolAbiJson;
+        signer.signTransaction(tx, abis);
+        await signer.signTransaction(tx);
       },
     }
   });
 
   contract.options.onlyOperation = true;
-  const { operation: takeOwnership } = await contract.functions.set_owner({ account: contractSigner.address });
+  const { operation: takeOwnership } = await contract.functions.set_owner({ account: signer.getAddress() });
   const { operation: setPoolParams } = await contract.functions.set_pool_params(poolParams);
   contract.options.onlyOperation = false;
 
@@ -189,8 +195,8 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   });
 
   if (transaction) {
-    console.log(contractSigner.address);
-    console.log(transaction);
+    // console.log(contractSigner.address);
+    // console.log(transaction);
     return Promise.resolve(transaction);
   }
   return Promise.reject(new Error("Deploy transaction did not succeed"));

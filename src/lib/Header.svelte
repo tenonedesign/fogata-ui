@@ -20,8 +20,8 @@
 		  <div class="flex flex-wrap w-full gap-4 justify-between items-center">
 
         <div class="flex items-center gap-4">
-          <img src={$pool?.logo ?? "https://cdn.pixabay.com/photo/2012/04/12/19/11/fire-30231_1280.png"} alt="Miner logo" class="h-10 w-auto sm:h-14 relative -top-1"/>
-          <span class="ml-2 text-3xl font-semibold">{$pool?.name ?? "Fogata Mining Pools"}</span>
+          <img src={$pool?.parameters.image ?? "https://cdn.pixabay.com/photo/2012/04/12/19/11/fire-30231_1280.png"} alt="Miner logo" class="h-10 w-auto sm:h-14 relative -top-1"/>
+          <span class="ml-2 text-3xl font-semibold">{$pool?.parameters.name ?? "Fogata Mining Pools"}</span>
         </div>
 
         <div class="flex gap-4">
