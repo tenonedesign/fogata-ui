@@ -3,7 +3,9 @@ import { writable as persistable } from 'svelte-local-storage-store'
 import { Pool, Wallet, User, Toast, Endpoint} from '$lib/types'
 
 
-export const user = persistable("user", new User());
+export const connectedAddress = persistable("connectedAddress", "");
+export const users = persistable("users", <{[address: string]:User}>{});
+export const user = writable(get(users)[get(connectedAddress)] ?? new User());
 export const rpcs = writable([new Endpoint("api.koinos.io"),new Endpoint("harbinger-api.koinos.io", true),new Endpoint("api.koinosblocks.com")]);
 export const wallet = writable(new Wallet());
 export const ownedPools: Writable<Pool[]> = writable([]);
@@ -11,6 +13,7 @@ export const pool = writable(new Pool());
 export const pools = writable(participatingPools());
 export const toasts: Writable<Toast[]> = writable([]);
 export const rcLimit = writable("5000000000");
+export const userChangedEvent = writable(false);
 export const env = derived(
 	user,
 	$user => {
@@ -40,7 +43,6 @@ export const env = derived(
 function participatingPools(): Pool[] {
   return [
     new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
-    new Pool("13MpmCsnaPeFBxNpfXtMYKRAR68QgAacr9"),
     new Pool("1AKkJ2ULDQrkTgnJznL3nWayRhrdqRLTyP")
   ]
 }

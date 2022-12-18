@@ -6,7 +6,6 @@
 	import { pool, user } from '$lib/stores';
   export let title: string = "Pool designer";
   export let contractWasmBase64: string;
-  export let visibleButton: boolean = true;
   export let poolParams = new PoolParams();
   export let mode: string = "create"; // or edit
   export let address = "";
@@ -66,12 +65,6 @@
   $: stepFourComplete = poolAddress != "" && nodePublicKey != "";
 </script>
 
-
-{#if visibleButton}
-  <label for="modal-{instanceId}" class="btn btn-secondary">
-    <slot></slot>
-  </label>
-{/if}
 
 <!-- Put this part before </body> tag -->
 <input type="checkbox" id="modal-{instanceId}" class="modal-toggle" />

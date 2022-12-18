@@ -1,7 +1,7 @@
 
 import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 import * as kondor from "kondor-js";
-import { env, ownedPools, rcLimit, toasts, user } from "$lib/stores";
+import { env, ownedPools, rcLimit, toasts, user, users } from "$lib/stores";
 import { Pool, PoolParams, Toast, User } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/pool-proto.json";
@@ -9,8 +9,8 @@ import pobAbiJson from "$lib/pob-proto.json";
 import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/interface";
 import crypto from "crypto";
 
-
-export const updateStoredObjects = () => {
+// this starts with a new User object that may have new properties, then fills in properties from the existing stored object
+export const updateStoredObjectFormats = () => {
    user.set({...new User(), ...get(user)});
 }
 export const populateOwnedPools = () => {
@@ -19,6 +19,15 @@ export const populateOwnedPools = () => {
     pools.push(new Pool(poolAddress));
   });
   ownedPools.set(pools)
+}
+
+// run by each $page every time the user store changes so our localStorage users stay updated
+export const updateUsers = (user: User) => {
+  if (user?.address) {
+    let u = get(users);
+    u[user.address] = user;
+    users.set(u);
+  }
 }
 
 export const pobRead = async (methodName: string): Promise<any> => {
@@ -163,11 +172,8 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
     signer: contractSigner,
     options: {
       payer: signer.getAddress(),
-      beforeSend: async (tx: TransactionJson) => {
-        const abis: any = {};
-        abis[contractSigner.address] = poolAbiJson;
-        signer.signTransaction(tx, abis);
-        await signer.signTransaction(tx);
+      beforeSend: async (tx: TransactionJson, options) => {
+        await signer.signTransaction(tx, options?.abis);
       },
     }
   });

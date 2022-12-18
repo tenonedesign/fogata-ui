@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { wallet, user, pool } from '$lib/stores';
+	import { wallet, user, pool, users, connectedAddress, userChangedEvent as userChangedEvent } from '$lib/stores';
 	import * as kondor from "kondor-js";
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import {onMount, onDestroy} from 'svelte';
-	import { Balances, Wallet } from '$lib/types';
+	import { Balances, User, Wallet } from '$lib/types';
 	import { errorToast, hideConnectionToast, showConnectionToast } from '$lib/utils';
 	import type { Writable } from 'svelte/store';
 
@@ -14,6 +14,9 @@
 		]) as {address:string}[];
 
 		if (accounts[0].address) {
+			// $user.address = accounts[0].address;
+			$connectedAddress = accounts[0].address;
+			$user = $users[accounts[0].address] ?? new User();
 			$user.address = accounts[0].address;
 			$wallet.loadBalances(accounts[0].address).then(() => {
 				wallet.set($wallet);
@@ -22,17 +25,23 @@
 				// errorToast("","Error reading token balance");
 				showConnectionToast();
 			});
+			$userChangedEvent = !$userChangedEvent;
 		}
 		return !!accounts[0].address;
 	};
 
 	const disconnect = async() => {
+		$connectedAddress = "";
 		// retain user api preferences, but clear wallet address
-		$user.address = ""
+		const u = new User();
+		u.selectedRpcUrl = $user.selectedRpcUrl;
+		u.customRpc = $user.customRpc;
+		$user = u;
 		$pool.userBalance = BigInt(0);
 		$pool.userBalanceKoin = BigInt(0);
 		$pool.userBalanceVhp = BigInt(0);
 		wallet.set(new Wallet());
+		$userChangedEvent = !$userChangedEvent;
 	}
 
 </script>

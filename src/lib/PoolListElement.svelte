@@ -7,9 +7,11 @@
 </script>
 
 <div class="flex gap-4 p-4 items-center">
-  <img  class="flex-none h-2 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
-  <a href="/pools/{pool.address}" class="flex-1 font-semibold">{pool.parameters.name}</a>
-  <div class="flex-none"><span class="text-xs">APY:</span> {(pool.apy * 100).toFixed(2)}%</div>
+  <img  class="flex-none h-8 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
+  <div class="flex flex-wrap items-center flex-1">
+    <a href="/pools/{pool.address}" class="flex-1 font-semibold">{pool.parameters.name}</a>
+    <div class="flex-none"><span class="text-xs">APY:</span> {(pool.apy * 100).toFixed(2)}%</div>
+  </div>
   {#if owned}
     <div class="dropdown dropdown-end flex-none">
       <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>

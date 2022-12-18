@@ -5,14 +5,18 @@
 	import { pools, wallet, pool, user, env, ownedPools } from '$lib/stores';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { balanceDisplayFormat, balanceToFloat, hideConnectionToast, pobRead, poolRead, populateOwnedPools, showConnectionToast, tokenBalanceOf, tokenTotalSupply, updateStoredObjects } from '$lib/utils';
+	import { balanceDisplayFormat, balanceToFloat, hideConnectionToast, pobRead, poolRead, populateOwnedPools, showConnectionToast, tokenBalanceOf, tokenTotalSupply, updateStoredObjectFormats, updateUsers } from '$lib/utils';
 	import { Pool } from '$lib/types';
 	import { Serializer, utils } from 'koilib';
 
-	updateStoredObjects();
+	updateStoredObjectFormats();
 	populateOwnedPools();
 	pool.set($pools.find(x => x.address == $page.params.id) || $ownedPools.find(x => x.address == $page.params.id) || new Pool());
 
+
+	// update stored users reference any time user is updated
+	$: updateUsers($user);
+	
 	let timer: NodeJS.Timer;
 	onMount(async () => {
 		load();

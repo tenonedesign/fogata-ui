@@ -12,7 +12,8 @@ export class Pool {
     public userBalanceKoin = BigInt(0),
     public userBalanceVhp = BigInt(0),
     public userBalanceVapor = BigInt(0),
-    public wallet: Wallet = new Wallet()
+    public wallet: Wallet = new Wallet(),
+    public nodePublicKey: string = ""
   ) { }
   public refresh = async () => {
     await this.wallet.loadBalances(this.address);
@@ -92,6 +93,13 @@ export class User {
     public selectedRpcUrl: string = "api.koinos.io",  // "" indicates use of customRpc
     public customRpc: Endpoint = new Endpoint(""),
     public ownedPools: string[] = [],
+    public nodes: Node[] = [],
+  ) { }
+}
+export class Node {
+  constructor(
+    public name: string,
+    public publicKey: string,
   ) { }
 }
 
