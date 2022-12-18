@@ -1,4 +1,4 @@
-import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply } from "$lib/utils";
+import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply, vaporBalanceOf } from "$lib/utils";
 import { env } from "$lib/stores";
 import { get } from "svelte/store";
 import { utils } from "koilib";
@@ -115,8 +115,11 @@ export class Wallet {
   ) { }
 
   public loadBalances = async (address: string) => {
+    // promises.all pattern should work well here
+    // let [someResult, anotherResult] = await Promise.all([someCall(), anotherCall()]);
 		this.balances.koin = await tokenBalanceOf(get(env).koin_address, address);
 		this.balances.vhp = await tokenBalanceOf(get(env).vhp_address, address);
+		// this.balances.vapor = await vaporBalanceOf(address);
 		this.balances.mana = BigInt(await getAccountRc(address)) || BigInt(0);
 		Promise.resolve();
 	}
@@ -127,6 +130,7 @@ export class Balances {
     public koin: bigint = BigInt(0),
     public mana: bigint = BigInt(0),
     public vhp: bigint = BigInt(0),
+    public vapor: bigint = BigInt(0),
   ) { }
 }
 

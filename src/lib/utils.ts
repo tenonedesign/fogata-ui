@@ -30,13 +30,24 @@ export const updateUsers = (user: User) => {
   }
 }
 
-export const pobRead = async (methodName: string): Promise<any> => {
+export const pobRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, {}).then((result) => {
     return Promise.resolve(result.value);
   },
   (error) => {
     errorToast("", "Something went wrong reading a reading proof of burn params. "+error, 5000);
     Promise.reject(error);
+  });
+}
+
+export const vaporBalanceOf = async (address: string): Promise<bigint> => {
+  return sponsorsRead("balance_of", {owner: address}).then((result) => {
+    return Promise.resolve(BigInt(result.value) || BigInt(0));
+  });
+}
+export const sponsorsRead = async (methodName: string, args = {}): Promise<any> => {
+  return contractOperation(get(env).pob_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
+    return Promise.resolve(result.value);
   });
 }
 

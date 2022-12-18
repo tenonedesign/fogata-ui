@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
-	import { connectedAddress, ownedPools, pools, userChangedEvent, user } from '$lib/stores.js';
+	import { connectedAddress, ownedPools, pools, user } from '$lib/stores.js';
 	import PoolList from '$lib/PoolList.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
@@ -12,6 +12,7 @@
 	import { utils } from 'koilib';
 
 	let timer: NodeJS.Timer;
+  let debounceTimer: NodeJS.Timer;
   let poolEditor: any = null;
   let nodeEditor: any = null;
 
@@ -21,12 +22,20 @@
   // update stored users reference any time user is updated
   // $: console.log($user);
   $: updateUsers($user);
-  $: onUserChanged($userChangedEvent); // hack to reload when userChangedEvent changes
+  $: debouncedChange($connectedAddress); // hack to reload when userChangedEvent changes
+  $: debouncedChange($user.customRpc.url + $user.selectedRpcUrl);
+  // $: console.log($user.customRpc + $user.selectedRpcUrl);
 
-  function onUserChanged(event: any = null) {
-    if (!timer) { return; }
-    populateOwnedPools();
-    load();
+  // don’t react to event unless events have paused for more than 200ms
+  function debouncedChange(event: any = null) {
+    if (!timer) { return; } // not mounted yet
+    
+    clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(() => {
+      // console.log(event);
+      populateOwnedPools();
+      load();
+		}, 200);
   }
 
 	onMount(async () => {
@@ -93,10 +102,6 @@
     <!-- Start your own pool -->
     <Card>
 
-      <!-- Title -->
-      {#if $user.nodes.length == 0}
-      {/if}
-
       <!-- Nodes section -->
       {#if $user.nodes.length == 0}
         <div class="text-lg font-semibold">Start your own mining pool</div>
@@ -139,8 +144,12 @@
   </section>
 
 </div>
-<PoolCreator bind:this={poolEditor} contractWasmBase64={data.contractWasmBase64}></PoolCreator>
 
+<!-- hide before onMount because modal flashes when loaded with any latency -->
+<!-- there’s a larger issue with some styles not being applied before first paint, but this modal is the most noticeable offender -->
+{#if timer}
+  <PoolCreator bind:this={poolEditor} contractWasmBase64={data.contractWasmBase64}></PoolCreator>
+{/if}
 
 <style>
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { wallet, user, pool, users, connectedAddress, userChangedEvent as userChangedEvent } from '$lib/stores';
+	import { wallet, user, pool, users, connectedAddress } from '$lib/stores';
 	import * as kondor from "kondor-js";
 	import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 	import {onMount, onDestroy} from 'svelte';
@@ -15,7 +15,6 @@
 
 		if (accounts[0].address) {
 			// $user.address = accounts[0].address;
-			$connectedAddress = accounts[0].address;
 			$user = $users[accounts[0].address] ?? new User();
 			$user.address = accounts[0].address;
 			$wallet.loadBalances(accounts[0].address).then(() => {
@@ -25,13 +24,13 @@
 				// errorToast("","Error reading token balance");
 				showConnectionToast();
 			});
-			$userChangedEvent = !$userChangedEvent;
+			// $userChangedEvent = !$userChangedEvent;
+			$connectedAddress = accounts[0].address;
 		}
 		return !!accounts[0].address;
 	};
 
 	const disconnect = async() => {
-		$connectedAddress = "";
 		// retain user api preferences, but clear wallet address
 		const u = new User();
 		u.selectedRpcUrl = $user.selectedRpcUrl;
@@ -41,7 +40,8 @@
 		$pool.userBalanceKoin = BigInt(0);
 		$pool.userBalanceVhp = BigInt(0);
 		wallet.set(new Wallet());
-		$userChangedEvent = !$userChangedEvent;
+		// $userChangedEvent = !$userChangedEvent;
+		$connectedAddress = "";
 	}
 
 </script>

@@ -15,6 +15,7 @@
       <h2 class="text-sm opacity-75 uppercase">Liquid Koin: <span class="tooltip" data-tip="{tFormat(wallet.balances.mana)} KOIN">{format(wallet.balances.mana)}</span></h2>
       <h2 class="text-sm opacity-75 uppercase">Total Koin: <span class="tooltip" data-tip="{tFormat(wallet.balances.koin)} KOIN">{format(wallet.balances.koin)}</span></h2>
       <h2 class="text-sm opacity-75 uppercase">VHP: <span class="tooltip" data-tip="{tFormat(wallet.balances.vhp)} VHP">{format(wallet.balances.vhp)}</span></h2>
+      <h2 class="text-sm opacity-75 uppercase">VAPOR: <span class="tooltip" data-tip="{tFormat(wallet.balances.vapor)} VHP">{format(wallet.balances.vapor)}</span></h2>
     {:else}
       <h2 class="text-sm opacity-75 text-center my-6">Not connected</h2>
     {/if}

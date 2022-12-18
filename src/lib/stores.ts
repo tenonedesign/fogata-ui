@@ -13,7 +13,6 @@ export const pool = writable(new Pool());
 export const pools = writable(participatingPools());
 export const toasts: Writable<Toast[]> = writable([]);
 export const rcLimit = writable("5000000000");
-export const userChangedEvent = writable(false);
 export const env = derived(
 	user,
 	$user => {

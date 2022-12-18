@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { user, wallet, pool } from './stores';
-  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, poolOperation } from './utils';
+  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, poolOperation, poolWrite } from './utils';
 	import Card from '$lib/Card.svelte';
 	import WalletView from './WalletView.svelte';
 	import { utils } from 'koilib';
 	import PoolActionButton from '$lib/PoolActionButton.svelte';
 	import { TokenName } from './types';
+  import { EllipsisVertical, CaretDownSharp } from 'svelte-ionicons';
 
   let activeToken: string = TokenName.VHP;
   let depositValue: string = "";
@@ -25,17 +26,47 @@
     withdrawalValue = "";
   }
 
+	async function collectKoin() {
+    poolOperation($pool, "unstake", $pool.userBalanceKoin, BigInt(0));
+	}
+	async function collectVapor() {
+		poolWrite($pool.address, "collect_vapor", {account: $user.address}, "vapor collection");
+	}
+
 </script>
 
     <Card>
+
+      <!-- <div class="dropdown dropdown-end flex-none absolute right-4 top-4">
+        <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li><a on:click={collectVapor}>Collect vapor</a></li>
+        </ul>
+      </div> -->
+
       <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold">
         <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalance)}">
           {format($pool.userBalance)}
         </span>
       </h1>
-      <h2 class="text-sm text-center max-w-2xl mt-4 mx-auto opacity-75">
-        YOUR STAKE (Includes <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN)
-      </h2>
+      <div class="text-sm text-center max-w-2xl mt-4 mx-auto">
+        <span class="opacity-75">
+          YOUR STAKE (Includes 
+          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN and 
+          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)} VAPOR</span>)
+        </span>
+        {#if ($pool.userBalanceKoin > 0 || $pool.userBalanceVapor > 0)}
+          <div class="dropdown dropdown-end flex-none">
+            <label tabindex="0" class="btn btn-secondary px-2 h-6 min-h-0 opacity-75">collect<CaretDownSharp class="ml-2" size="12" /></label>
+            <ul tabindex="0" class="dropdown-content menu p-2 mt-2 shadow bg-base-100 rounded-box w-52">
+              {#if $pool.userBalanceKoin > 0}<li><a on:click={collectKoin}>Collect KOIN</a></li>{/if}
+              {#if $pool.userBalanceVapor > 0}<li><a on:click={collectVapor}>Collect VAPOR</a></li>{/if}
+            </ul>
+          </div>
+          <!-- <button class="btn btn-secondary no-underline px-2 relative h-6 min-h-0">collect<CaretDownSharp class="ml-2" size="12" /></button> -->
+        {/if}
+        
+        </div>
       <div class="flex justify-center gap-4 mt-8 flex-1">
 
         {#if $wallet.balances.mana > 0}

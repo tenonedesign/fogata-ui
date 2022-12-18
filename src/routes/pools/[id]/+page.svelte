@@ -47,6 +47,7 @@
 			poolRead($pool.address, "balance_of", { account: $user.address }).then((value) => {
 				$pool.userBalanceKoin = BigInt(value?.koin_amount ?? "0");
 				$pool.userBalanceVhp = BigInt(value?.vhp_amount ?? "0");
+				$pool.userBalanceVapor = BigInt(value?.vapor_amount ?? "0");
 				$pool.userBalance = $pool.userBalanceKoin + $pool.userBalanceVhp;
 			});
 		}
