@@ -1,6 +1,7 @@
 import { writable, derived, type Writable, get } from 'svelte/store';
 import { writable as persistable } from 'svelte-local-storage-store'
 import { Pool, Wallet, User, Toast, Endpoint} from '$lib/types'
+import { poolsRead } from './utils';
 
 
 export const connectedAddress = persistable("connectedAddress", "");
@@ -10,7 +11,8 @@ export const rpcs = writable([new Endpoint("api.koinos.io"),new Endpoint("harbin
 export const wallet = writable(new Wallet());
 export const ownedPools: Writable<Pool[]> = writable([]);
 export const pool = writable(new Pool());
-export const pools = writable(participatingPools());
+export const approvedPools: Writable<Pool[]> = writable([]);
+export const submittedPools: Writable<Pool[]> = writable([]);
 export const toasts: Writable<Toast[]> = writable([]);
 export const rcLimit = writable("5000000000");
 export const env = derived(
@@ -22,6 +24,8 @@ export const env = derived(
         "koin_address": "19JntSm8pSNETT9aHTwAUHC5RMoaSmgZPJ",
         "vhp_address": "1JZqj7dDrK5LzvdJgufYBJNUFo88xBoWC8",
         "pob_address": "198RuEouhgiiaQm7uGfaXS6jqZr6g6nyoR",
+        "pools_address": "1M4GSDejwQPwDvq3EVS2anjDA1rkzdwFF9",
+        "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1AuJQxqqyBZXqqugTQZzXRVRmEYJtsMYQ8",
         "chain_id": "EiAAKqFi-puoXnuJTdn7qBGGJa8yd-dcS2P0ciODe4wupQ=="
       }
@@ -31,6 +35,8 @@ export const env = derived(
         "koin_address": "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
         "vhp_address": "1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9",
         "pob_address": "159myq5YUhhoVWu3wsHKHiJYKPKGUrGiyv",
+        "pools_address": "1M4GSDejwQPwDvq3EVS2anjDA1rkzdwFF9",
+        "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1AuJQxqqyBZXqqugTQZzXRVRmEYJtsMYQ8",
         "chain_id": "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA=="
       }
@@ -39,9 +45,3 @@ export const env = derived(
 );
 
 
-function participatingPools(): Pool[] {
-  return [
-    new Pool("16KZRu7TbjZZ8movNZnHcR2SmgqKDqJsoP"),
-    new Pool("1AKkJ2ULDQrkTgnJznL3nWayRhrdqRLTyP")
-  ]
-}

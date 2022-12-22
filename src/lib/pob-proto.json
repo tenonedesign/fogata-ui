@@ -13,6 +13,20 @@
             "description": "get_metadata",
             "entry_point": 4244088463,
             "read_only": true
+        },
+        "get_public_key": {
+            "argument": "pob.get_public_key_arguments",
+            "return": "pob.get_public_key_result",
+            "entry_point": 2523090792,
+            "description": "Gets the public key registered to a producer address",
+            "read_only": true
+        },
+        "register_public_key": {
+            "argument": "pob.register_public_key_arguments",
+            "return": "pob.register_public_key_result",
+            "entry_point": 1394158561,
+            "description": "Gets the public key registered to a producer address",
+            "read_only": false
         }
     },
     "types": {

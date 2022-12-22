@@ -1,11 +1,13 @@
 
 import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 import * as kondor from "kondor-js";
-import { env, ownedPools, rcLimit, toasts, user, users } from "$lib/stores";
+import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools } from "$lib/stores";
 import { Pool, PoolParams, Toast, User } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/pool-proto.json";
+import poolsAbiJson from "$lib/pools-proto.json";
 import pobAbiJson from "$lib/pob-proto.json";
+import sponsorsAbiJson from "$lib/sponsors-proto.json";
 import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/interface";
 import crypto from "crypto";
 
@@ -16,9 +18,34 @@ export const updateStoredObjectFormats = () => {
 export const populateOwnedPools = () => {
   let pools: Pool[] = [];
   get(user).ownedPools.forEach(poolAddress => {
-    pools.push(new Pool(poolAddress));
+    let p = new Pool(poolAddress);
+    p.loadPublicKey();
+    pools.push(p);
   });
-  ownedPools.set(pools)
+  ownedPools.set(pools);
+}
+export function userIsAdmin() {
+  return (get(user).address === get(env).pools_owner);
+}
+export const loadFogataPools = () => {
+  return Promise.all([
+    poolsRead("get_approved_pools", {}).then(value => {
+      let pools: Pool[] = [];
+      value?.forEach((pool: {account: string, submission_time: string}) => {
+        pools.push(new Pool(pool.account));
+      });
+      approvedPools.set(pools);
+      Promise.resolve();
+    }),
+    poolsRead("get_submitted_pools", {}).then(value => {
+      let pools: Pool[] = [];
+      value?.forEach((pool: {account: string, submission_time: string}) => {
+        pools.push(new Pool(pool.account));
+      });
+      submittedPools.set(pools);
+      Promise.resolve();
+    })
+  ]);
 }
 
 // run by each $page every time the user store changes so our localStorage users stay updated
@@ -30,24 +57,33 @@ export const updateUsers = (user: User) => {
   }
 }
 
-export const pobRead = async (methodName: string, args = {}): Promise<any> => {
-  return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, {}).then((result) => {
+export const poolsRead = async (methodName: string, args = {}): Promise<any> => {
+  return contractOperation(get(env).pools_address, koilibAbi(poolsAbiJson), methodName, args).then((result) => {
     return Promise.resolve(result.value);
-  },
-  (error) => {
-    errorToast("", "Something went wrong reading a reading proof of burn params. "+error, 5000);
-    Promise.reject(error);
-  });
+  }, (error) => {});
 }
+export const poolsWrite = async (methodName: string, args: any, description: string) => {
+  return contractWriteWithToasts(get(env).pools_address, poolsAbiJson, methodName, args, description);
+}
+
+export const pobRead = async (methodName: string, args = {}): Promise<any> => {
+  return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, args).then((result) => {
+    return Promise.resolve(result.value);
+  }, (error) => {});
+}
+export const pobWrite = async (methodName: string, args: any, description: string) => {
+  return contractWriteWithToasts(get(env).pob_address, pobAbiJson, methodName, args, description);
+}
+
 
 export const vaporBalanceOf = async (address: string): Promise<bigint> => {
   return sponsorsRead("balance_of", {owner: address}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || BigInt(0));
+    return Promise.resolve((result) ? BigInt(result) : BigInt(0));
   });
 }
 export const sponsorsRead = async (methodName: string, args = {}): Promise<any> => {
-  return contractOperation(get(env).pob_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result.value);
+  return contractOperation(get(env).sponsors_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
+    return Promise.resolve(result?.value);
   });
 }
 
@@ -60,16 +96,20 @@ export const poolOperation = async (pool: Pool, methodName: string, koinAmount: 
   if (vhpAmount > BigInt(0) && koinAmount == BigInt(0)) { tokenName = "VHP"; }
   return poolWrite(pool.address, methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }, tokenName + " " + opName);
 }
-
 export const poolRead = async (address: string, methodName: string, args: any) => {
   return contractOperation(address, koilibAbi(poolAbiJson), methodName, args).then((result) => {
     return Promise.resolve(result);
   });
 }
-
 export const poolWrite = async (address: string, methodName: string, args: any, description: string) => {
+  return contractWriteWithToasts(address, poolAbiJson, methodName, args, description);
+}
+
+
+
+export const contractWriteWithToasts = async (address: string, abiJson: any, methodName: string, args: any, description: string) => {
   let timeout = 30000;
-  return contractOperation(address, koilibAbi(poolAbiJson), methodName, args).then((transaction: TransactionJsonWait) => {
+  return contractOperation(address, koilibAbi(abiJson), methodName, args).then((transaction: TransactionJsonWait) => {
     let toastId = infoToast("Transaction submitted", "The transaction containing your " + description + " is being processed.  This may take some time.", 0).id;
     transaction.wait("byBlock", timeout).then((blockInfo) => {
       removeToastWithId(toastId);
@@ -226,7 +266,9 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
 
 
 
-
+export function clone(o: any): any {
+  return JSON.parse(JSON.stringify(o));
+} 
 
 export function addHttps(url: string): string {
   if (url && !/^https?:\/\//i.test(url)) {

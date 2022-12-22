@@ -7,11 +7,8 @@
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
   // init
-  let contributionBeneficiary: Beneficiary = poolParams.beneficiaries.find(x => x.address == $env.sponsors_address) ?? new Beneficiary($env.sponsors_address, 5000);
+  let contributionBeneficiary: Beneficiary = poolParams.beneficiaries.find(x => x.address == $env.sponsors_address) ?? new Beneficiary($env.sponsors_address, 15000);
   let otherBeneficiaries: Beneficiary[] = poolParams.beneficiaries.filter(x => x.address != $env.sponsors_address);
-  if (otherBeneficiaries.length == 0) {
-    otherBeneficiaries = [new Beneficiary($user.address, 15000)];
-  }
   if (otherBeneficiaries.length == 1 && otherBeneficiaries[0].address == "") {
     otherBeneficiaries[0].address = $user.address;
   }
@@ -23,6 +20,9 @@
   }
   const addBeneficiary = () => {
     otherBeneficiaries.push(new Beneficiary());
+    if (otherBeneficiaries.length == 1 && otherBeneficiaries[0].address == "") {
+      otherBeneficiaries[0].address = $user.address;
+    }
     otherBeneficiaries = otherBeneficiaries;
   }
 
@@ -77,10 +77,13 @@
           <span class="label-text">Pool beneficiaries</span>
         </label>
         <div class=" bg-base-200 rounded-2xl p-4 flex flex-col gap-2">
+          {#if otherBeneficiaries.length == 0}
+            <span class="text-sm opacity-50 text-center mt-4">No beneficiaries</span>
+          {/if}
           {#each otherBeneficiaries as beneficiary, index}
             {#if beneficiary.address != $env.sponsors_address}
               <div class="bg-base-100 rounded-xl p-2 shadow-md relative">
-                <button on:click={() => {removeBeneficiary(index)}} disabled={otherBeneficiaries.length == 1} class="btn btn-circle btn-ghost absolute right-1 top-1 min-h-0 h-7 w-7 max-w-none"><CloseOutline size="24" /></button>
+                <button on:click={() => {removeBeneficiary(index)}} class="btn btn-circle btn-ghost absolute right-1 top-1 min-h-0 h-7 w-7 max-w-none"><CloseOutline size="24" /></button>
                 <label for="poolContribution-{instanceId}{index}" class="label">
                   <span class="label-text font-medium">Beneficiary {index + 1}</span>
                 </label>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Header from '$lib/Header.svelte';
-	import { pools } from '$lib/stores.js';
+	import { approvedPools } from '$lib/stores.js';
 	import PoolList from '$lib/PoolList.svelte';
 </script>
 
@@ -13,7 +13,7 @@
 
 	<Header pool={null} />
 	<section class="grid grid-cols-1 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20">
-		<PoolList pools={$pools} title="Join a mining pool" />
+		<PoolList pools={$approvedPools} title="Join a mining pool" />
 	</section>
 
 </div>

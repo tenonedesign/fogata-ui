@@ -48,11 +48,11 @@
 
 
 	{#if $user.address == ""}
-		<button class="btn" on:click={connect}>Connect to Kondor</button>
+		<button class="btn btn-sm sm:btn-md" on:click={connect}>Connect to Kondor</button>
 	
 	{:else}
 		<div class="dropdown dropdown-end ">
-		<button class="btn">{$user?.address?.slice(0,5)+"..."+$user?.address?.slice(-5)}</button>
+		<button class="btn btn-sm sm:btn-md">{$user?.address?.slice(0,5)+"..."+$user?.address?.slice(-5)}</button>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 		<div tabindex="0" class="dropdown-content menu mt-2 p-2 shadow bg-base-100 rounded-box w-52">
 		  <li><button on:click={connect}>Open Kondor</button></li>

@@ -44,16 +44,17 @@
         </ul>
       </div> -->
 
-      <h1 class=" text-5xl sm:text-6xl lg:text-[80px] mt-8 text-center font-semibold">
+      <h1 class=" text-5xl sm:text-6xl lg:text-[70px] mt-8 text-center font-semibold">
         <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalance)}">
           {format($pool.userBalance)}
         </span>
       </h1>
       <div class="text-sm text-center max-w-2xl mt-4 mx-auto">
         <span class="opacity-75">
-          YOUR STAKE (Includes 
+          YOUR TOTAL STAKE<br />
+          (Includes 
           <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN and 
-          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)} VAPOR</span>)
+          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)}</span> VAPOR)
         </span>
         {#if ($pool.userBalanceKoin > 0 || $pool.userBalanceVapor > 0)}
           <div class="dropdown dropdown-end flex-none">

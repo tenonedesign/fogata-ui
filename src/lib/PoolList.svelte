@@ -5,11 +5,9 @@
   export let title: string = "Active pools";
 </script>
 
-<Card>
   <div class="text-lg font-semibold">{title}</div>
   {#each pools as pool}
     <PoolListElement pool={pool} />
   {/each}
-</Card>
 
 <style></style>

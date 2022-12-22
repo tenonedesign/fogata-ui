@@ -3,6 +3,14 @@ import { env } from "$lib/stores";
 import { get } from "svelte/store";
 import { utils } from "koilib";
 
+export enum PoolListingState {
+  Unknown,
+  Ineligible,
+  Eligible,
+  Submitted,
+  Listed
+}
+
 export class Pool {
   constructor(
     public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
@@ -16,14 +24,31 @@ export class Pool {
     public nodePublicKey: string = ""
   ) { }
   public refresh = async () => {
-    await this.wallet.loadBalances(this.address);
-    await this.loadParameters();
+    await Promise.all([
+      this.wallet.loadBalances(this.address, false),
+      this.loadParameters(),
+      this.loadPublicKey(),
+    ]);
     await this.calculateApy();
   }
   public loadParameters = async () => {
     this.parameters = await poolRead(this.address, "get_pool_params", {});
     Promise.resolve();
 	}
+  public loadPublicKey = async () => {
+    this.nodePublicKey = await pobRead("get_public_key", {"producer": this.address});
+    Promise.resolve();
+  }
+  public isListingEligible(): boolean {
+    let contributionBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
+    return (!!this.nodePublicKey && contributionBeneficiary.percentage > 0);
+  }
+  public listingState(approvedPools: Pool[], submittedPools: Pool[]) {
+    if (approvedPools.some(e => e.address === this.address)) { return PoolListingState.Listed; }
+    if (submittedPools.some(e => e.address === this.address)) { return PoolListingState.Submitted; }
+    if (this.apy == 0) { return PoolListingState.Unknown; } // probably not loaded, but also could have no nodePublicKey
+    return this.isListingEligible() ? PoolListingState.Eligible : PoolListingState.Ineligible;
+  }
   public calculateApy = async () => {
     // calculate apy
 		let totalKoin = await tokenTotalSupply(get(env).koin_address);
@@ -77,6 +102,10 @@ export class Pool {
 		// console.log("totalApy: "+totalApy);
 		// console.log("participantApy: "+participantApy);
 		this.apy = participantApy;
+
+    if (!this.nodePublicKey) {
+      this.apy = 0;
+    }
   }
 }
 
@@ -93,10 +122,10 @@ export class User {
     public selectedRpcUrl: string = "api.koinos.io",  // "" indicates use of customRpc
     public customRpc: Endpoint = new Endpoint(""),
     public ownedPools: string[] = [],
-    public nodes: Node[] = [],
+    public nodes: KoinosNode[] = [],
   ) { }
 }
-export class Node {
+export class KoinosNode {
   constructor(
     public name: string,
     public publicKey: string,
@@ -114,13 +143,15 @@ export class Wallet {
     public balances: Balances = new Balances(),
   ) { }
 
-  public loadBalances = async (address: string) => {
+  public loadBalances = async (address: string, includeVapor = true) => {
     // promises.all pattern should work well here
     // let [someResult, anotherResult] = await Promise.all([someCall(), anotherCall()]);
 		this.balances.koin = await tokenBalanceOf(get(env).koin_address, address);
 		this.balances.vhp = await tokenBalanceOf(get(env).vhp_address, address);
-		// this.balances.vapor = await vaporBalanceOf(address);
 		this.balances.mana = BigInt(await getAccountRc(address)) || BigInt(0);
+		if (includeVapor) {
+      this.balances.vapor = await vaporBalanceOf(address);
+    }
 		Promise.resolve();
 	}
 }

@@ -4,14 +4,19 @@
 	import { Pool, PoolParams } from '$lib/types';
 	import { contractOperation, errorToast, infoToast, koilibAbi, poolOperation, poolWrite, populateOwnedPools, removeToastWithId, successToast, uploadPoolContract, warningToast } from '$lib/utils';
 	import { pool, user } from '$lib/stores';
-  export let title: string = "Pool designer";
   export let contractWasmBase64: string;
   export let poolParams = new PoolParams();
   export let mode: string = "create"; // or edit
   export let address = "";
 
-  export let show = () => {
+  export const show = (initialParameters?: PoolParams) => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = true;
+    if (initialParameters != null) {
+      poolParams = initialParameters;
+    }
+    else {
+      poolParams = new PoolParams();
+    }
     step = 0;
   }
 
@@ -60,7 +65,7 @@
 
 
   $: stepOneComplete = poolParams.name != "" && poolParams.image != "" && poolParams.description != "" && poolParams.payment_period > 0;
-  $: stepTwoComplete = poolParams.beneficiaries.length > 1 && poolParams.beneficiaries[0].address != "";
+  $: stepTwoComplete = poolParams.beneficiaries.length > 0 && poolParams.beneficiaries[0].address != "";
   $: stepThreeComplete = true;
   $: stepFourComplete = poolAddress != "" && nodePublicKey != "";
 </script>
