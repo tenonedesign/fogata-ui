@@ -50,6 +50,9 @@
 				$pool.userBalanceVapor = BigInt(value?.vapor_amount ?? "0");
 				$pool.userBalance = $pool.userBalanceKoin + $pool.userBalanceVhp;
 			});
+			poolRead($pool.address, "get_pool_state", {}).then((value) => {
+				$pool.state = value;
+			})
 		}
 	}
 </script>

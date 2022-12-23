@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EllipsisVertical, WarningSharp} from 'svelte-ionicons';
+  import { EllipsisVertical, WarningSharp, CaretForward} from 'svelte-ionicons';
 	import Card from './Card.svelte';
 	import { PoolListingState, type Pool } from './types';
   export let pool: Pool;
@@ -27,13 +27,16 @@
     </div>
     <div class="flex flex-wrap items-center flex-1">
       <a href="/pools/{pool.address}" class="flex-1 font-semibold">{pool.parameters.name}</a>
-      <div class="flex-none"><span class="text-xs">APY:</span> {(pool.apy * 100).toFixed(2)}%</div>
+      <div class="flex-none">
+        <span class="badge badge-secondary text-xs text-neutral tooltip" data-tip="This pool contributes {(pool.sponsorsPercentage() / 1000).toFixed(2)}% of its profit (an estimated apy of {(pool.sponsorsApy * 100).toFixed(2)}%) to the community sponsorship contract"><CaretForward class="inline" size="12px" />{(pool.sponsorsApy * 100).toFixed(2)}%</span>
+        <span class="text-xs ml-3">APY:</span> {(pool.apy * 100).toFixed(2)}%
+      </div>
     </div>
     {#if owned}
       <div class="dropdown dropdown-end flex-none">
         <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-60">
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
           <li><a on:click={() => (editAction(pool.address))}>Edit pool</a></li>
           {#if !pool.nodePublicKey}
             <li><a on:click={() => (linkAction(pool.address))}>Link to block producer</a></li>
@@ -49,7 +52,7 @@
       <div class="dropdown dropdown-end flex-none">
         <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-60">
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
           <li><a on:click={() => (statsAction(pool.address))}>Show pool stats</a></li>
           <li><a on:click={() => (delistAction(pool.address))}>Remove pool</a></li>
           {#if listingState == PoolListingState.Submitted}

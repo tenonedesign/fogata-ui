@@ -24,7 +24,7 @@
 </script>
 
 
-<label for="modal-{instanceId}" class="btn btn-outline">
+<label for="modal-{instanceId}" class="btn btn-outline w-40">
   <slot></slot>
 </label>
 

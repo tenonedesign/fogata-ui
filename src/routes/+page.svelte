@@ -1,4 +1,11 @@
 <script lang="ts">
+
+  // TODO:
+  // - Take payment_period into consideration when calculating APY
+  // - More explanations of what things are and how they work. Some of this can be with tooltips
+  // - 'How to run a node' needs to be implemented 
+  // - Add vapor, vhp, and koinos logos to wallet displays
+
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
 	import { approvedPools, connectedAddress, ownedPools, submittedPools, user } from '$lib/stores.js';

@@ -29,7 +29,7 @@ export function userIsAdmin() {
 }
 export const loadFogataPools = () => {
   return Promise.all([
-    poolsRead("get_approved_pools", {}).then(value => {
+    poolsRead("get_approved_pools", {limit: 200}).then(value => {
       let pools: Pool[] = [];
       value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
@@ -37,7 +37,7 @@ export const loadFogataPools = () => {
       approvedPools.set(pools);
       Promise.resolve();
     }),
-    poolsRead("get_submitted_pools", {}).then(value => {
+    poolsRead("get_submitted_pools", {limit: 200}).then(value => {
       let pools: Pool[] = [];
       value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
@@ -283,11 +283,11 @@ export function balanceToFloat(balance: bigint): number {
 export function balanceDisplayFormat(balance: bigint, language: string = "en-US"): string {
   let dec = balanceToFloat(balance);
   if (dec == 0) { return "0"; }
-  if (dec <= 0.0001) { return dec.toLocaleString(language, {minimumFractionDigits:8}); }
-  if (dec <= 1) { return dec.toLocaleString(language, {minimumFractionDigits:5}); }
-  if (dec <= 100) { return dec.toLocaleString(language, {minimumFractionDigits:3}); } // less than 100
-  if (dec <= 1000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); }  // less than 1k
-  if (dec <= 1000000) { return dec.toLocaleString(language, {minimumFractionDigits:2}); } // less than 1M
+  if (dec <= 0.0001) { return dec.toLocaleString(language, {minimumFractionDigits:8, maximumFractionDigits: 8}); }
+  if (dec <= 1) { return dec.toLocaleString(language, {minimumFractionDigits:5, maximumFractionDigits: 5}); }
+  if (dec <= 100) { return dec.toLocaleString(language, {minimumFractionDigits:3, maximumFractionDigits: 3}); } // less than 100
+  if (dec <= 1000) { return dec.toLocaleString(language, {minimumFractionDigits:2, maximumFractionDigits: 2}); }  // less than 1k
+  if (dec <= 1000000) { return dec.toLocaleString(language, {minimumFractionDigits:2, maximumFractionDigits: 2}); } // less than 1M
   return dec.toLocaleString(language, {minimumFractionDigits:0}); // over 1M
 }
 export function balanceTooltipFormat(balance: bigint, language: string = "en-US"): string {

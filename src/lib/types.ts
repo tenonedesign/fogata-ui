@@ -15,6 +15,8 @@ export class Pool {
   constructor(
     public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
     public parameters: PoolParams = new PoolParams(),
+    public state: PoolState = new PoolState(),
+    public sponsorsApy = 0,
     public apy = 0,
     public userBalance = BigInt(0),
     public userBalanceKoin = BigInt(0),
@@ -39,9 +41,12 @@ export class Pool {
     this.nodePublicKey = await pobRead("get_public_key", {"producer": this.address});
     Promise.resolve();
   }
+  public sponsorsPercentage(): number {
+    let sponsorsBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
+    return sponsorsBeneficiary.percentage;
+  }
   public isListingEligible(): boolean {
-    let contributionBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
-    return (!!this.nodePublicKey && contributionBeneficiary.percentage > 0);
+    return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
   }
   public listingState(approvedPools: Pool[], submittedPools: Pool[]) {
     if (approvedPools.some(e => e.address === this.address)) { return PoolListingState.Listed; }
@@ -91,8 +96,8 @@ export class Pool {
     this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
       combinedBeneficiaryPercentage += beneficiary.percentage;
     });
-    let poolPercentage = combinedBeneficiaryPercentage / 100000;
-		let participantApy = (1 - poolPercentage) * totalApy;
+    let beneficiaryPercentage = combinedBeneficiaryPercentage / 100000;
+		let participantApy = (1 - beneficiaryPercentage) * totalApy;
 
 		// console.log("vhpProducingGlobal: "+ vhpProducingGlobal);
 		// console.log("virtual supply: "+ balanceToFloat(totalKoin + totalVhp));
@@ -101,6 +106,8 @@ export class Pool {
 		// console.log("yearlyMinedByPool: "+ yearlyMinedByPool);
 		// console.log("totalApy: "+totalApy);
 		// console.log("participantApy: "+participantApy);
+
+    this.sponsorsApy = (this.sponsorsPercentage() / 100000) * totalApy;
 		this.apy = participantApy;
 
     if (!this.nodePublicKey) {
@@ -194,9 +201,55 @@ export class PoolParams {
     public payment_period: number = 0,
   ) { }
 }
+export class PoolState {
+  constructor(
+    public stake: string = "",
+    public virtual: string = "",
+    public previous_stake: string = "",
+    public previous_koin: string = "",
+    public current_payment_time: string = "",
+    public next_payment_time: string = "",
+    public previous_vapor: string = "",
+    public vapor_withdrawn: string = "",
+  ) { }
+}
 export class Beneficiary {
   constructor(
     public address: string = "",
     public percentage: number = 0,
   ) { }
+}
+
+export const CountdownTimer = class countdownTimer {
+  completionTimestamp = 0;
+  completed = false;
+  tickCallback = (remainingSeconds: number, timeComponents: any) => {};
+  completionCallback = () => {};
+  constructor(completionTimestamp: number, tickCallback:any, completionCallback:any) {
+    this.completionTimestamp = completionTimestamp;
+    this.tickCallback = tickCallback;
+    this.completionCallback = completionCallback;
+    this.tick();
+  }
+  tick() {
+    if (this.completed) { return false; }
+    const remainingSeconds = this.completionTimestamp - Math.floor(Date.now() / 1000);
+    if (typeof this.tickCallback === 'function') {
+      this.tickCallback(remainingSeconds, this.timeComponents(remainingSeconds));
+    }
+    if (remainingSeconds <= 0 && typeof this.completionCallback === 'function') {
+      this.completionCallback();
+      this.completed = true;
+    }
+    if (remainingSeconds > 0) {
+      setTimeout(() => {this.tick()}, 1000);
+    }
+  }
+  timeComponents(remainingSeconds: number) {
+    var d = Math.floor(remainingSeconds / (3600*24));
+    var h = Math.floor(remainingSeconds % (3600*24) / 3600);
+    var m = Math.floor(remainingSeconds % 3600 / 60);
+    var s = Math.floor(remainingSeconds % 60);
+    return {days: d, hours: h, minutes: m, seconds: s};
+  }
 }

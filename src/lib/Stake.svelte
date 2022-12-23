@@ -39,7 +39,7 @@
 
       <!-- <div class="dropdown dropdown-end flex-none absolute right-4 top-4">
         <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
           <li><a on:click={collectVapor}>Collect vapor</a></li>
         </ul>
       </div> -->
@@ -51,23 +51,26 @@
       </h1>
       <div class="text-sm text-center max-w-2xl mt-4 mx-auto">
         <span class="opacity-75">
-          YOUR TOTAL STAKE<br />
-          (Includes 
+          KOIN + VHP STAKE<br />
+          Last period output: 
           <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN and 
-          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)}</span> VAPOR)
+          <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)}</span> VAPOR
         </span>
         {#if ($pool.userBalanceKoin > 0 || $pool.userBalanceVapor > 0)}
           <div class="dropdown dropdown-end flex-none">
-            <label tabindex="0" class="btn btn-secondary px-2 h-6 min-h-0 opacity-75">collect<CaretDownSharp class="ml-2" size="12" /></label>
-            <ul tabindex="0" class="dropdown-content menu p-2 mt-2 shadow bg-base-100 rounded-box w-52">
+            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+            <!-- svelte-ignore a11y-label-has-associated-control -->
+            <label tabindex="0" class="btn btn-secondary px-2 h-6 min-h-0 opacity-75 ml-1">collect<CaretDownSharp class="ml-2" size="12" /></label>
+            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+            <ul tabindex="0" class="dropdown-content menu p-2 mt-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
               {#if $pool.userBalanceKoin > 0}<li><a on:click={collectKoin}>Collect KOIN</a></li>{/if}
               {#if $pool.userBalanceVapor > 0}<li><a on:click={collectVapor}>Collect VAPOR</a></li>{/if}
             </ul>
           </div>
           <!-- <button class="btn btn-secondary no-underline px-2 relative h-6 min-h-0">collect<CaretDownSharp class="ml-2" size="12" /></button> -->
         {/if}
-        
-        </div>
+      </div>
+
       <div class="flex justify-center gap-4 mt-8 flex-1">
 
         {#if $wallet.balances.mana > 0}
