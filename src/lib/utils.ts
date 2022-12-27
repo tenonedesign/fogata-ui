@@ -165,7 +165,9 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   const provider = new Provider([addHttps(rpc)]);
   const signerAddress = storedUser.address;
-  const signer = signerAddress ? kondor.getSigner(signerAddress) as Signer : undefined;
+  const signer = signerAddress ? kondor.getSigner(signerAddress, {
+    providerPrepareTransaction: provider,
+  }) as Signer : undefined;
 
   const contract = new Contract({
     id: contractAddress,
@@ -204,7 +206,9 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   if (!storedUser.address) {
     return Promise.reject(new Error("No wallet connected."));
   }
-  const signer = kondor.getSigner(storedUser.address);
+  const signer = kondor.getSigner(storedUser.address, {
+    providerPrepareTransaction: provider,
+  });
   signer.provider = provider;
 
   // New disposable account for contract
@@ -212,7 +216,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   self.crypto.getRandomValues(privateKeyBytes);
   const contractSigner = new Signer({
     privateKey: utils.toHexString(privateKeyBytes),
-    provider: provider,
+    provider: provider
   });
 
   const contract = new Contract({
@@ -277,6 +281,14 @@ export function addHttps(url: string): string {
   return url;
 }
 
+
+export function intervalDisplayFormat(intervalMs: number): string {
+  if (intervalMs > 1000 * 60 * 60 * 24) { return (intervalMs / (1000 * 60 * 60 * 24)).toLocaleString([], {maximumFractionDigits: 2}) + " days"; }
+  if (intervalMs > 1000 * 60 * 60) { return (intervalMs / (1000 * 60 * 60)).toLocaleString([], {maximumFractionDigits: 2}) + " hours"; }
+  if (intervalMs > 1000 * 60) { return (intervalMs / (1000 * 60)).toLocaleString([], {maximumFractionDigits: 2}) + " minutes"; }
+  if (intervalMs > 1000) { return (intervalMs / (1000)).toLocaleString([], {maximumFractionDigits: 2}) + " seconds"; }
+  return String(intervalMs) + " ms";
+}
 export function balanceToFloat(balance: bigint): number {
   return parseFloat(utils.formatUnits(balance, 8));
 }
