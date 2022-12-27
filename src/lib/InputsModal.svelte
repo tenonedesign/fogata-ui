@@ -51,11 +51,11 @@
     {/each}
 
 
-    <div class="mt-6">
+    <div class="mt-6 flex gap-2">
       {#if showNegativeAction}
         <label for="modal-{instanceId}" class="btn btn-outline">{negativeActionName}</label>
       {/if}
-      <button on:click={_buttonAction} class="btn btn-primary ml-2">{positiveActionName}</button>
+      <button on:click={_buttonAction} class="btn btn-primary">{positiveActionName}</button>
     </div>
   </div>
 </div>

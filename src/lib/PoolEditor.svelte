@@ -3,6 +3,7 @@
 	import { env, pool, user } from '$lib/stores';
 	import { Beneficiary, PoolParams } from './types';
   import { CloseOutline } from 'svelte-ionicons';
+	import DurationPicker from './DurationPicker.svelte';
   export let poolParams: PoolParams = new PoolParams();
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
@@ -63,12 +64,11 @@
     {/if}
 
     {#if attributes.includes("payment_period")}
-      <div class="form-control w-full">
-        <label for="poolPaymentPeriod-{instanceId}" class="label">
-          <span class="label-text">Pool payment period (in ms)</span>
-        </label>
-        <input bind:value={poolParams.payment_period} id="poolPaymentPeriod-{instanceId}" type="text" placeholder="604800000" class="input input-bordered w-full" />
-      </div>
+
+      <label for="poolDuration-{instanceId}" class="label">
+        <span class="label-text">Minimum reburn period</span>
+      </label>
+      <DurationPicker bind:duration={poolParams.payment_period} />
     {/if}
 
     {#if attributes.includes("beneficiaries")}

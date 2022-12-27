@@ -23,7 +23,8 @@ export class Pool {
     public userBalanceVhp = BigInt(0),
     public userBalanceVapor = BigInt(0),
     public wallet: Wallet = new Wallet(),
-    public nodePublicKey: string = ""
+    public nodePublicKey: string = "",
+    public loaded: boolean = false
   ) { }
   public refresh = async () => {
     await Promise.all([
@@ -32,6 +33,7 @@ export class Pool {
       this.loadPublicKey(),
     ]);
     await this.calculateApy();
+    this.loaded = true;
   }
   public loadParameters = async () => {
     this.parameters = await poolRead(this.address, "get_pool_params", {});
@@ -43,7 +45,7 @@ export class Pool {
   }
   public sponsorsPercentage(): number {
     let sponsorsBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
-    return sponsorsBeneficiary.percentage;
+    return sponsorsBeneficiary.percentage || 0;
   }
   public isListingEligible(): boolean {
     return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
@@ -51,7 +53,7 @@ export class Pool {
   public listingState(approvedPools: Pool[], submittedPools: Pool[]) {
     if (approvedPools.some(e => e.address === this.address)) { return PoolListingState.Listed; }
     if (submittedPools.some(e => e.address === this.address)) { return PoolListingState.Submitted; }
-    if (this.apy == 0) { return PoolListingState.Unknown; } // probably not loaded, but also could have no nodePublicKey
+    if (!this.loaded) { return PoolListingState.Unknown; } // probably not loaded, but also could have no beneficiaries
     return this.isListingEligible() ? PoolListingState.Eligible : PoolListingState.Ineligible;
   }
   public calculateApy = async () => {
@@ -69,24 +71,24 @@ export class Pool {
 		let quantaPerBlockInterval = BigInt(pobConsensusParams.target_block_interval / pobConsensusParams.quantum_length);
 		let vhpProducingGlobal =  balanceToFloat(difficulty / quantaPerBlockInterval);
 
-		// is this too clever?
+		// is this too clever?  YES.  ultimately, the vhpProducingGlobal number could be more accurate by averaging over several hours
 		// if (totalVhp < vhpProducingGlobal) {
 		// 	vhpProducingGlobal = totalVhp;
 		// }
 		// console.log(vhpProducingGlobal);
 
-		// burnkoin calculation
+		// unused burnkoin calculation
 		// const virtualSupply = (koinTotalSupply.data || 0) + (vhpTotalSupply.data || 0);
 		// const yearlyInflationAmount = virtualSupply * Math.pow(Math.E, 0.019802) - virtualSupply;
 		// const apy = (currentApy = 0.95 * (100 * yearlyInflationAmount) / (vhpTotalSupply.data || 1));
 
 		// CALCULATE POOL APY
-		// strategy is 0.95 * (yearlyMinedByPool / currentPoolAssets).
+		// strategy is participantPercentage (e.g. 0.95) * (yearlyMinedByPool / currentPoolAssets).
 		// expected koin mined by pool is yearlyMinedGlobal * (currentPoolAssets / vhpProducing)
 		// note that 0.05 taken after the year is done differs from 0.05 taken from each mined reward, thereby preventing its use in future mining.
 		// however, the effective difference is very small (on the order of 0.001% apy difference)
 		let yearlyMinedGlobal = 0.019999360139121 * balanceToFloat(totalKoin + totalVhp);	// would be 0.02, but simulated output of pob contract is slightly less
-		let currentPoolAssets = balanceToFloat(this.wallet.balances.koin + this.wallet.balances.vhp);	// should include koin, too?  assumption of impending burn?
+		let currentPoolAssets = balanceToFloat(this.wallet.balances.vhp);	// should include koin, too?  assumption of impending burn?.  No - don’t think so
 		let yearlyMinedByPool =  yearlyMinedGlobal * (currentPoolAssets / vhpProducingGlobal);
 		let totalApy = yearlyMinedByPool /  currentPoolAssets;
 		if (this.wallet.balances.vhp == BigInt(0)) {
@@ -205,11 +207,11 @@ export class PoolState {
   constructor(
     public stake: string = "",
     public virtual: string = "",
-    public previous_stake: string = "",
-    public previous_koin: string = "",
-    public current_payment_time: string = "",
-    public next_payment_time: string = "",
-    public previous_vapor: string = "",
+    public snapshot_stake: string = "",
+    public snapshot_koin: string = "",
+    public current_snapshot: string = "",
+    public next_snapshot: string = "",
+    public snapshot_vapor: string = "",
     public vapor_withdrawn: string = "",
   ) { }
 }
