@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex gap-4 p-4 items-center">
-  <Server class="flex-none h-8 w-auto sm:h-12" size="24" />
+  <Server class="flex-none h-9 w-auto sm:h-12" size="24" />
   <div class="flex flex-wrap items-center flex-1">
     <div class="flex-1 font-semibold">{node.name}</div>
     <div class="flex-none"><span class="text-xs">pubKey:</span> {node.publicKey?.slice(0,5)+"..."+node.publicKey?.slice(-5)}</div>

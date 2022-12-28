@@ -32,10 +32,10 @@
   <div class="flex gap-4 items-center">
     <div class="relative w-12">
       <a href="/pools/{pool.address}" class="flex-1 font-semibold">
-        <img  class="flex-none h-8 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
+        <img  class="flex-none h-9 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
       </a>
       {#if pool.parameters.name && !pool.nodePublicKey}
-        <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning" data-tip="This pool is not linked to a block producer, and its yield is zero">
+        <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning before:w-48 before:content-[attr(data-tip)]" data-tip="This pool is not linked to a block producer, and its yield is zero">
           <WarningSharp class="text-warning" size=24 />
         </div>
       {/if}
