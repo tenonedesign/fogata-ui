@@ -11,7 +11,7 @@
 	import { approvedPools, connectedAddress, ownedPools, submittedPools, user } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
-	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, userIsAdmin } from '$lib/utils';
+	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner } from '$lib/utils';
 	import PoolListElement from '$lib/PoolListElement.svelte';
 	import type { KoinosNode } from '$lib/types';
 	import NodeElement from '$lib/NodeElement.svelte';
@@ -53,6 +53,7 @@
 	onMount(async () => {
     updateStoredObjectFormats();
     populateOwnedPools();
+    readPoolsOwner();
     await loadFogataPools();
     
 		load();
@@ -237,7 +238,7 @@
 
       <div class="rounded-xl bg-base-200 mt-2">
         {#each $approvedPools as pool, i}
-          <PoolListElement administered={userIsAdmin()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} statsAction={showPoolStats} pool={pool} />
+          <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} statsAction={showPoolStats} pool={pool} />
           {#if i < ($approvedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
         {/each}
       </div>
@@ -261,7 +262,7 @@
           
           <div class="rounded-xl bg-base-200 mt-2">
             {#each $submittedPools as pool, i}
-              <PoolListElement administered={userIsAdmin()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} approveAction={approvePool} statsAction={showPoolStats} pool={pool} />
+              <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} approveAction={approvePool} statsAction={showPoolStats} pool={pool} />
               {#if i < ($submittedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
             {/each}
           </div>

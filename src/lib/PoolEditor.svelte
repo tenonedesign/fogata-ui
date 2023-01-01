@@ -30,7 +30,7 @@
   function combineBeneficiaries(contribution: Beneficiary, other: Beneficiary[]): Beneficiary[] {
     return [...other, ...[contribution]];
   }
-  $: poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries);
+  $: if (attributes.includes("beneficiaries")) { poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries); }
   // $: console.log(poolParams);
 </script>
 

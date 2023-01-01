@@ -1,7 +1,7 @@
 
 import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 import * as kondor from "kondor-js";
-import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools } from "$lib/stores";
+import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools, poolsOwner } from "$lib/stores";
 import { Pool, PoolParams, Toast, User } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/fogata-abi.json";
@@ -9,7 +9,6 @@ import poolsAbiJson from "$lib/pools-abi.json";
 import pobAbiJson from "$lib/pob-proto.json";
 import sponsorsAbiJson from "$lib/sponsors-proto.json";
 import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/interface";
-import crypto from "crypto";
 
 // this starts with a new User object that may have new properties, then fills in properties from the existing stored object
 export const updateStoredObjectFormats = () => {
@@ -24,22 +23,27 @@ export const populateOwnedPools = () => {
   });
   ownedPools.set(pools);
 }
-export function userIsAdmin() {
-  return (get(user).address === get(env).pools_owner);
+export const readPoolsOwner = () => {
+  poolsRead("get_owner", {}).then(result => {
+    poolsOwner.set(result.account);
+  });
+}
+export function userIsPoolsOwner() {
+  return (get(user).address === get(poolsOwner));
 }
 export const loadFogataPools = () => {
   return Promise.all([
-    poolsRead("get_approved_pools", {limit: 200}).then(value => {
+    poolsRead("get_approved_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      value?.forEach((pool: {account: string, submission_time: string}) => {
+      result.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       approvedPools.set(pools);
       Promise.resolve();
     }),
-    poolsRead("get_submitted_pools", {limit: 200}).then(value => {
+    poolsRead("get_submitted_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      value?.forEach((pool: {account: string, submission_time: string}) => {
+      result.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       submittedPools.set(pools);
@@ -59,7 +63,7 @@ export const updateUsers = (user: User) => {
 
 export const poolsRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).pools_address, koilibAbi(poolsAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result.value);
+    return Promise.resolve(result);
   }, (error) => {});
 }
 export const poolsWrite = async (methodName: string, args: any, description: string) => {
