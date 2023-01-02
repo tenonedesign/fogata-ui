@@ -322,7 +322,7 @@
         </div> 
         <div class="mt-3 flex gap-3 flex-wrap">
           <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolEditor.show()}}>Create another pool</button>
-          <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolAdder.show()}}>Add another pool</button>
+          <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolAdder.show()}}>Add existing pool</button>
         </div>
       {/if}
 

@@ -35,7 +35,7 @@ export const loadFogataPools = () => {
   return Promise.all([
     poolsRead("get_approved_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      result.value?.forEach((pool: {account: string, submission_time: string}) => {
+      result?.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       approvedPools.set(pools);
@@ -43,7 +43,7 @@ export const loadFogataPools = () => {
     }),
     poolsRead("get_submitted_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      result.value?.forEach((pool: {account: string, submission_time: string}) => {
+      result?.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       submittedPools.set(pools);

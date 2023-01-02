@@ -52,7 +52,7 @@
       <div class="text-sm text-center max-w-2xl mt-4 mx-auto">
         <span class="opacity-75">
           KOIN + VHP STAKE<br />
-          Last snapshot output: 
+          Last snapshot result: 
           <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span> liquid KOIN and 
           <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVapor)}">{format($pool.userBalanceVapor)}</span> VAPOR
         </span>
