@@ -6,7 +6,7 @@
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
 	import { hideConnectionToast, loadFogataPools, poolRead, populateOwnedPools, readPoolsOwner, showConnectionToast, updateStoredObjectFormats, updateUsers } from '$lib/utils';
-	import { Pool } from '$lib/types';
+	import { Pool, PoolState } from '$lib/types';
 
 	updateStoredObjectFormats();
 	populateOwnedPools();
@@ -57,6 +57,7 @@
 			});
 			poolRead($pool.address, "get_pool_state", {}).then((value) => {
 				$pool.state = value;
+				$pool.state = {...new PoolState(), ...value};
 			})
 		}
 	}

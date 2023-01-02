@@ -98,7 +98,7 @@
         <div class="text-sm mt-2">
           <h2><span class="font-semibold">Stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.stake))} KOIN">{format(BigInt($pool.state.stake))}</span></h2>
           <h2><span class="font-semibold">Virtual stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.virtual))} KOIN">{format(BigInt($pool.state.virtual))}</span></h2>
-          <h2><span class="font-semibold">Snapshot stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_stake))} VHP">{format(BigInt($pool.state.snapshot_stake))}</span></h2>
+          <h2><span class="font-semibold">Snapshot stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_stake || 0))} VHP">{format(BigInt($pool.state.snapshot_stake || 0))}</span></h2>
           <h2><span class="font-semibold">Snapshot KOIN:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_koin || 0))} VHP">{format(BigInt($pool.state.snapshot_koin || 0))}</span></h2>
           <h2><span class="font-semibold">Snapshot VAPOR:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_vapor || 0))} VHP">{format(BigInt($pool.state.snapshot_vapor || 0))}</span></h2>
           <h2><span class="font-semibold">VAPOR withdrawn:</span> <span class="tooltip" data-tip="{tFormat(BigInt(($pool.state.vapor_withdrawn) || 0))} VHP">{format(BigInt($pool.state.vapor_withdrawn || 0))}</span></h2>

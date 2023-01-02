@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { user, wallet, pool } from './stores';
-  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, poolOperation, poolWrite } from './utils';
+  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, intervalDisplayFormat, poolOperation, poolWrite } from './utils';
 	import Card from '$lib/Card.svelte';
 	import WalletView from './WalletView.svelte';
 	import { utils } from 'koilib';
@@ -79,7 +79,7 @@
             title="Deposit KOIN or VHP"
             message="Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time."
             maximums={{koin: $wallet.balances.koin, vhp: $wallet.balances.vhp}}
-            burnWarning="Depositing KOIN will permanently convert it to VHP. You will only be able to withdraw it as VHP."
+            burnWarning="Depositing KOIN will permanently convert it to VHP. You will only be able to withdraw it as VHP, or as small amounts of KOIN every {intervalDisplayFormat($pool.parameters.payment_period)}."
             buttonAction={initiateDeposit}
             bind:activeToken={activeToken}
             bind:value={depositValue}>Deposit</PoolActionButton>

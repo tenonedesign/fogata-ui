@@ -11,7 +11,7 @@
 	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
-	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner } from '$lib/utils';
+	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat } from '$lib/utils';
 	import PoolListElement from '$lib/PoolListElement.svelte';
 	import type { KoinosNode } from '$lib/types';
 	import NodeElement from '$lib/NodeElement.svelte';
@@ -135,10 +135,21 @@
   }
   function showPoolStats(address: string) {
     const p = $submittedPools.find(x => x.address == address) || $approvedPools.find(x => x.address == address) ||  $ownedPools.find(x => x.address == address);
+    if (p===undefined) { return; }
     confirmModal.title = "Pool information";
     confirmModal.positiveActionName = "Hide";
     confirmModal.showNegativeAction = false;
-    confirmModal.message = "Address: "+address+"\n\n"+JSON.stringify(p?.parameters, null, 2);
+    confirmModal.message = "Address: "+address+"\n\n"+
+      "APY:   "+(p.apy * 100).toFixed(2)+"%\n"+
+      "Operator fee:   "+((p.beneficiariesPercentage() - p.sponsorsPercentage()) / 1000).toFixed(2)+"%\n"+
+      "Sponsors contribution:   "+(p.sponsorsPercentage() / 1000).toFixed(2)+"%\n"+
+      "Total pool fee:   "+(p.beneficiariesPercentage() / 1000).toFixed(2)+"%\n"+
+      "Minimum reburn period:   "+intervalDisplayFormat(p.parameters.payment_period)+"\n"+
+      "VHP:   "+balanceTooltipFormat(p.wallet.balances.vhp)+"\n"+
+      "\n"+
+      "All fees are collected on pool profit\n"+
+      "";
+      // JSON.stringify(p, null, 2);
     confirmModal.show();
   }
   function showNodeInstructions() {
@@ -204,7 +215,8 @@
 	<meta name="description" content="Koinos mining pools" />
 </svelte:head>
 
-<div class="px-4">
+<!-- clip prevents tooltips from messing up page scaling -->
+<div class="px-4 overflow-clip">
 
   <Header pool={null} />
 

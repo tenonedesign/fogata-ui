@@ -47,6 +47,13 @@ export class Pool {
     let sponsorsBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
     return sponsorsBeneficiary.percentage || 0;
   }
+  public beneficiariesPercentage(): number {
+    let combinedBeneficiaryPercentage = 0;
+    this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
+      combinedBeneficiaryPercentage += beneficiary.percentage;
+    });
+    return combinedBeneficiaryPercentage;
+  }
   public isListingEligible(): boolean {
     return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
   }
@@ -205,14 +212,14 @@ export class PoolParams {
 }
 export class PoolState {
   constructor(
-    public stake: string = "",
-    public virtual: string = "",
-    public snapshot_stake: string = "",
-    public snapshot_koin: string = "",
-    public current_snapshot: string = "",
-    public next_snapshot: string = "",
-    public snapshot_vapor: string = "",
-    public vapor_withdrawn: string = "",
+    public stake: string = "0",
+    public virtual: string = "0",
+    public snapshot_stake: string = "0",
+    public snapshot_koin: string = "0",
+    public current_snapshot: string = "0",
+    public next_snapshot: string = "0",
+    public snapshot_vapor: string = "0",
+    public vapor_withdrawn: string = "0",
   ) { }
 }
 export class Beneficiary {
