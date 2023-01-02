@@ -237,7 +237,7 @@
         <!-- <span class="ml-4 text-sm font-normal opacity-75">How to pick <InformationCircleSharp class="inline" size="16" /></span></div> -->
 
       <div class="rounded-xl bg-base-200 mt-2">
-        {#each $approvedPools as pool, i}
+        {#each $approvedPools.sort((a, b) => (a.sponsorsPercentage() < b.sponsorsPercentage()) ? 1 : -1) as pool, i}
           <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} statsAction={showPoolStats} pool={pool} />
           {#if i < ($approvedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
         {/each}
@@ -261,7 +261,7 @@
           </div>
           
           <div class="rounded-xl bg-base-200 mt-2">
-            {#each $submittedPools as pool, i}
+            {#each $submittedPools.sort((a, b) => (a.sponsorsPercentage() < b.sponsorsPercentage()) ? 1 : -1) as pool, i}
               <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} approveAction={approvePool} statsAction={showPoolStats} pool={pool} />
               {#if i < ($submittedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
             {/each}
