@@ -240,6 +240,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   contract.options.onlyOperation = true;
   const { operation: takeOwnership } = await contract.functions.set_owner({ account: signer.getAddress() });
   const { operation: setPoolParams } = await contract.functions.set_pool_params(poolParams);
+  const { operation: reburnToInit } = await contract.functions.reburn_and_snapshot({});
   contract.options.onlyOperation = false;
 
   let rcLimitString = "0";
@@ -253,7 +254,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
     authorizesCallContract: true,
     authorizesTransactionApplication: true,
     authorizesUploadContract: true,
-    nextOperations: [takeOwnership, setPoolParams],
+    nextOperations: [takeOwnership, setPoolParams, reburnToInit],
     rcLimit: rcLimitString,
     nonce: nextNonce,
     chainId: get(env).chain_id,

@@ -21,7 +21,7 @@
 		poolWrite($pool.address, "pay_beneficiaries", {}, "beneficiaries payment request");
 	}
 	async function reburnAndSnapshot() {
-		poolWrite($pool.address, "reburn_and_snapshot", {}, "payment computation");
+		poolWrite($pool.address, "reburn_and_snapshot", {}, "reburn");
 	}
 
   function startCountdownClock(endTime: number, completionCallback:any = null) {
