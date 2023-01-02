@@ -333,49 +333,52 @@
 </div>
 
 <!-- hide before onMount because modal flashes when loaded with any latency -->
-<!-- there’s a larger issue with some styles not being applied before first paint, but this modal is the most noticeable offender -->
+<!-- there’s a larger issue with some styles not being applied before first paint, but these modals are the most noticeable offender -->
 {#if timer}
   <PoolCreator bind:this={poolEditor} contractWasmBase64={($env.testnet) ? data.contractWasmBase64Harbinger : data.contractWasmBase64}></PoolCreator>
-{/if}
-<InputsModal bind:this={nodeEditor}
-  title="Add a node"
-  message="Paste the public key from your node here.  If you’re using the command line, look in .koinos/block_producer/public.key"
-  positiveActionName="Add Node"
-  buttonAction={addNode}
-  schemas={[
-    {
-      key: "publicKey",
-      placeholder: "ArdeH...",
-      label: "Public key"
-    },
-    {
-      key: "name",
-      placeholder: "Cloud node 2",
-      label: "Node name"
-    }
-  ]}
-/>
-<InputsModal bind:this={poolAdder}
-  title="Add an exsiting Fogata pool"
-  message="Paste the pool address here."
-  positiveActionName="Add Pool"
-  buttonAction={addPool}
-  schemas={[
-    {
-      key: "address",
-      placeholder: "zgdeH...",
-      label: "Pool address"
-    }
-  ]}
-/>
 
-<InputsModal bind:this={confirmModal} title="Are your sure?" message="" positiveActionName="Yes" />
-<SelectModal bind:this={nodePicker}
-  title="Link your pool with a node"
-  message="Linking to a node will allow Koinos to reward your pool for the node’s block production.  This operation will consume mana."
-  label="Select your node"
-  required={true}
-  positiveActionName="Create link"
-/>
+  <InputsModal bind:this={nodeEditor}
+    title="Add a node"
+    message="Paste the public key from your node here.  If you’re using the command line, look in .koinos/block_producer/public.key"
+    positiveActionName="Add Node"
+    buttonAction={addNode}
+    schemas={[
+      {
+        key: "publicKey",
+        placeholder: "ArdeH...",
+        label: "Public key"
+      },
+      {
+        key: "name",
+        placeholder: "Cloud node 2",
+        label: "Node name"
+      }
+    ]}
+  />
+  <InputsModal bind:this={poolAdder}
+    title="Add an exsiting Fogata pool"
+    message="Paste the pool address here."
+    positiveActionName="Add Pool"
+    buttonAction={addPool}
+    schemas={[
+      {
+        key: "address",
+        placeholder: "zgdeH...",
+        label: "Pool address"
+      }
+    ]}
+  />
+
+  <InputsModal bind:this={confirmModal} title="Are your sure?" message="" positiveActionName="Yes" />
+  <SelectModal bind:this={nodePicker}
+    title="Link your pool with a node"
+    message="Linking to a node will allow Koinos to reward your pool for the node’s block production.  This operation will consume mana."
+    label="Select your node"
+    required={true}
+    positiveActionName="Create link"
+  />
+
+{/if}
+
 <style>
 </style>
