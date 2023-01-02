@@ -8,7 +8,7 @@
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
 	import vaporLogo from '$lib/images/vapor-icon.svg?raw';
-	import { approvedPools, connectedAddress, ownedPools, submittedPools, user } from '$lib/stores.js';
+	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
 	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner } from '$lib/utils';
@@ -335,7 +335,7 @@
 <!-- hide before onMount because modal flashes when loaded with any latency -->
 <!-- there’s a larger issue with some styles not being applied before first paint, but this modal is the most noticeable offender -->
 {#if timer}
-  <PoolCreator bind:this={poolEditor} contractWasmBase64={data.contractWasmBase64}></PoolCreator>
+  <PoolCreator bind:this={poolEditor} contractWasmBase64={($env.testnet) ? data.contractWasmBase64Harbinger : data.contractWasmBase64}></PoolCreator>
 {/if}
 <InputsModal bind:this={nodeEditor}
   title="Add a node"

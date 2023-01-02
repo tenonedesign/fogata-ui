@@ -28,7 +28,8 @@ export const env = derived(
         "pools_address": "1M4GSDejwQPwDvq3EVS2anjDA1rkzdwFF9",
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1AuJQxqqyBZXqqugTQZzXRVRmEYJtsMYQ8",
-        "chain_id": "EiAAKqFi-puoXnuJTdn7qBGGJa8yd-dcS2P0ciODe4wupQ=="
+        "chain_id": "EiAAKqFi-puoXnuJTdn7qBGGJa8yd-dcS2P0ciODe4wupQ==",
+        "testnet": true
       }
     }
     else {
@@ -39,7 +40,8 @@ export const env = derived(
         "pools_address": "1MmV5nzSBVGnBrjTr3B8XtA4yPs8wcSpr",
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1KTasVrqvMBofMANKMCT3HMya16sfZPLFB",
-        "chain_id": "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA=="
+        "chain_id": "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA==",
+        "testnet": false
       }
     }
   }
