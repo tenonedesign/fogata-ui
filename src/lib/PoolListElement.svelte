@@ -56,10 +56,10 @@
         </div>
       </div>
       <div class="flex-none flex items-center flex-col gap-2 pl-3">
-        <span class="w-full badge badge-outline bg-base-100 bg-opacity-70 border-base-content border-opacity-40 text-xs tooltip tooltip-top sm:tooltip-left flex items-center" data-tip="Depositors should expect an APY of {(pool.apy * 100).toFixed(2)}% with KOIN reburned every {intervalDisplayFormat(pool.parameters.payment_period)}">
+        <span class="w-full badge badge-outline bg-base-100 border-none shadow text-xs tooltip tooltip-top sm:tooltip-left flex items-center" data-tip="Depositors should expect an APY of {(pool.apy * 100).toFixed(2)}% with KOIN reburned every {intervalDisplayFormat(pool.parameters.payment_period)}">
           <span class="text-xs text-[8px] font-semibold pr-1">APY:</span> <span>{(pool.apy * 100).toFixed(2)}%</span>
         </span>
-        <span class="w-full badge badge-outline bg-base-100 bg-opacity-70 border-base-content border-opacity-40 text-xs tooltip tooltip-top sm:tooltip-left flex items-center" data-tip="Depositors receive {(pool.sponsorsPercentage() / 1000).toFixed(2)}% of their profit (about {(pool.sponsorsApy * 100).toFixed(2)}% APY) as VAPOR">
+        <span class="w-full badge badge-outline bg-base-100 border-none shadow text-xs tooltip tooltip-top sm:tooltip-left flex items-center" data-tip="Depositors receive {(pool.sponsorsPercentage() / 1000).toFixed(2)}% of their profit (about {(pool.sponsorsApy * 100).toFixed(2)}% APY) as VAPOR">
           <span class="inline-block w-3 mr-2">{@html vaporLogo}</span><CaretForward class="inline hidden" size="12px" />{(pool.sponsorsApy * 100).toFixed(2)}%
         </span>
         <!-- <button class="btn btn-xs btn-ghost w-full">View</button> -->

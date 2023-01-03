@@ -45,7 +45,7 @@
       </div> -->
 
       <h1 class=" text-5xl sm:text-6xl lg:text-[70px] mt-8 text-center font-semibold">
-        <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalance)}">
+        <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceVhp)} VHP + {tFormat($pool.userBalanceKoin)} KOIN">
           {format($pool.userBalance)}
         </span>
       </h1>
