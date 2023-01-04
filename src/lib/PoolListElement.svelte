@@ -50,7 +50,7 @@
               <button class="btn btn-ghost btn-xs absolute -bottom-[2px] right-1" on:click={() => showMore = !showMore}>more</button>
             {/if}
           {:else}
-          <a href="/pools/{pool.address}">{truncate(pool.parameters.description, 2000, true)}        </a>
+          <a href="/pools/{pool.address}" class="whitespace-pre-wrap">{truncate(pool.parameters.description, 2000, true)}        </a>
             <button class="btn btn-ghost btn-xs absolute -bottom-[2px] right-1" on:click={() => showMore = !showMore}>less</button>
           {/if}
         </div>
