@@ -116,7 +116,7 @@
             {#if contributionBeneficiary.percentage == 0}
               <div class="text-xs bg-warning text-warning-content p-3 flex gap-3 rounded-xl items-center mt-1">
                 <WarningOutline class="flex-shrink-0" size="24" />
-                <div>Pools without a community contribution will not be accessible on Fogata, but you can still self-host your own pool interface.</div>
+                <div>Pools without a community contribution will be available on Fogata, but are unlikely to be featured.</div>
               </div>
             {/if}
           </div>

@@ -76,7 +76,7 @@
 		<div class="text-sm text-center max-w-2xl mt-4 mx-auto">
 			<span class="opacity-75">
 				Estimated pool APY<br />
-        <span class="tooltip tooltip-secondary" data-tip="{tFormat(BigInt($pool.state?.snapshot_koin || 0))}">{format(BigInt($pool.state?.snapshot_koin || 0))}</span> (including your <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span>) KOIN
+        <span class="tooltip tooltip-secondary" data-tip="{tFormat(BigInt($pool.state?.snapshot_koin))}">{format(BigInt($pool.state?.snapshot_koin))}</span> (including your <span class="tooltip tooltip-secondary" data-tip="{tFormat($pool.userBalanceKoin)}">{format($pool.userBalanceKoin)}</span>) KOIN
         {#if Date.now() > Number($pool.state?.next_snapshot)}
           may be reburned at any time
         {:else}
@@ -94,18 +94,18 @@
     
     {#if showStats}
       <div class="flex flex-col items-center mt-4">
-        <div class="font-bold">Pool stats</div>
+        <div class="font-bold">Live pool stats</div>
         <div class="text-sm mt-2">
           <h2><span class="font-semibold">Stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.stake))} KOIN">{format(BigInt($pool.state.stake))}</span></h2>
           <h2><span class="font-semibold">Virtual stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.virtual))} KOIN">{format(BigInt($pool.state.virtual))}</span></h2>
-          <h2><span class="font-semibold">Snapshot stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_stake || 0))} VHP">{format(BigInt($pool.state.snapshot_stake || 0))}</span></h2>
-          <h2><span class="font-semibold">Snapshot KOIN:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_koin || 0))} VHP">{format(BigInt($pool.state.snapshot_koin || 0))}</span></h2>
-          <h2><span class="font-semibold">Snapshot VAPOR:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_vapor || 0))} VHP">{format(BigInt($pool.state.snapshot_vapor || 0))}</span></h2>
-          <h2><span class="font-semibold">VAPOR withdrawn:</span> <span class="tooltip" data-tip="{tFormat(BigInt(($pool.state.vapor_withdrawn) || 0))} VHP">{format(BigInt($pool.state.vapor_withdrawn || 0))}</span></h2>
+          <h2><span class="font-semibold">Snapshot stake:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_stake))} VHP">{format(BigInt($pool.state.snapshot_stake))}</span></h2>
+          <h2><span class="font-semibold">Snapshot KOIN:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_koin))} VHP">{format(BigInt($pool.state.snapshot_koin))}</span></h2>
+          <h2><span class="font-semibold">Snapshot VAPOR:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_vapor))} VHP">{format(BigInt($pool.state.snapshot_vapor))}</span></h2>
+          <h2><span class="font-semibold">VAPOR withdrawn:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.vapor_withdrawn))} VHP">{format(BigInt($pool.state.vapor_withdrawn))}</span></h2>
+          <h2><span class="font-semibold">Depositors:</span> <span>{$pool.state.user_count}</span></h2>
           <h2><span class="font-semibold">Last snapshot/reburn:</span> {(new Date(Number($pool.state.current_snapshot))).toLocaleString([],{timeZoneName:'short'})}</h2>
           <h2><span class="font-semibold">Can reburn after:</span> {(new Date(Number($pool.state.next_snapshot))).toLocaleString([],{timeZoneName:'short'})}</h2>
         </div>
-        <button class="btn btn-sm btn-outline mt-4" on:click={payBeneficiaries}>Recalculate & pay beneficiaries</button>
       </div>
     {/if}
 

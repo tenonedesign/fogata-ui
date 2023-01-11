@@ -55,9 +55,10 @@ export class Pool {
     return combinedBeneficiaryPercentage;
   }
   public isListingEligible(): boolean {
-    return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
+    return (!!this.nodePublicKey);
+    // return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
   }
-  public listingState(approvedPools: Pool[], submittedPools: Pool[]) {
+  public listingState(approvedPools: Pool[], submittedPools: Pool[]): PoolListingState {
     if (approvedPools.some(e => e.address === this.address)) { return PoolListingState.Listed; }
     if (submittedPools.some(e => e.address === this.address)) { return PoolListingState.Submitted; }
     if (!this.loaded) { return PoolListingState.Unknown; } // probably not loaded, but also could have no beneficiaries
@@ -220,6 +221,9 @@ export class PoolState {
     public next_snapshot: string = "0",
     public snapshot_vapor: string = "0",
     public vapor_withdrawn: string = "0",
+    public user_count: string ="0",
+    public vapor: string = "0",
+    public virtual_vapor: string = "0",
   ) { }
 }
 export class Beneficiary {

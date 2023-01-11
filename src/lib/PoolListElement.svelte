@@ -116,7 +116,7 @@
   {/if}
   {#if owned && listingState == PoolListingState.Ineligible}
     <div class="flex justify-center items-center mt-2 gap-3">
-      This pool is not eligible for listing on Fogata.
+      This pool is not eligible for listing on Fogata. Make sure it is linked to a block producer.
     </div>
   {/if}
 </div>

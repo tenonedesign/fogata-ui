@@ -17,6 +17,7 @@
 	import NodeElement from '$lib/NodeElement.svelte';
 	import InputsModal from '$lib/InputsModal.svelte';
 	import SelectModal from '$lib/SelectModal.svelte';
+	import Faqs from '$lib/Faqs.svelte';
 
 	let timer: NodeJS.Timer;
   let debounceTimer: NodeJS.Timer;
@@ -220,7 +221,7 @@
 
   <Header pool={null} />
 
-  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20 pb-60">
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20">
 
     <Card>
       <div class="flex flex-col md:flex-row md:items-center gap-2">
@@ -341,6 +342,27 @@
     </Card>				
 
   </section>
+
+  
+  <!-- FAQs -->
+  <div class="bg-base-200 text-base-content pt-20 pb-40 max-w-[800px] mx-auto">
+    <h1 class="text-3xl mb-8 text-center font-semibold">FAQs</h1>
+    <Faqs faqs={[
+      {
+        q: "How is APY calculated?",
+        a: "Fogata reads the current mining diffuculty from the Proof of Burn system contract.  This difficulty is used along with the total number of claimed Koin to estimate the amount of Koin the pool will generate in one year.  Note: The estimated APY will vary over time as the mining difficulty is constantly adjusted."
+      },
+      {
+        q: "How does pool approval work?",
+        a: "If you create a pool that meets the requirements (your pool must be linked with a running a block producer), you will be prompted to submit the pool for approval.  The approval is handled on-chain, so by submitting, you’re adding your pool address to a queue in a smart contract.  A fogata admin will verify the pool is a genuine fogata pool and uploaded to previously-unused address, and has sole discretion to approve or reject the pool.  Once approved, it appears on the main list, and can be interacted with."
+      },
+      {
+        q: "How do I withdraw koin from a pool?",
+        a: "Pool operations are separated into payment periods.  You are always able to collect your share of Koin (and Vapor, if applicable) from the previous payment period.  If you do not collect your Koin, it is free to be be converted to VHP after the current payment period concludes. Anyone may trigger this reburn."
+      },
+
+    ]} />
+  </div>
 
 </div>
 
