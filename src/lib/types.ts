@@ -104,7 +104,7 @@ export class Pool {
 		}
     let combinedBeneficiaryPercentage = 0;
     this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
-      combinedBeneficiaryPercentage += beneficiary.percentage;
+      combinedBeneficiaryPercentage += beneficiary.percentage ?? 0;
     });
     let beneficiaryPercentage = combinedBeneficiaryPercentage / 100000;
 		let participantApy = (1 - beneficiaryPercentage) * totalApy;
