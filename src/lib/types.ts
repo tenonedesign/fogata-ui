@@ -1,5 +1,5 @@
 import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply, vaporBalanceOf } from "$lib/utils";
-import { env } from "$lib/stores";
+import { env, user } from "$lib/stores";
 import { get } from "svelte/store";
 import { utils } from "koilib";
 
@@ -15,6 +15,7 @@ export class Pool {
   constructor(
     public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
     public parameters: PoolParams = new PoolParams(),
+    public collectKoinPreferences: CollectKoinPreferences = new CollectKoinPreferences(),
     public state: PoolState = new PoolState(),
     public sponsorsApy = 0,
     public apy = 0,
@@ -41,6 +42,13 @@ export class Pool {
 	}
   public loadPublicKey = async () => {
     this.nodePublicKey = await pobRead("get_public_key", {"producer": this.address});
+    Promise.resolve();
+  }
+  public loadCollectKoinPreferences = async (address: string) => {
+    const rawParameters = await poolRead(this.address, "get_collect_koin_preferences", {account: address});
+    this.collectKoinPreferences.account = rawParameters?.account || address;
+    this.collectKoinPreferences.all_after_virtual = BigInt(rawParameters?.all_after_virtual || 0);
+    this.collectKoinPreferences.percentage_koin = rawParameters?.percentage_koin || 0;
     Promise.resolve();
   }
   public sponsorsPercentage(): number {
@@ -209,6 +217,13 @@ export class PoolParams {
     public description: string = "",
     public beneficiaries: Beneficiary[] = [new Beneficiary("", 5000)],
     public payment_period: number = 0,
+  ) { }
+}
+export class CollectKoinPreferences {
+  constructor(
+    public account: string = "",
+    public percentage_koin: number = 0,
+    public all_after_virtual = BigInt(0),
   ) { }
 }
 export class PoolState {

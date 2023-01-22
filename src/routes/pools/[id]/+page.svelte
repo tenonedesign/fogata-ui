@@ -24,7 +24,7 @@
 		readPoolsOwner();
 		knownPool = Boolean($approvedPools.find(x => x.address == $page.params.id) || $ownedPools.find(x => x.address == $page.params.id));
 		knownPoolChecked = true;
-		if (!knownPool) { return; }
+		// if (!knownPool) { return; }	// this is ok now
 		load();
 		timer = setInterval(() => {
 			load();
@@ -59,6 +59,7 @@
 				// if this looks weird, it’s because properties with a value of "0" are ommited from response
 				$pool.state = {...new PoolState(), ...value};
 			})
+			$pool.loadCollectKoinPreferences($user.address);
 		}
 	}
 </script>
