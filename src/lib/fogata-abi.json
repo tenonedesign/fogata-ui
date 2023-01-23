@@ -423,7 +423,10 @@
               },
               "all_after_virtual": {
                 "type": "uint64",
-                "id": 3
+                "id": 3,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
               }
             }
           },

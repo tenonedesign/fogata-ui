@@ -42,7 +42,7 @@ const config = {
           "accent": "#2ee362",
           "accent-content": "#003810",
 
-          "info": "#e7ed39",  // yellow
+          "info": "#f1f0ee",  // tan
           "success": "#2de362", // ??
           "warning": "#ffb22c", // orange
           "error": "#ff3050", // red
@@ -67,7 +67,7 @@ const config = {
           "accent": "#2ee362",
           "accent-content": "#1c1f24",
 
-          "info": "#e7ed39",
+          "info": "#c9c7c5",
           "success": "#2de362",
           "warning": "#ffb22c",
           "error": "#ff3050",
