@@ -239,6 +239,7 @@ export class PoolState {
     public user_count: string ="0",
     public vapor: string = "0",
     public virtual_vapor: string = "0",
+    public version: string = "",
   ) { }
 }
 export class Beneficiary {

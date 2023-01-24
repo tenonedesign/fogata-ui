@@ -95,7 +95,7 @@
                     <div class="w-full flex justify-between text-xs px-2">
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
-                      <span>|</span> <span>|</span>
+                      <span>|</span> <span>|</span> <span>|</span>
                     </div>
                   </div>
                 </div>
@@ -125,7 +125,7 @@
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
-          <span>|</span> <span>|</span>
+          <span>|</span> <span>|</span> <span>|</span>
         </div>
       </div>
     {/if}

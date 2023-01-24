@@ -44,6 +44,11 @@
       percentage_koin: collectStrategy == "percent" ? collectKoinPreferences.percentage_koin : 0,
       all_after_virtual: (collectStrategy == "threshold" ? collectKoinPreferences.all_after_virtual : BigInt(0)).toString(),
     }
+    if (collectStrategy == "threshold" && params.all_after_virtual == "0") {
+      // user intends to collect all generated koin
+      // since '0' means off, we represent this intent as percentage_koin = 100%
+      params.percentage_koin = 100000;
+    }
     poolWrite(poolAddress, "set_collect_koin_preferences", params, "collection preference update");
   }
 
@@ -72,7 +77,7 @@
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
-          <span>|</span> <span>|</span>
+          <span>|</span> <span>|</span> <span>|</span>
         </div>
       </div>
       <div class="text-xs bg-info text-info-content p-3 flex gap-3 rounded-xl items-center mt-1">
@@ -92,7 +97,7 @@
 
     {#if collectStrategy == ""}
       <div class="mt-2 w-full">
-        Collection is currently turned off.  All profits will be re-burned as VHP to optimize returns.
+        Collection is currently turned off.  All profits will be re-burned as VHP to optimize returns.  Vapor will still be collected if applicable.
       </div>
     {/if}
 
