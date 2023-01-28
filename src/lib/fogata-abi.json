@@ -189,7 +189,7 @@
       "read_only": true,
       "read-only": true
     },
-    "get_reserved_koins": {
+    "get_all_reserved_koin": {
       "argument": "",
       "return": "common.uint64",
       "description": "Get reserved koins (for beneficiaries and mana supporters)",
@@ -198,7 +198,7 @@
       "read_only": true,
       "read-only": true
     },
-    "get_mana_delegation": {
+    "get_reserved_koin": {
       "argument": "common.address",
       "return": "common.uint64",
       "description": "Get koin balance of mana supporter",
@@ -207,7 +207,7 @@
       "read_only": true,
       "read-only": true
     },
-    "add_mana_delegation": {
+    "add_reserved_koin": {
       "argument": "fogata.koin_account",
       "return": "common.boole",
       "description": "Transfer KOINs to the pool to support the mana consumption. This amount will not be burned",
@@ -216,7 +216,7 @@
       "read_only": false,
       "read-only": false
     },
-    "remove_mana_delegation": {
+    "remove_reserved_koin": {
       "argument": "fogata.koin_account",
       "return": "common.boole",
       "description": "Withdraw KOINs used in the mana consumption.",

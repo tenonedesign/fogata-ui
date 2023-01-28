@@ -2,8 +2,9 @@
   import { EllipsisVertical, WarningSharp, CaretForward} from 'svelte-ionicons';
 	import { PoolListingState, type Pool } from './types';
 	import vaporLogo from '$lib/images/vapor-icon.svg?raw';
-	import { intervalDisplayFormat } from './utils';
+	import { intervalDisplayFormat, balanceDisplayFormat } from './utils';
 	import { fade, scale, slide } from 'svelte/transition';
+	import { env } from './stores';
   export let pool: Pool;
   export let owned: boolean = false;
   export let administered: boolean = false;
@@ -11,6 +12,7 @@
   export let linkAction: any = () => {};
   export let removeAction: any = () => {};
   export let submitAction: any = () => {};
+  export let manageReservedKoinAction: any = () => {};
   export let delistAction: any = () => {};
   export let approveAction: any = () => {};
   export let statsAction: any = () => {};
@@ -36,6 +38,11 @@
       </a>
       {#if pool.parameters.name && !pool.nodePublicKey}
         <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning before:w-48 before:content-[attr(data-tip)]" data-tip="This pool is not linked to a block producer, and its yield is zero">
+          <WarningSharp class="text-warning" size=24 />
+        </div>
+      {/if}
+      {#if pool.parameters.name && pool.reservedKoin < $env.minimum_reserved_koin}
+        <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning before:w-48 before:content-[attr(data-tip)]" data-tip="This pool has a reserved Koin balance below {balanceDisplayFormat($env.minimum_reserved_koin)}.  Please add reserved Koin.">
           <WarningSharp class="text-warning" size=24 />
         </div>
       {/if}
@@ -87,6 +94,7 @@
             <li><a on:click={() => linkAction(pool.address)}>Change block producer</a></li>
           {/if}
           <li><a on:click={() => removeAction(pool.address)}>Remove pool from list</a></li>
+          <li><a on:click={() => manageReservedKoinAction(pool.address)}>Manage reserved Koin</a></li>
         {/if}
         {#if !owned && administered}
           <li><a on:click={() => delistAction(pool.address)}>Remove pool</a></li>

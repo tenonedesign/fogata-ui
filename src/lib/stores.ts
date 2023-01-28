@@ -29,6 +29,7 @@ export const env = derived(
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1AuJQxqqyBZXqqugTQZzXRVRmEYJtsMYQ8",
         "chain_id": "EiAAKqFi-puoXnuJTdn7qBGGJa8yd-dcS2P0ciODe4wupQ==",
+        "minimum_reserved_koin": BigInt(500000000),
         "testnet": true
       }
     }
@@ -41,6 +42,7 @@ export const env = derived(
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1KTasVrqvMBofMANKMCT3HMya16sfZPLFB",
         "chain_id": "EiBZK_GGVP0H_fXVAM3j6EAuz3-B-l3ejxRSewi7qIBfSA==",
+        "minimum_reserved_koin": BigInt(500000000),
         "testnet": false
       }
     }

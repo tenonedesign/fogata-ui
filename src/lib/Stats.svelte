@@ -102,6 +102,7 @@
           <h2><span class="font-semibold">Snapshot KOIN:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_koin))} VHP">{format(BigInt($pool.state.snapshot_koin))}</span></h2>
           <h2><span class="font-semibold">Snapshot VAPOR:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.snapshot_vapor))} VHP">{format(BigInt($pool.state.snapshot_vapor))}</span></h2>
           <h2><span class="font-semibold">VAPOR withdrawn:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.state.vapor_withdrawn))} VHP">{format(BigInt($pool.state.vapor_withdrawn))}</span></h2>
+          <h2><span class="font-semibold">Reserved KOIN:</span> <span class="tooltip" data-tip="{tFormat(BigInt($pool.reservedKoin))} KOIN">{format(BigInt($pool.reservedKoin))}</span></h2>
           <h2><span class="font-semibold">Pool version:</span> <span>{$pool.state.version}</span></h2>
           <h2><span class="font-semibold">Depositors:</span> <span>{$pool.state.user_count}</span></h2>
           <h2><span class="font-semibold">Last snapshot/reburn:</span> {(new Date(Number($pool.state.current_snapshot))).toLocaleString([],{timeZoneName:'short'})}</h2>

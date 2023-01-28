@@ -8,11 +8,17 @@
 	import { TokenName } from './types';
   import { EllipsisVertical, CaretDownSharp } from 'svelte-ionicons';
 	import CollectKoinPrefsEditor from './CollectKoinPrefsEditor.svelte';
+	import { onMount } from 'svelte';
 
   let activeToken: string = TokenName.VHP;
   let depositValue: string = "";
   let withdrawalValue: string = "";
   let prefsEditor: any = null;
+  let mounted: boolean = false;
+
+  onMount(async () => {
+    mounted = true;
+	});
 
   async function initiateDeposit() {
     let koinAmount = (activeToken == TokenName.KOIN) ? BigInt(utils.parseUnits(depositValue, 8)) : BigInt(0);
@@ -105,5 +111,8 @@
       </div>
 	</Card>
 
+<!-- hide before onMount because modal flashes when loaded with any latency -->
+{#if mounted}
   <CollectKoinPrefsEditor bind:this={prefsEditor}></CollectKoinPrefsEditor>
+{/if}
 <style></style>

@@ -1,10 +1,5 @@
 <script lang="ts">
 
-  // TODO:
-  // - More explanations of what things are and how they work. Some of this can be with tooltips
-  // - 'How to run a node' needs to be implemented 
-  // - Add vapor, vhp, and koinos logos to wallet displays
-
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
 	import vaporLogo from '$lib/images/vapor-icon.svg?raw';
@@ -18,12 +13,14 @@
 	import InputsModal from '$lib/InputsModal.svelte';
 	import SelectModal from '$lib/SelectModal.svelte';
 	import Faqs from '$lib/Faqs.svelte';
+	import ReservedKoinEditor from '$lib/ReservedKoinEditor.svelte';
 
 	let timer: NodeJS.Timer;
   let debounceTimer: NodeJS.Timer;
   let poolEditor: any = null;
   let nodeEditor: any = null;
   let poolAdder: any = null;
+  let poolReservedKoinEditor: any = null;
   let nodePicker: any = null;
   let confirmModal: any = null;
   let showSubmittedPools: boolean = false;
@@ -159,6 +156,12 @@
     confirmModal.showNegativeAction = false;
     confirmModal.message = "Official Koinos node documentation is at https://docs.koinos.io/quickstart/running-a-koinos-node.html";
     confirmModal.show();
+  }
+  function manageReservedKoin(address: string) {
+    poolReservedKoinEditor.pools = ownedPools;
+    poolReservedKoinEditor.address = address;
+    poolReservedKoinEditor.minimumAmount = $env.minimum_reserved_koin;
+    poolReservedKoinEditor.show();
   }
   function editPool(address: string) {
     const p = $ownedPools.find(x => x.address == address);
@@ -325,6 +328,7 @@
               owned={true}
               listingState={pool.listingState($approvedPools, $submittedPools)}
               editAction={editPool}
+              manageReservedKoinAction={manageReservedKoin}
               linkAction={linkPoolWithNode}
               removeAction={removePool}
               submitAction={submitPool}
@@ -402,7 +406,7 @@
       }
     ]}
   />
-
+  <ReservedKoinEditor bind:this={poolReservedKoinEditor} />
   <InputsModal bind:this={confirmModal} title="Are your sure?" message="" positiveActionName="Yes" />
   <SelectModal bind:this={nodePicker}
     title="Link your pool with a node"

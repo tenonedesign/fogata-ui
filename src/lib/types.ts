@@ -13,7 +13,7 @@ export enum PoolListingState {
 
 export class Pool {
   constructor(
-    public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
+    public address: string = "",
     public parameters: PoolParams = new PoolParams(),
     public collectKoinPreferences: CollectKoinPreferences = new CollectKoinPreferences(),
     public state: PoolState = new PoolState(),
@@ -25,6 +25,7 @@ export class Pool {
     public userBalanceVapor = BigInt(0),
     public wallet: Wallet = new Wallet(),
     public nodePublicKey: string = "",
+    public reservedKoin = BigInt(0),
     public loaded: boolean = false
   ) { }
   public refresh = async () => {
@@ -32,6 +33,7 @@ export class Pool {
       this.wallet.loadBalances(this.address, false),
       this.loadParameters(),
       this.loadPublicKey(),
+      this.loadReservedKoin(),
     ]);
     await this.calculateApy();
     this.loaded = true;
@@ -42,6 +44,11 @@ export class Pool {
 	}
   public loadPublicKey = async () => {
     this.nodePublicKey = await pobRead("get_public_key", {"producer": this.address});
+    Promise.resolve();
+  }
+  public loadReservedKoin = async () => {
+    const val = await poolRead(this.address, "get_all_reserved_koin", {});
+    this.reservedKoin = BigInt(val?.value || 0);
     Promise.resolve();
   }
   public loadCollectKoinPreferences = async (address: string) => {

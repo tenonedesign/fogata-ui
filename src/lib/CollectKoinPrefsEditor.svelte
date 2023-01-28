@@ -12,8 +12,8 @@
   let minimumBalanceIsValid = true;
 
   let collectStrategies = [
-    { name: "Collection turned off", value: ""},
-    { name: "Collect everything above a set balance", value: "threshold"},
+    { name: "Koin collection turned off", value: ""},
+    { name: "Collect Koin above a set balance", value: "threshold"},
     { name: "Collect a percentage of available Koin", value: "percent"},
   ];
   let collectStrategy = collectKoinPreferences.percentage_koin > 0 ? "percent" : (collectKoinPreferences.all_after_virtual > 0 ? "threshold" : "");
@@ -62,7 +62,7 @@
   
     <label for="modal-{instanceId}" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
     <h3 class="text-lg font-bold">Pool profit collection preferences</h3>
-    <p class="pt-4">Specify how you receive distributions from the pool, or if all profits are burned to optimize returns.</p>
+    <p class="pt-4">Specify how you receive Koin distributions from the pool, or if all profits are burned to optimize returns. Vapor is always collected in full.</p>
 
     <select bind:value={collectStrategy} class="select select-bordered w-full mt-6">
       {#each collectStrategies as collectStrategy}
@@ -72,7 +72,7 @@
 
     {#if collectStrategy == "percent"}
       <div class="flex flex-wrap gap-4 items-center">
-        <div class="font-semibold">{collectKoinPreferences.percentage_koin / 1000}% of generated Koin</div>
+        <div class="font-semibold">{collectKoinPreferences.percentage_koin / 1000}% of available Koin</div>
         <input bind:value={collectKoinPreferences.percentage_koin} id="collect-percentage-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="1000" />
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
@@ -87,7 +87,7 @@
     {/if}
     {#if collectStrategy == "threshold"}
       <div class="mt-2 form-control w-full">
-        <label class="label"><span class="label-text">Collect everything above this minimum balance (Koin + VHP)</span></label>
+        <label class="label"><span class="label-text">Collect all Koin above this minimum balance (Koin + VHP)</span></label>
         <div class="flex items-center">
           <BalanceInput bind:value={collectKoinPreferences.all_after_virtual} bind:valid={minimumBalanceIsValid}></BalanceInput>
           <!-- <input bind:value={collectKoinPreferences.all_after_virtual} type="text" pattern="[0-9.]+" placeholder="0" class="input input-bordered input-primary min-w-[150px] flex-1 invalid:bg-red-100" /> -->
@@ -97,7 +97,7 @@
 
     {#if collectStrategy == ""}
       <div class="mt-2 w-full">
-        Collection is currently turned off.  All profits will be re-burned as VHP to optimize returns.  Vapor will still be collected if applicable.
+        Koin collection is currently turned off.  All profits will be re-burned as VHP to optimize returns.
       </div>
     {/if}
 
