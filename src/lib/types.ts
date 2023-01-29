@@ -163,7 +163,19 @@ export class KoinosNode {
     public publicKey: string,
   ) { }
 }
-
+export class SponsorsContract {
+  constructor(
+    public address = "",
+    public wallet: Wallet = new Wallet(),
+    public loaded: boolean = false,
+  ) { }
+  public refresh = async () => {
+    await Promise.all([
+      this.wallet.loadBalances(this.address, false),
+    ]);
+    this.loaded = true;
+  }
+}
 export class Endpoint {
   constructor(
     public url: string,

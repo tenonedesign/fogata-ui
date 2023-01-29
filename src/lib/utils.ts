@@ -82,13 +82,16 @@ export const pobWrite = async (methodName: string, args: any, description: strin
 
 export const vaporBalanceOf = async (address: string): Promise<bigint> => {
   return sponsorsRead("balance_of", {owner: address}).then((result) => {
-    return Promise.resolve((result) ? BigInt(result) : BigInt(0));
+    return Promise.resolve((result?.value) ? BigInt(result?.value) : BigInt(0));
   });
 }
 export const sponsorsRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).sponsors_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result?.value);
+    return Promise.resolve(result);
   });
+}
+export const sponsorsWrite = async (methodName: string, args: any, description: string) => {
+  return contractWriteWithToasts(get(env).sponsors_address, sponsorsAbiJson, methodName, args, description);
 }
 
 

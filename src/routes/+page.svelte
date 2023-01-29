@@ -345,6 +345,17 @@
 
     </Card>				
 
+    <Card>
+      <div class="flex flex-col gap-2">
+        <span class="text-lg font-semibold">Learn about the Sponsors program</span>
+      </div>
+      <div class="mt-8">
+        <p>Many Fogata pools contribute a portion of their profits to the Sponsors program. This is a decentralized Koinos contract built to benefit the Koinos community by assisting new applications. By participating in a contributing pool, or by contributing directly, you will receive the Sponsors token, called Vapor.</p>
+      </div>
+      <div class="mt-8">
+        <a class="btn " href="sponsors">View and contribute</a>
+      </div>
+    </Card>
   </section>
 
   
@@ -363,6 +374,10 @@
       {
         q: "How do I withdraw koin from a pool?",
         a: "Pool operations are separated into payment periods.  You are always able to collect your share of Koin (and Vapor, if applicable) from the previous payment period.  If you do not collect your Koin, it is free to be be converted to VHP after the current payment period concludes. Anyone may trigger this reburn."
+      },
+      {
+        q: "What is the Sponsors program?",
+        a: "Many Fogata pools contribute a portion of their profits to the Sponsors program. This is a decentralized Koinos contract built to benefit the Koinos community by assisting new applications. By participating in a contributing pool, or by contributing directly, you will receive the Sponsors token, called Vapor."
       },
 
     ]} />

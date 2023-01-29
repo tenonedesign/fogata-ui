@@ -20,6 +20,6 @@
 
 </script>
 
-<input bind:value={humanValue} bind:this={humanInput} type="text" pattern="[0-9.]+" placeholder="0" class="thisinput input input-bordered input-primary min-w-[150px] flex-1 invalid:bg-red-100" />
+<input bind:value={humanValue} bind:this={humanInput} type="text" size="1" pattern="[0-9.]+" placeholder="0" class="thisinput input input-bordered input-primary min-w-[150px] flex-1 invalid:bg-red-100" />
 
 <style></style>
