@@ -168,12 +168,17 @@ export class SponsorsContract {
     public address = "",
     public wallet: Wallet = new Wallet(),
     public loaded: boolean = false,
+    public totalSupply: bigint = BigInt(0)
   ) { }
   public refresh = async () => {
     await Promise.all([
       this.wallet.loadBalances(this.address, false),
+      this.loadTotalSupply(),
     ]);
     this.loaded = true;
+  }
+  public loadTotalSupply = async () => {
+		this.totalSupply = await tokenTotalSupply(get(env).sponsors_address);
   }
 }
 export class Endpoint {

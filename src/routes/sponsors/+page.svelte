@@ -4,7 +4,7 @@ import Card from '$lib/Card.svelte';
 	import Header from '$lib/Header.svelte';
 	import { env, user, wallet } from '$lib/stores';
 	import { SponsorsContract } from '$lib/types';
-	import { balanceDisplayFormat, balanceTooltipFormat, sponsorsWrite } from '$lib/utils';
+	import { balanceDisplayFormat, balanceTooltipFormat, sponsorsWrite, tokenTotalSupply } from '$lib/utils';
 	import WalletView from '$lib/WalletView.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	
@@ -58,12 +58,16 @@ import Card from '$lib/Card.svelte';
 
 		<Card>
 			<h1 class=" text-5xl sm:text-6xl lg:text-[70px] mt-8 text-center font-semibold">
-				<span class="tooltip tooltip-secondary" data-tip="{balanceTooltipFormat(sponsors.wallet.balances.koin)} VHP + {balanceDisplayFormat(sponsors.wallet.balances.koin)} KOIN">
+				<span class="tooltip tooltip-secondary" data-tip="{balanceTooltipFormat(sponsors.wallet.balances.koin)} KOIN">
 					{(sponsors.loaded)? balanceDisplayFormat(sponsors.wallet.balances.koin) : " "}
 				</span>
 			</h1>
 			<div class="text-sm text-center max-w-2xl mt-4 mx-auto">
-        <span class="opacity-75">Sponsors contract Koin balance</span>
+        <span class="opacity-75">
+					Sponsors Koin balance
+					<br />
+					Total Vapor supply: <span class="tooltip" data-tip="{balanceTooltipFormat(sponsors.totalSupply)} VAPOR">{(sponsors.loaded)? balanceDisplayFormat(sponsors.totalSupply) : " "}</span>
+				</span>
 			</div>
 
 			<div class="flex justify-around gap-4 mt-10 flex-1">
