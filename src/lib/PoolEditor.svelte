@@ -28,7 +28,10 @@
   }
 
   function combineBeneficiaries(contribution: Beneficiary, other: Beneficiary[]): Beneficiary[] {
-    return [...other, ...[contribution]];
+    if (contribution.percentage > 0) {
+      return [...other, ...[contribution]];
+    }
+    return other;
   }
   $: if (attributes.includes("beneficiaries")) { poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries); }
   // $: console.log(poolParams);

@@ -353,7 +353,7 @@
         <p>Many Fogata pools contribute a portion of their profits to the Sponsors program. This is a decentralized Koinos contract built to benefit the Koinos community by assisting new applications. By participating in a contributing pool, or by contributing directly, you will receive the Sponsors token, called Vapor.</p>
       </div>
       <div class="mt-8">
-        <a class="btn " href="sponsors">View and contribute</a>
+        <a class="btn btn-secondary text-secondary-content h-8 min-h-8" href="sponsors">View and contribute</a>
       </div>
     </Card>
   </section>

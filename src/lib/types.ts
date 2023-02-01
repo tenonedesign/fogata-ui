@@ -65,7 +65,7 @@ export class Pool {
   public beneficiariesPercentage(): number {
     let combinedBeneficiaryPercentage = 0;
     this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
-      combinedBeneficiaryPercentage += beneficiary.percentage;
+      combinedBeneficiaryPercentage += beneficiary.percentage || 0;
     });
     return combinedBeneficiaryPercentage;
   }
