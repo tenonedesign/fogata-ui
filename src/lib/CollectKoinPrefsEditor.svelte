@@ -1,10 +1,9 @@
 <svelte:options accessors={true}/>
 <script lang="ts">
 	import { CollectKoinPreferences, Pool } from '$lib/types';
-	import { clone, errorToast, infoToast, koilibAbi, poolOperation, poolWrite, populateOwnedPools, removeToastWithId, successToast, uploadPoolContract, warningToast } from '$lib/utils';
-	import { pool, user } from '$lib/stores';
+	import { poolWrite } from '$lib/utils';
 	import BalanceInput from './BalanceInput.svelte';
-	import { Exit, InformationOutline, WarningOutline } from 'svelte-ionicons';
+	import { InformationOutline } from 'svelte-ionicons';
 
   export let poolAddress = "";
   export let userAddress = "";

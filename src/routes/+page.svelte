@@ -388,7 +388,7 @@
 <!-- hide before onMount because modal flashes when loaded with any latency -->
 <!-- there’s a larger issue with some styles not being applied before first paint, but these modals are the most noticeable offender -->
 {#if timer}
-  <PoolCreator bind:this={poolEditor} contractWasmBase64={($env.testnet) ? data.contractWasmBase64Harbinger : data.contractWasmBase64}></PoolCreator>
+  <PoolCreator bind:this={poolEditor} ContractWasmBase64Power={data.contractWasmBase64HarbingerPower} contractWasmBase64={($env.testnet) ? data.contractWasmBase64Harbinger : data.contractWasmBase64}></PoolCreator>
 
   <InputsModal bind:this={nodeEditor}
     title="Add a node"

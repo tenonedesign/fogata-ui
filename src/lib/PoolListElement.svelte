@@ -31,9 +31,9 @@
 </script>
 
 <div class="flex flex-col p-4">
-  <div class="flex gap-2 sm:gap-3 items-center">
-    <div class="relative w-12">
-      <a href="/pools/{pool.address}" class="flex-1 font-semibold">
+  <div class="flex gap-2 sm:gap-3 items-start">
+    <div class="relative w-12 pt-2">
+      <a href="/pools/{pool.address}" class="flex-1 font-semibold flex justify-center items-center">
         <img  class="flex-none h-9 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
       </a>
       {#if pool.parameters.name && !pool.nodePublicKey}
@@ -47,7 +47,7 @@
         </div>
       {/if}
     </div>
-    <div class="flex flex-wrap items-center flex-1 gap-y-4">
+    <div class="flex flex-wrap items-start flex-1 gap-y-4">
       <div class="flex flex-col flex-1 mr-1">
         <a href="/pools/{pool.address}" class="font-semibold">{pool.parameters.name}</a>
         <div class="text-sm relative transition-all duration-200">
@@ -62,7 +62,7 @@
           {/if}
         </div>
       </div>
-      <div class="flex-none flex items-center flex-col gap-2 pl-3">
+      <div class="flex-none flex items-center flex-col gap-2 mt-[9px] pl-3">
         <span class="w-full badge badge-outline bg-base-100 border-none shadow text-xs tooltip tooltip-top sm:tooltip-left flex items-center" data-tip="Depositors should expect an APY of {(pool.apy * 100).toFixed(2)}% with KOIN reburned every {intervalDisplayFormat(pool.parameters.payment_period)}">
           <span class="text-xs text-[8px] font-semibold pr-1">APY:</span> <span>{(pool.apy * 100).toFixed(2)}%</span>
         </span>
@@ -78,7 +78,7 @@
     </div>
 
 
-    <div class="dropdown dropdown-end flex-none">
+    <div class="dropdown dropdown-end flex-none pt-2">
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
       <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -112,18 +112,18 @@
       </div> -->
   </div>
   {#if owned && listingState == PoolListingState.Eligible}
-    <div class="flex justify-center items-center mt-2 gap-3">
+    <div class="flex justify-center items-center mt-6 gap-3">
       This Pool may be eligible for listing on Fogata.
       <button class="btn btn-sm btn-accent" on:click={() => submitAction(pool.address)}>Submit now</button>
     </div>
   {/if}
   {#if owned && listingState == PoolListingState.Submitted}
-    <div class="flex justify-center items-center mt-2 gap-3">
+    <div class="flex justify-center items-center mt-6 gap-3">
       This pool has been submitted and is awaiting approval.
     </div>
   {/if}
   {#if owned && listingState == PoolListingState.Ineligible}
-    <div class="flex justify-center items-center mt-2 gap-3">
+    <div class="flex justify-center items-center mt-6 gap-3">
       This pool is not eligible for listing on Fogata. Make sure it is linked to a block producer.
     </div>
   {/if}

@@ -195,18 +195,23 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
   // console.log(args);
   // console.log(contract.functions);
 
-  let result;
-  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id });
-  if (result.transaction) {
-    result = await provider.sendTransaction(result.transaction!);
-    return Promise.resolve(result.transaction);
+  try {
+    let result;
+    result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id }).catch();
+    if (result.transaction) {
+      result = await provider.sendTransaction(result.transaction!);
+      return Promise.resolve(result.transaction);
+    }
+    else {
+      return Promise.resolve(result.result);
+    }
   }
-  else {
-    return Promise.resolve(result.result);
+  catch (e) {
+    Promise.reject(e);
   }
 }
 
-export const uploadPoolContract = async (contractWasmBase64: string, poolParams: PoolParams): Promise<TransactionJsonWait> => {
+export const uploadPoolContract = async (contractWasmBase64: string, abi: any, poolParams: PoolParams): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   const provider = new Provider([addHttps(rpc)]);
@@ -228,7 +233,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
 
   const contract = new Contract({
     id: contractSigner.address,
-    abi: poolAbiJson,
+    abi: abi,
     provider: provider,
     bytecode: utils.decodeBase64(contractWasmBase64),
     signer: contractSigner,
@@ -253,7 +258,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   nextNonce = await provider.getNextNonce(signer.getAddress());
 
   const { receipt, transaction } = await contract.deploy({
-    abi: JSON.stringify(poolAbiJson),
+    abi: JSON.stringify(abi),
     authorizesCallContract: true,
     authorizesTransactionApplication: true,
     authorizesUploadContract: true,

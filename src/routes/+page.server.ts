@@ -6,5 +6,6 @@ export async function load({ params }) {
   return {
     contractWasmBase64: fs.readFileSync("src/lib/fogata.wasm").toString("base64"),
     contractWasmBase64Harbinger: fs.readFileSync("src/lib/fogata-harbinger.wasm").toString("base64"),
+    contractWasmBase64HarbingerPower: fs.readFileSync("src/lib/fogata-power-harbinger.wasm").toString("base64"),
   };
 }

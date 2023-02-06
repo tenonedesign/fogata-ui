@@ -83,6 +83,17 @@
 	{#if $pool?.parameters.image}
 		<img class="h-20 mx-auto mt-6 sm:mt-12" src={$pool?.parameters.image} alt="{$pool.parameters.name}" />
 		<div class=" text-2xl text-center mt-2">{$pool?.parameters.name}</div>
+
+		<div class="dropdown flex justify-center mt-2">
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<label tabindex="0" class="btn btn-outline h-6 px-3 min-h-0 rounded-full">
+				About<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24"><path d="M5 11l7 7 7 -7"></path></svg>
+			</label>
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<div tabindex="0" class="dropdown-content menu mt-8 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
+				<p class="mt-4 whitespace-pre-wrap">{$pool?.parameters.description}</p>
+			</div>
+		</div>
 	{/if}
 	<section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pb-40 pt-10">
 		<Stake />

@@ -4,6 +4,7 @@
 	import { Beneficiary, PoolParams } from './types';
   import { CloseOutline } from 'svelte-ionicons';
 	import DurationPicker from './DurationPicker.svelte';
+	import { onMount } from 'svelte';
   export let poolParams: PoolParams = new PoolParams();
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
@@ -33,6 +34,12 @@
     }
     return other;
   }
+
+  // report back to parent after init since stuff could have changed
+  onMount(async () => {
+    poolParams = poolParams;
+	});
+
   $: if (attributes.includes("beneficiaries")) { poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries); }
   // $: console.log(poolParams);
 </script>

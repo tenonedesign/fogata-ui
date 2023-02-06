@@ -260,6 +260,7 @@ export class PoolState {
     public next_snapshot: string = "0",
     public snapshot_vapor: string = "0",
     public vapor_withdrawn: string = "0",
+    public koin_withdrawn: string = "0",
     public user_count: string ="0",
     public vapor: string = "0",
     public virtual_vapor: string = "0",
