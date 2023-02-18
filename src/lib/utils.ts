@@ -211,6 +211,54 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
   }
 }
 
+export const uploadUserContract = async (contractWasmBase64: string, abi: any): Promise<TransactionJsonWait> => {
+  const storedUser = get(user);
+  const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  const provider = new Provider([addHttps(rpc)]);
+  if (!storedUser.address) {
+    return Promise.reject(new Error("No wallet connected."));
+  }
+  const signer = kondor.getSigner(storedUser.address, {
+    providerPrepareTransaction: provider,
+  }) as Signer;
+  signer.provider = provider;
+
+  // NOTE:  Setting a testnet provider will not work here maybe because it’s kondor’s signer
+  // transaction will still use mainnet.
+  // uploadPoolContract works.  maybe because it creates its own signer with the private key
+  
+  const contract = new Contract({
+    id: signer.getAddress(),
+    abi: abi,
+    provider: provider,
+    bytecode: utils.decodeBase64(contractWasmBase64),
+    signer: signer
+  });
+
+
+  let rcLimitString = "0";
+  let nextNonce = "";
+  const availableRc = await provider.getAccountRc(signer.getAddress());
+  rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
+  nextNonce = await provider.getNextNonce(signer.getAddress());
+
+  const { receipt, transaction } = await contract.deploy({
+    abi: JSON.stringify(abi),
+    authorizesTransactionApplication: true,
+    nextOperations: [],
+    rcLimit: rcLimitString,
+    nonce: nextNonce,
+    chainId: get(env).chain_id,
+  });
+
+  if (transaction) {
+    // console.log(transaction);
+    return Promise.resolve(transaction);
+  }
+  return Promise.reject(new Error("Deploy transaction did not succeed"));
+  
+}
+
 export const uploadPoolContract = async (contractWasmBase64: string, abi: any, poolParams: PoolParams): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;

@@ -101,7 +101,7 @@
                   <input bind:value={beneficiary.address} id="poolContribution-{instanceId}{index}" type="text" placeholder="1xyz..." class="input input-bordered max-w-xs" />
                   <div class=" flex-grow">
                     <div class="font-semibold">{beneficiary.percentage / 1000}% of pool profit</div>
-                    <input bind:value={beneficiary.percentage} id="poolBeneficiaries-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="1000" />
+                    <input bind:value={beneficiary.percentage} id="poolBeneficiaries-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="500" />
                     <div class="w-full flex justify-between text-xs px-2">
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
@@ -131,7 +131,7 @@
             {/if}
           </div>
         </label>
-        <input bind:value={contributionBeneficiary.percentage} id="communityBeneficiary-{instanceId}" type="range" min="0" max="100000" class="range mt-2" step="1000" />
+        <input bind:value={contributionBeneficiary.percentage} id="communityBeneficiary-{instanceId}" type="range" min="0" max="100000" class="range mt-2" step="500" />
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>

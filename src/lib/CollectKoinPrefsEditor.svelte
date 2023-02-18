@@ -72,7 +72,7 @@
     {#if collectStrategy == "percent"}
       <div class="flex flex-wrap gap-4 items-center">
         <div class="font-semibold">{collectKoinPreferences.percentage_koin / 1000}% of available Koin</div>
-        <input bind:value={collectKoinPreferences.percentage_koin} id="collect-percentage-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="1000" />
+        <input bind:value={collectKoinPreferences.percentage_koin} id="collect-percentage-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="500" />
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>

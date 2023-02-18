@@ -24,7 +24,7 @@
 		readPoolsOwner();
 		knownPool = Boolean($approvedPools.find(x => x.address == $page.params.id) || $ownedPools.find(x => x.address == $page.params.id));
 		knownPoolChecked = true;
-		// if (!knownPool) { return; }	// this is ok now
+		// if (!knownPool) { return; }	// unapproved pools are ok now
 		load();
 		timer = setInterval(() => {
 			load();
@@ -43,6 +43,12 @@
 			showConnectionToast();
 		});
 
+
+		poolRead($pool.address, "get_pool_state", {}).then((value) => {
+			// if this looks weird, it’s because properties with a value of "0" are ommited from response
+			$pool.state = {...new PoolState(), ...value};
+		});
+
 		if ($user.address) {
 			$wallet.loadBalances($user.address).then(() => {
 				wallet.set($wallet);
@@ -55,10 +61,6 @@
 				$pool.userBalanceVapor = BigInt(value?.vapor_amount ?? "0");
 				$pool.userBalance = $pool.userBalanceKoin + $pool.userBalanceVhp;
 			});
-			poolRead($pool.address, "get_pool_state", {}).then((value) => {
-				// if this looks weird, it’s because properties with a value of "0" are ommited from response
-				$pool.state = {...new PoolState(), ...value};
-			})
 			$pool.loadCollectKoinPreferences($user.address);
 		}
 	}

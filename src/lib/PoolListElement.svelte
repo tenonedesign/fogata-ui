@@ -85,7 +85,7 @@
       <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
         <li><a href="/pools/{pool.address}">Open pool</a></li>
         <li><a on:click={() => statsAction(pool.address)}>Show pool stats</a></li>
-        
+        <li><a target="_blank" rel="noopener" href="https://koiner.app/addresses/{pool.address}/rewards">Recent blocks</a></li>
         {#if owned}
           <li><a on:click={() => editAction(pool.address)}>Edit pool</a></li>
           {#if !pool.nodePublicKey}
