@@ -50,13 +50,13 @@
     <label for="modal-{instanceId}" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
 
     <h3 class="text-lg font-bold">Manage reserved Koin</h3>
-    <p class="pt-4">Fogata pools require a small reserved Koin balance to operate.  The recommended amount is {balanceDisplayFormat(minimumAmount)}.
-    <h2><span class="font-semibold">Current reserved Koin:</span><span class="ml-2 font-semibold">{balanceDisplayFormat(BigInt(pool.reservedKoin))}</span></h2>
+    <p class="pt-4">Fogata pools require a small reserved Koin balance to operate.  It should be at least {balanceDisplayFormat(minimumAmount)}. The current total is {balanceDisplayFormat(BigInt(pool.reservedKoin))}.
+    <h2><span class="font-semibold">Your reserved Koin:</span><span class="ml-2 font-semibold">{balanceDisplayFormat(BigInt(pool.userReservedKoin))}</span></h2>
 
     {#if pool.reservedKoin < minimumAmount}
       <div class="text-xs bg-warning text-warning-content p-3 flex gap-3 rounded-xl items-center">
         <WarningOutline class="flex-shrink-0" size="24" />
-        <div>Your reserved Koin balance is below the recommended amount.  Block production may fail.</div>
+        <div>Total reserved Koin balance is below the recommended amount.  Block production may fail.</div>
       </div>
     {/if}
 

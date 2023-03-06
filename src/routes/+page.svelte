@@ -6,7 +6,7 @@
 	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
-	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat } from '$lib/utils';
+	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat, poolRead } from '$lib/utils';
 	import PoolListElement from '$lib/PoolListElement.svelte';
 	import type { KoinosNode } from '$lib/types';
 	import NodeElement from '$lib/NodeElement.svelte';
@@ -79,6 +79,11 @@
     $ownedPools.forEach(pool => {
 			pool.refresh().then(() => {
 				$ownedPools = $ownedPools;
+        if ($user.address) {
+          poolRead(pool.address, "get_reserved_koin", {account: $user.address}).then((value) => {
+            pool.userReservedKoin = BigInt(value?.value || 0);
+          });
+        }
 			});
     });
 	}

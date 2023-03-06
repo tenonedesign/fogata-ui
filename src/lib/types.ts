@@ -23,6 +23,7 @@ export class Pool {
     public userBalanceKoin = BigInt(0),
     public userBalanceVhp = BigInt(0),
     public userBalanceVapor = BigInt(0),
+    public userReservedKoin = BigInt(0),
     public wallet: Wallet = new Wallet(),
     public nodePublicKey: string = "",
     public reservedKoin = BigInt(0),
