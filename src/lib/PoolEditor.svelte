@@ -79,10 +79,10 @@
         <span class="label-text">Minimum reburn period</span>
       </label>
       <DurationPicker bind:duration={poolParams.payment_period} />
-      {#if poolParams.payment_period >= 2630000000}
+      {#if poolParams.payment_period >= 2592000000}
       <div class="text-xs bg-warning text-warning-content p-3 flex gap-3 rounded-xl items-center mt-1">
         <WarningOutline class="flex-shrink-0" size="24" />
-        <div>Pool proceeds will be locked until after the reburn, so don’t make long reburn periods</div>
+        <div>Maximum reburn period is one Month</div>
       </div>
     {/if}
     {/if}
