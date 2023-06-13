@@ -36,7 +36,7 @@ export const env = derived(
     else {
       return {
         "koin_address": "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
-        "vhp_address": "1AdzuXSpC6K9qtXdCBgD5NUpDNwHjMgrc9",
+        "vhp_address": "18tWNU7E4yuQzz7hMVpceb9ixmaWLVyQsr",
         "pob_address": "159myq5YUhhoVWu3wsHKHiJYKPKGUrGiyv",
         "pools_address": "1MmV5nzSBVGnBrjTr3B8XtA4yPs8wcSpr",
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
