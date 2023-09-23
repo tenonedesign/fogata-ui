@@ -25,7 +25,7 @@ export const populateOwnedPools = () => {
 }
 export const readPoolsOwner = () => {
   poolsRead("get_owner", {}).then(result => {
-    poolsOwner.set(result.account);
+    poolsOwner.set(result?.account);
   });
 }
 export function userIsPoolsOwner() {
@@ -152,6 +152,7 @@ export const tokenTotalSupply = async (contractAddress: string): Promise<bigint>
 export const getAccountRc = (account: string): Promise<string> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   return provider.getAccountRc(account);
 }
@@ -170,6 +171,7 @@ export const koilibAbi = (abiJson: {methods: any, types: any}): Abi => {
 export const contractOperation = async (contractAddress: string, abi: any, methodName: string, args: any): Promise<any> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   const signerAddress = storedUser.address;
   const signer = signerAddress ? kondor.getSigner(signerAddress, {
@@ -214,6 +216,7 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
 export const uploadUserContract = async (contractWasmBase64: string, abi: any): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   if (!storedUser.address) {
     return Promise.reject(new Error("No wallet connected."));
@@ -262,6 +265,7 @@ export const uploadUserContract = async (contractWasmBase64: string, abi: any): 
 export const uploadPoolContract = async (contractWasmBase64: string, abi: any, poolParams: PoolParams): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   if (!storedUser.address) {
     return Promise.reject(new Error("No wallet connected."));

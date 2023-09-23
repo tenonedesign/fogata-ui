@@ -34,14 +34,14 @@
   <div class="flex gap-2 sm:gap-3 items-start">
     <div class="relative w-12 pt-2">
       <a href="/pools/{pool.address}" class="flex-1 font-semibold flex justify-center items-center">
-        <img  class="flex-none h-9 w-auto sm:h-12" src={pool.parameters.image} alt="{pool.parameters.name}" />
+        <img  class="flex-none h-9 w-auto sm:h-12" src={pool.parameters?.image} alt="{pool.parameters?.name}" />
       </a>
-      {#if pool.parameters.name && !pool.nodePublicKey}
+      {#if pool.parameters?.name && !pool.nodePublicKey}
         <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning before:w-48 before:content-[attr(data-tip)]" data-tip="This pool is not linked to a block producer, and its yield is zero">
           <WarningSharp class="text-warning" size=24 />
         </div>
       {/if}
-      {#if pool.parameters.name && pool.reservedKoin < $env.minimum_reserved_koin}
+      {#if pool.parameters?.name && pool.reservedKoin < $env.minimum_reserved_koin}
         <div class="absolute -top-[8px] -right-[6px] tooltip tooltip-right tooltip-warning before:w-48 before:content-[attr(data-tip)]" data-tip="This pool has a reserved Koin balance below {balanceDisplayFormat($env.minimum_reserved_koin)}.  Please add reserved Koin.">
           <WarningSharp class="text-warning" size=24 />
         </div>
@@ -49,15 +49,15 @@
     </div>
     <div class="flex flex-wrap items-start flex-1 gap-y-4">
       <div class="flex flex-col flex-1 mr-1">
-        <a href="/pools/{pool.address}" class="font-semibold">{pool.parameters.name}</a>
+        <a href="/pools/{pool.address}" class="font-semibold">{pool.parameters?.name}</a>
         <div class="text-sm relative transition-all duration-200">
           {#if !showMore}
             <a href="/pools/{pool.address}">{truncate(pool.parameters.description, descriptionMaxLength, true)}           </a>
-            {#if pool.parameters.description.length > descriptionMaxLength}
+            {#if pool.parameters?.description.length > descriptionMaxLength}
               <button class="btn btn-ghost btn-xs absolute -bottom-[2px] right-1" on:click={() => showMore = !showMore}>more</button>
             {/if}
           {:else}
-          <a href="/pools/{pool.address}" class="whitespace-pre-wrap">{truncate(pool.parameters.description, 2000, true)}        </a>
+          <a href="/pools/{pool.address}" class="whitespace-pre-wrap">{truncate(pool.parameters?.description, 2000, true)}        </a>
             <button class="btn btn-ghost btn-xs absolute -bottom-[2px] right-1" on:click={() => showMore = !showMore}>less</button>
           {/if}
         </div>
