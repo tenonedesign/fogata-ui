@@ -72,7 +72,7 @@ export const poolsWrite = async (methodName: string, args: any, description: str
 
 export const pobRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result.value);
+    return Promise.resolve(result?.value);
   }, (error) => {});
 }
 export const pobWrite = async (methodName: string, args: any, description: string) => {
@@ -136,12 +136,12 @@ export const contractWriteWithToasts = async (address: string, abiJson: any, met
 
 export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || BigInt(0));
+    return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
 export const tokenTotalSupply = async (contractAddress: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || BigInt(0));
+    return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
 

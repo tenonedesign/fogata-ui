@@ -67,8 +67,8 @@
 </script>
 
 <svelte:head>
-	<title>Fogata - {$pool?.parameters.name}</title>
-	<meta name="description" content="Fogata mining pool on Koinos - $pool?.parameters.name" />
+	<title>Fogata - {$pool?.parameters?.name}</title>
+	<meta name="description" content="Fogata mining pool on Koinos - $pool?.parameters?.name" />
 </svelte:head>
 
 
@@ -82,9 +82,9 @@
 			</div>
 		</div>
 	{/if}
-	{#if $pool?.parameters.image}
-		<img class="h-20 mx-auto mt-6 sm:mt-12" src={$pool?.parameters.image} alt="{$pool.parameters.name}" />
-		<div class=" text-2xl text-center mt-2">{$pool?.parameters.name}</div>
+	{#if $pool?.parameters?.image}
+		<img class="h-20 mx-auto mt-6 sm:mt-12" src={$pool?.parameters?.image} alt="{$pool.parameters?.name}" />
+		<div class=" text-2xl text-center mt-2">{$pool?.parameters?.name}</div>
 
 		<div class="dropdown flex justify-center mt-2">
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -93,7 +93,7 @@
 			</label>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<div tabindex="0" class="dropdown-content menu mt-8 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
-				<p class="mt-4 whitespace-pre-wrap">{$pool?.parameters.description}</p>
+				<p class="mt-4 whitespace-pre-wrap">{$pool?.parameters?.description}</p>
 			</div>
 		</div>
 	{/if}
