@@ -159,7 +159,7 @@
     confirmModal.title = "How to run your own node";
     confirmModal.positiveActionName = "Done";
     confirmModal.showNegativeAction = false;
-    confirmModal.message = "Official Koinos node documentation is at https://docs.koinos.io/quickstart/running-a-koinos-node.html";
+    confirmModal.message = "Official Koinos node documentation is at https://docs.koinos.io/";
     confirmModal.show();
   }
   function manageReservedKoin(address: string) {

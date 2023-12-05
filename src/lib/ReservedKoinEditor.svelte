@@ -1,8 +1,8 @@
 <svelte:options accessors={true}/>
 <script lang="ts">
 	import { Pool } from '$lib/types';
-	import { balanceDisplayFormat, poolWrite } from '$lib/utils';
-	import { user } from '$lib/stores';
+	import { balanceDisplayFormat, balanceTooltipFormat, poolWrite, warningToast } from '$lib/utils';
+	import { user, wallet } from '$lib/stores';
 	import BalanceInput from './BalanceInput.svelte';
 	import { WarningOutline } from 'svelte-ionicons';
 	import type { Writable } from 'svelte/store';
@@ -24,14 +24,22 @@
 
   const addReservedKoin = async (): Promise<any> => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
+    if (addAmount > $wallet.balances.koin) {
+      warningToast("Insufficient Koin balance", "Enter a number less than or equal to "+balanceTooltipFormat($wallet.balances.koin)+".");
+      return;
+    }
     const params = {
       account: $user.address,
       koin_amount: addAmount.toString(),
     }
     poolWrite(pool.address, "add_reserved_koin", params, "reserved Koin deposit");
   }
-  const removedReservedKoin = async (): Promise<any> => {
+  const removeReservedKoin = async (): Promise<any> => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
+    if (addAmount > $wallet.balances.koin) {
+      warningToast("Insufficient Koin balance", "Enter a number less than or equal to "+balanceDisplayFormat(BigInt(pool.userReservedKoin))+".");
+      return;
+    }
     const params = {
       account: $user.address,
       koin_amount: removeAmount.toString(),
@@ -79,7 +87,7 @@
         <label class="label"><span class="label-text">Enter amount of Koin to remove</span></label>
         <div class="flex items-center">
           <BalanceInput bind:value={removeAmount}></BalanceInput>
-          <button on:click={removedReservedKoin} disabled={removeAmount <= BigInt(0)} class="btn btn-primary ml-2">Remove</button>
+          <button on:click={removeReservedKoin} disabled={removeAmount <= BigInt(0)} class="btn btn-primary ml-2">Remove</button>
         </div>
       </div>
     {/if}

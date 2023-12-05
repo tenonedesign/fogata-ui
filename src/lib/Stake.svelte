@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { user, wallet, pool } from './stores';
-  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, intervalDisplayFormat, poolOperation, poolWrite } from './utils';
+  import { balanceDisplayFormat as format, balanceTooltipFormat as tFormat, intervalDisplayFormat, poolOperation, poolWrite, warningToast, balanceTooltipFormat } from './utils';
 	import Card from '$lib/Card.svelte';
 	import WalletView from './WalletView.svelte';
 	import { utils } from 'koilib';
@@ -23,6 +23,14 @@
   async function initiateDeposit() {
     let koinAmount = (activeToken == TokenName.KOIN) ? BigInt(utils.parseUnits(depositValue, 8)) : BigInt(0);
     let vhpAmount = (activeToken == TokenName.VHP) ? BigInt(utils.parseUnits(depositValue, 8)) : BigInt(0);
+    if (koinAmount > $wallet.balances.koin) {
+      warningToast("Insufficient Koin balance", "Enter a number less than or equal to "+balanceTooltipFormat($wallet.balances.koin)+".");
+      return;
+    }
+    if (vhpAmount > $wallet.balances.vhp) {
+      warningToast("Insufficient VHP balance", "Enter a number less than or equal to "+balanceTooltipFormat($wallet.balances.vhp)+".");
+      return;
+    }
     poolOperation($pool, "stake", koinAmount, vhpAmount);
     depositValue = "";
   }
@@ -30,6 +38,14 @@
   async function initiateWithdrawal() {
     let koinAmount = (activeToken == TokenName.KOIN) ? BigInt(utils.parseUnits(withdrawalValue, 8)) : BigInt(0);
     let vhpAmount = (activeToken == TokenName.VHP) ? BigInt(utils.parseUnits(withdrawalValue, 8)) : BigInt(0);
+    if (koinAmount > $pool.userBalanceKoin) {
+      warningToast("Insufficient Koin balance in pool", "Enter a number less than or equal to "+tFormat($pool.userBalanceKoin)+".");
+      return;
+    }
+    if (vhpAmount > $pool.userBalanceVhp) {
+      warningToast("Insufficient VHP balance in pool", "Enter a number less than or equal to "+tFormat($pool.userBalanceVhp)+".");
+      return;
+    }
     poolOperation($pool, "unstake", koinAmount, vhpAmount);
     withdrawalValue = "";
   }
