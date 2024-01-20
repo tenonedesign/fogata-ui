@@ -19,7 +19,7 @@
 
 <div class="toast toast-start gap-0">
   {#each $toasts as toast, i (toast)}
-      <div transition:slide={{duration:500}} class="flex rounded-2xl mt-2 items-center text-sm gap-1 p-2 md:gap-4 md:p-4 md:text-base {toast.classes()}">
+      <div transition:slide={{duration:500}} class="flex rounded-2xl mt-2 items-center text-sm gap-1 p-2 md:gap-4 md:p-4 md:text-base shadow-lg {toast.classes()}">
         {#if toast.type == "success"} <SuccessIcon size="24" /> {/if}
         {#if toast.type == "info"} <InfoIcon size="24" /> {/if}
         {#if toast.type == "warning"} <WarnIcon size="24" /> {/if}

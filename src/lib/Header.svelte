@@ -1,5 +1,5 @@
 <script lang="ts">
-	import logotype from '$lib/images/fogata-logotype.svg?raw';
+  import logo from '$lib/images/fogata-logo.svg?raw';
 	import Provider from '$lib/Provider.svelte';
   import { SettingsSharp } from 'svelte-ionicons';
   import { rpcs, user } from '$lib/stores'
@@ -16,11 +16,11 @@
 
    <div class="pt-4">
 
-    <div class="navbar max-w-[1300px] px-4 py-3 sm:px-6 sm:py-4 lg:py-4 mx-auto rounded-[20px] bg-base-100 shadow-red-100 dark:shadow-red-500/30 shadow-md">
+    <div class="navbar max-w-[1300px] px-4 py-3 sm:px-6 sm:py-4 lg:py-4 mx-auto rounded-[20px] bg-base-100 shadow-purple-100 dark:shadow-purple-500/30 shadow-md">
 		  <div class="flex flex-wrap w-full gap-4 justify-between items-center">
 
         <a class="flex flex-grow items-center gap-1 sm:gap-2" href="/">
-          <span class="inline-block w-full max-w-[96px] sm:max-w-[128px] mt-2">{@html logotype}</span>
+          <span class="inline-block w-full max-w-[96px] sm:max-w-[148px] -mt-1">{@html logo}</span>
           <span class="ml-1 hidden sm:block text-2xl font-semibold">mining pools</span>
         </a>
 

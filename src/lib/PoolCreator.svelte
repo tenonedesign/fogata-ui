@@ -2,9 +2,12 @@
 <script lang="ts">
 	import PoolEditor from '$lib/PoolEditor.svelte';
 	import { Pool, PoolParams } from '$lib/types';
+  import poolAbiJson from "$lib/fogata-abi.json";
+  import poolAbiJsonPower from "$lib/fogata-abi-power.json";
 	import { contractOperation, errorToast, infoToast, koilibAbi, poolOperation, poolWrite, populateOwnedPools, removeToastWithId, successToast, uploadPoolContract, warningToast } from '$lib/utils';
-	import { pool, user } from '$lib/stores';
+	import { env, pool, user } from '$lib/stores';
   export let contractWasmBase64: string;
+  export let ContractWasmBase64Power: string;
   export let poolParams = new PoolParams();
   export let mode: string = "create"; // or edit
   export let address = "";
@@ -24,11 +27,16 @@
   let poolAddress = "";
   let nodePublicKey = "";
   let step = 0;
+  let withPowers = true;
 
   const deployPool = async (): Promise<any> => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
     let timeout = 30000;
-    uploadPoolContract(contractWasmBase64, poolParams).then((transaction) => {
+    const usePowers = ($env.testnet && withPowers);
+    const contract = usePowers ? ContractWasmBase64Power : contractWasmBase64;
+    const abi = usePowers ? poolAbiJsonPower : poolAbiJson;
+
+    uploadPoolContract(contract, abi, poolParams).then((transaction) => {
       let toastId = infoToast("Creating pool", "Your pool is being created.  This may take some time.", 0).id;
       transaction.wait("byBlock", timeout).then((blockInfo) => {
         removeToastWithId(toastId);
@@ -112,6 +120,14 @@
         {:else}
           <div class="font-semibold mt-8">Your pool is ready to save</div>
           <div class="mt-4">Saving will update your mining pool parameters.  This operation will consume mana.</div>
+        {/if}
+        {#if $env.testnet}
+          <div class="form-control mt-4">
+            <label class="label cursor-pointer justify-start gap-2">
+              <input type="checkbox" bind:checked={withPowers} class="checkbox checkbox-xs" />
+              <span class="label-text">Add admin powers</span> 
+            </label>
+          </div>
         {/if}
         <div class="flex justify-between mt-4">
           <button on:click={() => {step--}} class="btn btn-outline mt-4 min-w-[112px]">Previous</button>

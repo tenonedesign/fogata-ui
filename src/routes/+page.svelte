@@ -1,28 +1,26 @@
 <script lang="ts">
 
-  // TODO:
-  // - More explanations of what things are and how they work. Some of this can be with tooltips
-  // - 'How to run a node' needs to be implemented 
-  // - Add vapor, vhp, and koinos logos to wallet displays
-
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
 	import vaporLogo from '$lib/images/vapor-icon.svg?raw';
-	import { approvedPools, connectedAddress, ownedPools, submittedPools, user } from '$lib/stores.js';
+	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
-	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, userIsAdmin } from '$lib/utils';
+	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat, poolRead } from '$lib/utils';
 	import PoolListElement from '$lib/PoolListElement.svelte';
 	import type { KoinosNode } from '$lib/types';
 	import NodeElement from '$lib/NodeElement.svelte';
 	import InputsModal from '$lib/InputsModal.svelte';
 	import SelectModal from '$lib/SelectModal.svelte';
+	import Faqs from '$lib/Faqs.svelte';
+	import ReservedKoinEditor from '$lib/ReservedKoinEditor.svelte';
 
 	let timer: NodeJS.Timer;
   let debounceTimer: NodeJS.Timer;
   let poolEditor: any = null;
   let nodeEditor: any = null;
   let poolAdder: any = null;
+  let poolReservedKoinEditor: any = null;
   let nodePicker: any = null;
   let confirmModal: any = null;
   let showSubmittedPools: boolean = false;
@@ -53,6 +51,7 @@
 	onMount(async () => {
     updateStoredObjectFormats();
     populateOwnedPools();
+    readPoolsOwner();
     await loadFogataPools();
     
 		load();
@@ -80,6 +79,11 @@
     $ownedPools.forEach(pool => {
 			pool.refresh().then(() => {
 				$ownedPools = $ownedPools;
+        if ($user.address) {
+          poolRead(pool.address, "get_reserved_koin", {account: $user.address}).then((value) => {
+            pool.userReservedKoin = BigInt(value?.value || 0);
+          });
+        }
 			});
     });
 	}
@@ -134,18 +138,35 @@
   }
   function showPoolStats(address: string) {
     const p = $submittedPools.find(x => x.address == address) || $approvedPools.find(x => x.address == address) ||  $ownedPools.find(x => x.address == address);
+    if (p===undefined) { return; }
     confirmModal.title = "Pool information";
     confirmModal.positiveActionName = "Hide";
     confirmModal.showNegativeAction = false;
-    confirmModal.message = "Address: "+address+"\n\n"+JSON.stringify(p?.parameters, null, 2);
+    confirmModal.message = "Address: "+address+"\n\n"+
+      "APY:   "+(p.apy * 100).toFixed(2)+"%\n"+
+      "Operator fee:   "+((p.beneficiariesPercentage() - p.sponsorsPercentage()) / 1000).toFixed(2)+"%\n"+
+      "Sponsors contribution:   "+(p.sponsorsPercentage() / 1000).toFixed(2)+"%\n"+
+      "Total pool fee:   "+(p.beneficiariesPercentage() / 1000).toFixed(2)+"%\n"+
+      "Minimum reburn period:   "+intervalDisplayFormat(p.parameters.payment_period)+"\n"+
+      "VHP:   "+balanceTooltipFormat(p.wallet.balances.vhp)+"\n"+
+      "\n"+
+      "All fees are collected on pool profit\n"+
+      "";
+      // JSON.stringify(p, null, 2);
     confirmModal.show();
   }
   function showNodeInstructions() {
     confirmModal.title = "How to run your own node";
     confirmModal.positiveActionName = "Done";
     confirmModal.showNegativeAction = false;
-    confirmModal.message = "Official Koinos node documentation is at https://docs.koinos.io/quickstart/running-a-koinos-node.html";
+    confirmModal.message = "Official Koinos node documentation is at https://docs.koinos.io/";
     confirmModal.show();
+  }
+  function manageReservedKoin(address: string) {
+    poolReservedKoinEditor.pools = ownedPools;
+    poolReservedKoinEditor.address = address;
+    poolReservedKoinEditor.minimumAmount = $env.minimum_reserved_koin;
+    poolReservedKoinEditor.show();
   }
   function editPool(address: string) {
     const p = $ownedPools.find(x => x.address == address);
@@ -203,11 +224,12 @@
 	<meta name="description" content="Koinos mining pools" />
 </svelte:head>
 
-<div class="px-4">
+<!-- clip prevents tooltips from messing up page scaling -->
+<div class="px-4 overflow-clip">
 
   <Header pool={null} />
 
-  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20 pb-60">
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-[1300px] mx-auto pt-20">
 
     <Card>
       <div class="flex flex-col md:flex-row md:items-center gap-2">
@@ -236,8 +258,8 @@
         <!-- <span class="ml-4 text-sm font-normal opacity-75">How to pick <InformationCircleSharp class="inline" size="16" /></span></div> -->
 
       <div class="rounded-xl bg-base-200 mt-2">
-        {#each $approvedPools as pool, i}
-          <PoolListElement administered={userIsAdmin()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} statsAction={showPoolStats} pool={pool} />
+        {#each $approvedPools.sort((a, b) => (a.sponsorsPercentage() < b.sponsorsPercentage()) ? 1 : -1) as pool, i}
+          <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} statsAction={showPoolStats} pool={pool} />
           {#if i < ($approvedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
         {/each}
       </div>
@@ -260,8 +282,8 @@
           </div>
           
           <div class="rounded-xl bg-base-200 mt-2">
-            {#each $submittedPools as pool, i}
-              <PoolListElement administered={userIsAdmin()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} approveAction={approvePool} statsAction={showPoolStats} pool={pool} />
+            {#each $submittedPools.sort((a, b) => (a.sponsorsPercentage() < b.sponsorsPercentage()) ? 1 : -1) as pool, i}
+              <PoolListElement administered={userIsPoolsOwner()} listingState={pool.listingState($approvedPools, $submittedPools)} delistAction={delistPool} approveAction={approvePool} statsAction={showPoolStats} pool={pool} />
               {#if i < ($submittedPools.length-1)}<div class="h-[1px] bg-base-300 mx-4"></div>{/if}
             {/each}
           </div>
@@ -311,6 +333,7 @@
               owned={true}
               listingState={pool.listingState($approvedPools, $submittedPools)}
               editAction={editPool}
+              manageReservedKoinAction={manageReservedKoin}
               linkAction={linkPoolWithNode}
               removeAction={removePool}
               submitAction={submitPool}
@@ -321,60 +344,99 @@
         </div> 
         <div class="mt-3 flex gap-3 flex-wrap">
           <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolEditor.show()}}>Create another pool</button>
-          <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolAdder.show()}}>Add another pool</button>
+          <button class="btn btn-secondary text-secondary-content h-8 min-h-8" on:click={() => {poolAdder.show()}}>Add existing pool</button>
         </div>
       {/if}
 
     </Card>				
 
+    <Card>
+      <div class="flex flex-col gap-2">
+        <span class="text-lg font-semibold">Learn about the Sponsors program</span>
+      </div>
+      <div class="mt-8">
+        <p>Many Fogata pools contribute a portion of their profits to the Sponsors program. This is a decentralized Koinos contract built to benefit the Koinos community by assisting new applications. By participating in a contributing pool, or by contributing directly, you will receive the Sponsors token, called Vapor.</p>
+      </div>
+      <div class="mt-8">
+        <a class="btn btn-secondary text-secondary-content h-8 min-h-8" href="sponsors">View and contribute</a>
+      </div>
+    </Card>
   </section>
+
+  
+  <!-- FAQs -->
+  <div class="bg-base-200 text-base-content pt-20 pb-40 max-w-[800px] mx-auto">
+    <h1 class="text-3xl mb-8 text-center font-semibold">FAQs</h1>
+    <Faqs faqs={[
+      {
+        q: "How is APY calculated?",
+        a: "Fogata reads the current mining diffuculty from the Proof of Burn system contract.  This difficulty is used along with the total number of claimed Koin to estimate the amount of Koin the pool will generate in one year.  Note: The estimated APY will vary over time as the mining difficulty is constantly adjusted."
+      },
+      {
+        q: "How does pool approval work?",
+        a: "If you create a pool that meets the requirements (your pool must be linked with a running a block producer), you will be prompted to submit the pool for approval.  The approval is handled on-chain, so by submitting, you’re adding your pool address to a queue in a smart contract.  A fogata admin will verify the pool is a genuine fogata pool and uploaded to previously-unused address, and has sole discretion to approve or reject the pool.  Once approved, it appears on the main list, and can be interacted with."
+      },
+      {
+        q: "How do I withdraw koin from a pool?",
+        a: "Pool operations are separated into payment periods.  You are always able to collect your share of Koin (and Vapor, if applicable) from the previous payment period.  If you do not collect your Koin, it is free to be be converted to VHP after the current payment period concludes. Anyone may trigger this reburn."
+      },
+      {
+        q: "What is the Sponsors program?",
+        a: "Many Fogata pools contribute a portion of their profits to the Sponsors program. This is a decentralized Koinos contract built to benefit the Koinos community by assisting new applications. By participating in a contributing pool, or by contributing directly, you will receive the Sponsors token, called Vapor."
+      },
+
+    ]} />
+  </div>
 
 </div>
 
 <!-- hide before onMount because modal flashes when loaded with any latency -->
-<!-- there’s a larger issue with some styles not being applied before first paint, but this modal is the most noticeable offender -->
+<!-- there’s a larger issue with some styles not being applied before first paint, but these modals are the most noticeable offender -->
 {#if timer}
-  <PoolCreator bind:this={poolEditor} contractWasmBase64={data.contractWasmBase64}></PoolCreator>
-{/if}
-<InputsModal bind:this={nodeEditor}
-  title="Add a node"
-  message="Paste the public key from your node here.  If you’re using the command line, look in .koinos/block_producer/public.key"
-  positiveActionName="Add Node"
-  buttonAction={addNode}
-  schemas={[
-    {
-      key: "publicKey",
-      placeholder: "ArdeH...",
-      label: "Public key"
-    },
-    {
-      key: "name",
-      placeholder: "Cloud node 2",
-      label: "Node name"
-    }
-  ]}
-/>
-<InputsModal bind:this={poolAdder}
-  title="Add an exsiting Fogata pool"
-  message="Paste the pool address here."
-  positiveActionName="Add Pool"
-  buttonAction={addPool}
-  schemas={[
-    {
-      key: "address",
-      placeholder: "zgdeH...",
-      label: "Pool address"
-    }
-  ]}
-/>
+  <PoolCreator bind:this={poolEditor} ContractWasmBase64Power={data.contractWasmBase64HarbingerPower} contractWasmBase64={($env.testnet) ? data.contractWasmBase64Harbinger : data.contractWasmBase64}></PoolCreator>
 
-<InputsModal bind:this={confirmModal} title="Are your sure?" message="" positiveActionName="Yes" />
-<SelectModal bind:this={nodePicker}
-  title="Link your pool with a node"
-  message="Linking to a node will allow Koinos to reward your pool for the node’s block production.  This operation will consume mana."
-  label="Select your node"
-  required={true}
-  positiveActionName="Create link"
-/>
+  <InputsModal bind:this={nodeEditor}
+    title="Add a node"
+    message="Paste the public key from your node here.  If you’re using the command line, look in .koinos/block_producer/public.key"
+    positiveActionName="Add Node"
+    buttonAction={addNode}
+    schemas={[
+      {
+        key: "publicKey",
+        placeholder: "ArdeH...",
+        label: "Public key"
+      },
+      {
+        key: "name",
+        placeholder: "Cloud node 2",
+        label: "Node name"
+      }
+    ]}
+  />
+  <InputsModal bind:this={poolAdder}
+    title="Add an exsiting Fogata pool"
+    message="Paste the pool address here."
+    positiveActionName="Add Pool"
+    buttonAction={addPool}
+    schemas={[
+      {
+        key: "address",
+        placeholder: "zgdeH...",
+        label: "Pool address"
+      }
+    ]}
+  />
+  <ReservedKoinEditor bind:this={poolReservedKoinEditor} />
+  <InputsModal bind:this={confirmModal} title="Are your sure?" message="" positiveActionName="Yes" />
+  <SelectModal bind:this={nodePicker}
+    title="Link your pool with a node"
+    message="Linking to a node will allow Koinos to reward your pool for the node’s block production.  This operation will consume mana."
+    label="Select your node"
+    required={true}
+    positiveActionName="Create link"
+  />
+
+{/if}
+
 <style>
 </style>

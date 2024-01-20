@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { spring } from 'svelte/motion';
   import { CaretUpSharp, CaretDownSharp } from 'svelte-ionicons';
 
 	export let duration = 60;
 
-	let _value = 0;
 	let d: number;
 	let h: number;
 	let m: number;
 	let s: number;
+	watchValue(duration);
 	
 
 	$: duration = (d || 0) * 3600 * 24 * 1000 + (h || 0) * 3600 * 1000 + (m || 0) * 60 * 1000 + (s || 0) * 1000;

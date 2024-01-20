@@ -1,15 +1,14 @@
 
 import { Signer, Contract, Provider, Serializer, utils } from "koilib";
 import * as kondor from "kondor-js";
-import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools } from "$lib/stores";
+import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools, poolsOwner } from "$lib/stores";
 import { Pool, PoolParams, Toast, User } from "$lib/types";
 import { get } from "svelte/store";
-import poolAbiJson from "$lib/pool-proto.json";
-import poolsAbiJson from "$lib/pools-proto.json";
+import poolAbiJson from "$lib/fogata-abi.json";
+import poolsAbiJson from "$lib/pools-abi.json";
 import pobAbiJson from "$lib/pob-proto.json";
 import sponsorsAbiJson from "$lib/sponsors-proto.json";
 import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/interface";
-import crypto from "crypto";
 
 // this starts with a new User object that may have new properties, then fills in properties from the existing stored object
 export const updateStoredObjectFormats = () => {
@@ -24,22 +23,27 @@ export const populateOwnedPools = () => {
   });
   ownedPools.set(pools);
 }
-export function userIsAdmin() {
-  return (get(user).address === get(env).pools_owner);
+export const readPoolsOwner = () => {
+  poolsRead("get_owner", {}).then(result => {
+    poolsOwner.set(result?.account);
+  });
+}
+export function userIsPoolsOwner() {
+  return (get(user).address === get(poolsOwner));
 }
 export const loadFogataPools = () => {
   return Promise.all([
-    poolsRead("get_approved_pools", {limit: 200}).then(value => {
+    poolsRead("get_approved_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      value?.forEach((pool: {account: string, submission_time: string}) => {
+      result?.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       approvedPools.set(pools);
       Promise.resolve();
     }),
-    poolsRead("get_submitted_pools", {limit: 200}).then(value => {
+    poolsRead("get_submitted_pools", {limit: 200}).then(result => {
       let pools: Pool[] = [];
-      value?.forEach((pool: {account: string, submission_time: string}) => {
+      result?.value?.forEach((pool: {account: string, submission_time: string}) => {
         pools.push(new Pool(pool.account));
       });
       submittedPools.set(pools);
@@ -59,7 +63,7 @@ export const updateUsers = (user: User) => {
 
 export const poolsRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).pools_address, koilibAbi(poolsAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result.value);
+    return Promise.resolve(result);
   }, (error) => {});
 }
 export const poolsWrite = async (methodName: string, args: any, description: string) => {
@@ -68,7 +72,7 @@ export const poolsWrite = async (methodName: string, args: any, description: str
 
 export const pobRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result.value);
+    return Promise.resolve(result?.value);
   }, (error) => {});
 }
 export const pobWrite = async (methodName: string, args: any, description: string) => {
@@ -78,13 +82,16 @@ export const pobWrite = async (methodName: string, args: any, description: strin
 
 export const vaporBalanceOf = async (address: string): Promise<bigint> => {
   return sponsorsRead("balance_of", {owner: address}).then((result) => {
-    return Promise.resolve((result) ? BigInt(result) : BigInt(0));
+    return Promise.resolve((result?.value) ? BigInt(result?.value) : BigInt(0));
   });
 }
 export const sponsorsRead = async (methodName: string, args = {}): Promise<any> => {
   return contractOperation(get(env).sponsors_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
-    return Promise.resolve(result?.value);
+    return Promise.resolve(result);
   });
+}
+export const sponsorsWrite = async (methodName: string, args: any, description: string) => {
+  return contractWriteWithToasts(get(env).sponsors_address, sponsorsAbiJson, methodName, args, description);
 }
 
 
@@ -129,12 +136,12 @@ export const contractWriteWithToasts = async (address: string, abiJson: any, met
 
 export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || BigInt(0));
+    return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
 export const tokenTotalSupply = async (contractAddress: string): Promise<bigint> => {
   return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}).then((result) => {
-    return Promise.resolve(BigInt(result.value) || BigInt(0));
+    return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
 
@@ -145,6 +152,7 @@ export const tokenTotalSupply = async (contractAddress: string): Promise<bigint>
 export const getAccountRc = (account: string): Promise<string> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   return provider.getAccountRc(account);
 }
@@ -163,6 +171,7 @@ export const koilibAbi = (abiJson: {methods: any, types: any}): Abi => {
 export const contractOperation = async (contractAddress: string, abi: any, methodName: string, args: any): Promise<any> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   const signerAddress = storedUser.address;
   const signer = signerAddress ? kondor.getSigner(signerAddress, {
@@ -188,20 +197,75 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
   // console.log(args);
   // console.log(contract.functions);
 
-  let result;
-  result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id });
-  if (result.transaction) {
-    result = await provider.sendTransaction(result.transaction!);
-    return Promise.resolve(result.transaction);
+  try {
+    let result;
+    result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id }).catch();
+    if (result.transaction) {
+      result = await provider.sendTransaction(result.transaction!);
+      return Promise.resolve(result.transaction);
+    }
+    else {
+      return Promise.resolve(result.result);
+    }
   }
-  else {
-    return Promise.resolve(result.result);
+  catch (e) {
+    Promise.reject(e);
   }
 }
 
-export const uploadPoolContract = async (contractWasmBase64: string, poolParams: PoolParams): Promise<TransactionJsonWait> => {
+export const uploadUserContract = async (contractWasmBase64: string, abi: any): Promise<TransactionJsonWait> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
+  const provider = new Provider([addHttps(rpc)]);
+  if (!storedUser.address) {
+    return Promise.reject(new Error("No wallet connected."));
+  }
+  const signer = kondor.getSigner(storedUser.address, {
+    providerPrepareTransaction: provider,
+  }) as Signer;
+  signer.provider = provider;
+
+  // NOTE:  Setting a testnet provider will not work here maybe because it’s kondor’s signer
+  // transaction will still use mainnet.
+  // uploadPoolContract works.  maybe because it creates its own signer with the private key
+  
+  const contract = new Contract({
+    id: signer.getAddress(),
+    abi: abi,
+    provider: provider,
+    bytecode: utils.decodeBase64(contractWasmBase64),
+    signer: signer
+  });
+
+
+  let rcLimitString = "0";
+  let nextNonce = "";
+  const availableRc = await provider.getAccountRc(signer.getAddress());
+  rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
+  nextNonce = await provider.getNextNonce(signer.getAddress());
+
+  const { receipt, transaction } = await contract.deploy({
+    abi: JSON.stringify(abi),
+    authorizesTransactionApplication: true,
+    nextOperations: [],
+    rcLimit: rcLimitString,
+    nonce: nextNonce,
+    chainId: get(env).chain_id,
+  });
+
+  if (transaction) {
+    // console.log(transaction);
+    return Promise.resolve(transaction);
+  }
+  return Promise.reject(new Error("Deploy transaction did not succeed"));
+  
+}
+
+export const uploadPoolContract = async (contractWasmBase64: string, abi: any, poolParams: PoolParams): Promise<TransactionJsonWait> => {
+  const storedUser = get(user);
+  const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   if (!storedUser.address) {
     return Promise.reject(new Error("No wallet connected."));
@@ -221,7 +285,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
 
   const contract = new Contract({
     id: contractSigner.address,
-    abi: poolAbiJson,
+    abi: abi,
     provider: provider,
     bytecode: utils.decodeBase64(contractWasmBase64),
     signer: contractSigner,
@@ -236,6 +300,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   contract.options.onlyOperation = true;
   const { operation: takeOwnership } = await contract.functions.set_owner({ account: signer.getAddress() });
   const { operation: setPoolParams } = await contract.functions.set_pool_params(poolParams);
+  const { operation: reburnToInit } = await contract.functions.reburn_and_snapshot({});
   contract.options.onlyOperation = false;
 
   let rcLimitString = "0";
@@ -245,11 +310,11 @@ export const uploadPoolContract = async (contractWasmBase64: string, poolParams:
   nextNonce = await provider.getNextNonce(signer.getAddress());
 
   const { receipt, transaction } = await contract.deploy({
-    abi: JSON.stringify(poolAbiJson),
+    abi: JSON.stringify(abi),
     authorizesCallContract: true,
     authorizesTransactionApplication: true,
     authorizesUploadContract: true,
-    nextOperations: [takeOwnership, setPoolParams],
+    nextOperations: [takeOwnership, setPoolParams, reburnToInit],
     rcLimit: rcLimitString,
     nonce: nextNonce,
     chainId: get(env).chain_id,

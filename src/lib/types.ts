@@ -1,5 +1,5 @@
 import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply, vaporBalanceOf } from "$lib/utils";
-import { env } from "$lib/stores";
+import { env, user } from "$lib/stores";
 import { get } from "svelte/store";
 import { utils } from "koilib";
 
@@ -13,8 +13,9 @@ export enum PoolListingState {
 
 export class Pool {
   constructor(
-    public address: string = "1NsQbH5AhQXgtSNg1ejpFqTi2hmCWz1eQS",
+    public address: string = "",
     public parameters: PoolParams = new PoolParams(),
+    public collectKoinPreferences: CollectKoinPreferences = new CollectKoinPreferences(),
     public state: PoolState = new PoolState(),
     public sponsorsApy = 0,
     public apy = 0,
@@ -22,8 +23,10 @@ export class Pool {
     public userBalanceKoin = BigInt(0),
     public userBalanceVhp = BigInt(0),
     public userBalanceVapor = BigInt(0),
+    public userReservedKoin = BigInt(0),
     public wallet: Wallet = new Wallet(),
     public nodePublicKey: string = "",
+    public reservedKoin = BigInt(0),
     public loaded: boolean = false
   ) { }
   public refresh = async () => {
@@ -31,6 +34,7 @@ export class Pool {
       this.wallet.loadBalances(this.address, false),
       this.loadParameters(),
       this.loadPublicKey(),
+      this.loadReservedKoin(),
     ]);
     await this.calculateApy();
     this.loaded = true;
@@ -43,14 +47,34 @@ export class Pool {
     this.nodePublicKey = await pobRead("get_public_key", {"producer": this.address});
     Promise.resolve();
   }
+  public loadReservedKoin = async () => {
+    const val = await poolRead(this.address, "get_all_reserved_koin", {});
+    this.reservedKoin = BigInt(val?.value || 0);
+    Promise.resolve();
+  }
+  public loadCollectKoinPreferences = async (address: string) => {
+    const rawParameters = await poolRead(this.address, "get_collect_koin_preferences", {account: address});
+    this.collectKoinPreferences.account = rawParameters?.account || address;
+    this.collectKoinPreferences.all_after_virtual = BigInt(rawParameters?.all_after_virtual || 0);
+    this.collectKoinPreferences.percentage_koin = rawParameters?.percentage_koin || 0;
+    Promise.resolve();
+  }
   public sponsorsPercentage(): number {
     let sponsorsBeneficiary: Beneficiary = this.parameters.beneficiaries.find(x => x.address == get(env).sponsors_address) ?? new Beneficiary(get(env).sponsors_address, 0);
     return sponsorsBeneficiary.percentage || 0;
   }
-  public isListingEligible(): boolean {
-    return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
+  public beneficiariesPercentage(): number {
+    let combinedBeneficiaryPercentage = 0;
+    this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
+      combinedBeneficiaryPercentage += beneficiary.percentage || 0;
+    });
+    return combinedBeneficiaryPercentage;
   }
-  public listingState(approvedPools: Pool[], submittedPools: Pool[]) {
+  public isListingEligible(): boolean {
+    return (!!this.nodePublicKey);
+    // return (!!this.nodePublicKey && this.sponsorsPercentage() > 0);
+  }
+  public listingState(approvedPools: Pool[], submittedPools: Pool[]): PoolListingState {
     if (approvedPools.some(e => e.address === this.address)) { return PoolListingState.Listed; }
     if (submittedPools.some(e => e.address === this.address)) { return PoolListingState.Submitted; }
     if (!this.loaded) { return PoolListingState.Unknown; } // probably not loaded, but also could have no beneficiaries
@@ -96,7 +120,7 @@ export class Pool {
 		}
     let combinedBeneficiaryPercentage = 0;
     this.parameters.beneficiaries.forEach((beneficiary: {address: string, percentage: number}) => {
-      combinedBeneficiaryPercentage += beneficiary.percentage;
+      combinedBeneficiaryPercentage += beneficiary.percentage ?? 0;
     });
     let beneficiaryPercentage = combinedBeneficiaryPercentage / 100000;
 		let participantApy = (1 - beneficiaryPercentage) * totalApy;
@@ -140,7 +164,24 @@ export class KoinosNode {
     public publicKey: string,
   ) { }
 }
-
+export class SponsorsContract {
+  constructor(
+    public address = "",
+    public wallet: Wallet = new Wallet(),
+    public loaded: boolean = false,
+    public totalSupply: bigint = BigInt(0)
+  ) { }
+  public refresh = async () => {
+    await Promise.all([
+      this.wallet.loadBalances(this.address, false),
+      this.loadTotalSupply(),
+    ]);
+    this.loaded = true;
+  }
+  public loadTotalSupply = async () => {
+		this.totalSupply = await tokenTotalSupply(get(env).sponsors_address);
+  }
+}
 export class Endpoint {
   constructor(
     public url: string,
@@ -203,16 +244,28 @@ export class PoolParams {
     public payment_period: number = 0,
   ) { }
 }
+export class CollectKoinPreferences {
+  constructor(
+    public account: string = "",
+    public percentage_koin: number = 0,
+    public all_after_virtual = BigInt(0),
+  ) { }
+}
 export class PoolState {
   constructor(
-    public stake: string = "",
-    public virtual: string = "",
-    public snapshot_stake: string = "",
-    public snapshot_koin: string = "",
-    public current_snapshot: string = "",
-    public next_snapshot: string = "",
-    public snapshot_vapor: string = "",
-    public vapor_withdrawn: string = "",
+    public stake: string = "0",
+    public virtual: string = "0",
+    public snapshot_stake: string = "0",
+    public snapshot_koin: string = "0",
+    public current_snapshot: string = "0",
+    public next_snapshot: string = "0",
+    public snapshot_vapor: string = "0",
+    public vapor_withdrawn: string = "0",
+    public koin_withdrawn: string = "0",
+    public user_count: string ="0",
+    public vapor: string = "0",
+    public virtual_vapor: string = "0",
+    public version: string = "",
   ) { }
 }
 export class Beneficiary {

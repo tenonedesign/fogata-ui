@@ -4,6 +4,7 @@
 	import { Beneficiary, PoolParams } from './types';
   import { CloseOutline } from 'svelte-ionicons';
 	import DurationPicker from './DurationPicker.svelte';
+	import { onMount } from 'svelte';
   export let poolParams: PoolParams = new PoolParams();
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
@@ -28,9 +29,18 @@
   }
 
   function combineBeneficiaries(contribution: Beneficiary, other: Beneficiary[]): Beneficiary[] {
-    return [...other, ...[contribution]];
+    if (contribution.percentage > 0) {
+      return [...other, ...[contribution]];
+    }
+    return other;
   }
-  $: poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries);
+
+  // report back to parent after init since stuff could have changed
+  onMount(async () => {
+    poolParams = poolParams;
+	});
+
+  $: if (attributes.includes("beneficiaries")) { poolParams.beneficiaries = combineBeneficiaries(contributionBeneficiary, otherBeneficiaries); }
   // $: console.log(poolParams);
 </script>
 
@@ -69,6 +79,12 @@
         <span class="label-text">Minimum reburn period</span>
       </label>
       <DurationPicker bind:duration={poolParams.payment_period} />
+      {#if poolParams.payment_period >= 2592000000}
+      <div class="text-xs bg-warning text-warning-content p-3 flex gap-3 rounded-xl items-center mt-1">
+        <WarningOutline class="flex-shrink-0" size="24" />
+        <div>Maximum reburn period is one Month</div>
+      </div>
+    {/if}
     {/if}
 
     {#if attributes.includes("beneficiaries")}
@@ -91,11 +107,11 @@
                   <input bind:value={beneficiary.address} id="poolContribution-{instanceId}{index}" type="text" placeholder="1xyz..." class="input input-bordered max-w-xs" />
                   <div class=" flex-grow">
                     <div class="font-semibold">{beneficiary.percentage / 1000}% of pool profit</div>
-                    <input bind:value={beneficiary.percentage} id="poolBeneficiaries-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="1000" />
+                    <input bind:value={beneficiary.percentage} id="poolBeneficiaries-{instanceId}" type="range" min="0" max="100000" class="range range-sm mt-2" step="500" />
                     <div class="w-full flex justify-between text-xs px-2">
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
                       <span>|</span> <span>|</span> <span>|</span> <span>|</span>
-                      <span>|</span> <span>|</span>
+                      <span>|</span> <span>|</span> <span>|</span>
                     </div>
                   </div>
                 </div>
@@ -116,16 +132,16 @@
             {#if contributionBeneficiary.percentage == 0}
               <div class="text-xs bg-warning text-warning-content p-3 flex gap-3 rounded-xl items-center mt-1">
                 <WarningOutline class="flex-shrink-0" size="24" />
-                <div>Pools without a community contribution will not be accessible on Fogata, but you can still self-host your own pool interface.</div>
+                <div>Pools without a community contribution will be available on Fogata, but are unlikely to be featured.</div>
               </div>
             {/if}
           </div>
         </label>
-        <input bind:value={contributionBeneficiary.percentage} id="communityBeneficiary-{instanceId}" type="range" min="0" max="100000" class="range mt-2" step="1000" />
+        <input bind:value={contributionBeneficiary.percentage} id="communityBeneficiary-{instanceId}" type="range" min="0" max="100000" class="range mt-2" step="500" />
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
           <span>|</span> <span>|</span> <span>|</span> <span>|</span>
-          <span>|</span> <span>|</span>
+          <span>|</span> <span>|</span> <span>|</span>
         </div>
       </div>
     {/if}

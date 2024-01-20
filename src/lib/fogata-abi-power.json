@@ -27,6 +27,15 @@
       "read_only": true,
       "read-only": true
     },
+    "get_vapor_withdrawn": {
+      "argument": "common.address",
+      "return": "common.uint64",
+      "description": "Get vapor withdrawn from the virtual vapor for a specific account",
+      "entry_point": 3739883904,
+      "entry-point": "0xdeea1980",
+      "read_only": true,
+      "read-only": true
+    },
     "get_accounts": {
       "argument": "common.list_args",
       "return": "common.addresses",
@@ -48,18 +57,36 @@
     "get_pool_state": {
       "argument": "",
       "return": "fogata.pool_state",
-      "description": "Get the state of the pool",
+      "description": "Get the state of the pool updated",
       "entry_point": 2975900562,
       "entry-point": "0xb160a392",
       "read_only": true,
       "read-only": true
     },
-    "set_pool_state": {
-      "argument": "fogata.pool_state",
+    "get_pool_state_no_updated": {
+      "argument": "",
+      "return": "fogata.pool_state",
+      "description": "Get the state of the pool not updated (use only for debug purposes)",
+      "entry_point": 2661655221,
+      "entry-point": "0x9ea5a2b5",
+      "read_only": true,
+      "read-only": true
+    },
+    "get_collect_koin_preferences": {
+      "argument": "common.address",
+      "return": "fogata.collect_koin_preferences",
+      "description": "Get user preferences",
+      "entry_point": 1816930530,
+      "entry-point": "0x6c4c28e2",
+      "read_only": true,
+      "read-only": true
+    },
+    "set_collect_koin_preferences": {
+      "argument": "fogata.collect_koin_preferences",
       "return": "common.boole",
-      "description": "Set pool state",
-      "entry_point": 1053132370,
-      "entry-point": "0x3ec58652",
+      "description": "Set user preferences",
+      "entry_point": 3893476635,
+      "entry-point": "0xe811bd1b",
       "read_only": false,
       "read-only": false
     },
@@ -117,12 +144,30 @@
       "read_only": false,
       "read-only": false
     },
-    "collect_vapor": {
+    "collect": {
       "argument": "common.address",
       "return": "common.boole",
-      "description": "Withdraw earnings of vapor. Anyone can call this method",
-      "entry_point": 591975041,
-      "entry-point": "0x2348d281",
+      "description": "Withdraw earnings of koin and vapor. Anyone can call this method",
+      "entry_point": 2172800144,
+      "entry-point": "0x81824c90",
+      "read_only": false,
+      "read-only": false
+    },
+    "set_pool_state": {
+      "argument": "fogata.pool_state",
+      "return": "common.boole",
+      "description": "Set pool state",
+      "entry_point": 1053132370,
+      "entry-point": "0x3ec58652",
+      "read_only": false,
+      "read-only": false
+    },
+    "set_all_reserved_koin": {
+      "argument": "common.uint64",
+      "return": "common.boole",
+      "description": "Set reserved koins",
+      "entry_point": 2128991467,
+      "entry-point": "0x7ee5d4eb",
       "read_only": false,
       "read-only": false
     },
@@ -144,39 +189,39 @@
       "read_only": true,
       "read-only": true
     },
-    "get_reserved_koins": {
+    "get_all_reserved_koin": {
       "argument": "",
       "return": "common.uint64",
-      "description": "Get reserved koins (for beneficiaries and mana supporters)",
-      "entry_point": 1407334024,
-      "entry-point": "0x53e23688",
+      "description": "Get reserved koin (for beneficiaries and mana supporters)",
+      "entry_point": 1184241330,
+      "entry-point": "0x469616b2",
       "read_only": true,
       "read-only": true
     },
-    "get_mana_delegation": {
+    "get_reserved_koin": {
       "argument": "common.address",
       "return": "common.uint64",
       "description": "Get koin balance of mana supporter",
-      "entry_point": 826351073,
-      "entry-point": "0x31411de1",
+      "entry_point": 3116625487,
+      "entry-point": "0xb9c3ee4f",
       "read_only": true,
       "read-only": true
     },
-    "add_mana_delegation": {
+    "add_reserved_koin": {
       "argument": "fogata.koin_account",
       "return": "common.boole",
       "description": "Transfer KOINs to the pool to support the mana consumption. This amount will not be burned",
-      "entry_point": 2022868113,
-      "entry-point": "0x78928491",
+      "entry_point": 3237584295,
+      "entry-point": "0xc0f99da7",
       "read_only": false,
       "read-only": false
     },
-    "remove_mana_delegation": {
+    "remove_reserved_koin": {
       "argument": "fogata.koin_account",
       "return": "common.boole",
       "description": "Withdraw KOINs used in the mana consumption.",
-      "entry_point": 1418115305,
-      "entry-point": "0x5486b8e9",
+      "entry_point": 2259544932,
+      "entry-point": "0x86adeb64",
       "read_only": false,
       "read-only": false
     },
@@ -226,7 +271,7 @@
       "read-only": true
     }
   },
-  "types": "CocMCgxmb2dhdGEucHJvdG8SBmZvZ2F0YRoUa29pbm9zL29wdGlvbnMucHJvdG8idAoKc3Rha2VfYXJncxIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50EiMKC2tvaW5fYW1vdW50GAIgASgEQgIwAVIKa29pbkFtb3VudBIhCgp2aHBfYW1vdW50GAMgASgEQgIwAVIJdmhwQW1vdW50Io8BCgtzdGFrZV9ldmVudBIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50EiMKC2tvaW5fYW1vdW50GAIgASgEQgIwAVIKa29pbkFtb3VudBIhCgp2aHBfYW1vdW50GAMgASgEQgIwAVIJdmhwQW1vdW50EhgKBXN0YWtlGAQgASgEQgIwAVIFc3Rha2UisQEKDnNuYXBzaG90X3N0YWtlEhgKBXN0YWtlGAEgASgEQgIwAVIFc3Rha2USLQoQY3VycmVudF9zbmFwc2hvdBgCIAEoBEICMAFSD2N1cnJlbnRTbmFwc2hvdBIpCg5rb2luX3dpdGhkcmF3bhgDIAEoBEICMAFSDWtvaW5XaXRoZHJhd24SKwoPdmFwb3Jfd2l0aGRyYXduGAQgASgEQgIwAVIOdmFwb3JXaXRoZHJhd24ieAoHYmFsYW5jZRIjCgtrb2luX2Ftb3VudBgBIAEoBEICMAFSCmtvaW5BbW91bnQSIQoKdmhwX2Ftb3VudBgCIAEoBEICMAFSCXZocEFtb3VudBIlCgx2YXBvcl9hbW91bnQYAyABKARCAjABUgt2YXBvckFtb3VudCJTCgxrb2luX2FjY291bnQSHgoHYWNjb3VudBgBIAEoDEIEgLUYBlIHYWNjb3VudBIjCgtrb2luX2Ftb3VudBgCIAEoBEICMAFSCmtvaW5BbW91bnQifAoJYWxsb3dhbmNlEioKBHR5cGUYASABKA4yFi5mb2dhdGEuYWxsb3dhbmNlX3R5cGVSBHR5cGUSIwoLa29pbl9hbW91bnQYAiABKARCAjABUgprb2luQW1vdW50Eh4KB2FjY291bnQYAyABKAxCBIC1GAZSB2FjY291bnQiTQoLYmVuZWZpY2lhcnkSHgoHYWRkcmVzcxgBIAEoDEIEgLUYBlIHYWRkcmVzcxIeCgpwZXJjZW50YWdlGAIgASgNUgpwZXJjZW50YWdlIr8BCgtwb29sX3BhcmFtcxISCgRuYW1lGAEgASgJUgRuYW1lEhQKBWltYWdlGAIgASgJUgVpbWFnZRIgCgtkZXNjcmlwdGlvbhgDIAEoCVILZGVzY3JpcHRpb24SOQoNYmVuZWZpY2lhcmllcxgEIAMoCzITLmZvZ2F0YS5iZW5lZmljaWFyeVINYmVuZWZpY2lhcmllcxIpCg5wYXltZW50X3BlcmlvZBgFIAEoBEICMAFSDXBheW1lbnRQZXJpb2Qi8wIKCnBvb2xfc3RhdGUSGAoFc3Rha2UYASABKARCAjABUgVzdGFrZRIcCgd2aXJ0dWFsGAIgASgEQgIwAVIHdmlydHVhbBIpCg5zbmFwc2hvdF9zdGFrZRgDIAEoBEICMAFSDXNuYXBzaG90U3Rha2USJwoNc25hcHNob3Rfa29pbhgEIAEoBEICMAFSDHNuYXBzaG90S29pbhItChBjdXJyZW50X3NuYXBzaG90GAUgASgEQgIwAVIPY3VycmVudFNuYXBzaG90EicKDW5leHRfc25hcHNob3QYBiABKARCAjABUgxuZXh0U25hcHNob3QSKQoOa29pbl93aXRoZHJhd24YByABKARCAjABUg1rb2luV2l0aGRyYXduEikKDnNuYXBzaG90X3ZhcG9yGAggASgEQgIwAVINc25hcHNob3RWYXBvchIrCg92YXBvcl93aXRoZHJhd24YCSABKARCAjABUg52YXBvcldpdGhkcmF3bipBCg5hbGxvd2FuY2VfdHlwZRINCglVTkRFRklORUQQABIRCg1UUkFOU0ZFUl9LT0lOEAESDQoJQlVSTl9LT0lOEAJiBnByb3RvMwqqAwoMY29tbW9uLnByb3RvEgZjb21tb24aFGtvaW5vcy9vcHRpb25zLnByb3RvIhsKA3N0chIUCgV2YWx1ZRgBIAEoCVIFdmFsdWUiHgoGdWludDMyEhQKBXZhbHVlGAEgASgNUgV2YWx1ZSIiCgZ1aW50NjQSGAoFdmFsdWUYASABKARCAjABUgV2YWx1ZSIdCgVib29sZRIUCgV2YWx1ZRgBIAEoCFIFdmFsdWUiKQoHYWRkcmVzcxIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50Im4KCWxpc3RfYXJncxIaCgVzdGFydBgBIAEoDEIEgLUYBlIFc3RhcnQSFAoFbGltaXQYAiABKAVSBWxpbWl0Ei8KCWRpcmVjdGlvbhgDIAEoDjIRLmNvbW1vbi5kaXJlY3Rpb25SCWRpcmVjdGlvbiItCglhZGRyZXNzZXMSIAoIYWNjb3VudHMYASADKAxCBIC1GAZSCGFjY291bnRzKioKCWRpcmVjdGlvbhINCglhc2NlbmRpbmcQABIOCgpkZXNjZW5kaW5nEAFiBnByb3RvMwpfCg1vd25hYmxlLnByb3RvEgdvd25hYmxlGhRrb2lub3Mvb3B0aW9ucy5wcm90byInCgVvd25lchIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50YgZwcm90bzMK/QMKC3Rva2VuLnByb3RvEgV0b2tlbhoUa29pbm9zL29wdGlvbnMucHJvdG8iTgoEaW5mbxISCgRuYW1lGAEgASgJUgRuYW1lEhYKBnN5bWJvbBgCIAEoCVIGc3ltYm9sEhoKCGRlY2ltYWxzGAMgASgNUghkZWNpbWFscyItCg9iYWxhbmNlX29mX2FyZ3MSGgoFb3duZXIYASABKAxCBIC1GAZSBW93bmVyIlkKDXRyYW5zZmVyX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIUCgJ0bxgCIAEoDEIEgLUYBlICdG8SGAoFdmFsdWUYAyABKARCAjABUgV2YWx1ZSJFCg9jb250cmlidXRlX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIYCgV2YWx1ZRgCIAEoBEICMAFSBXZhbHVlIjsKCW1pbnRfYXJncxIUCgJ0bxgBIAEoDEIEgLUYBlICdG8SGAoFdmFsdWUYAiABKARCAjABUgV2YWx1ZSI/CglidXJuX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIYCgV2YWx1ZRgCIAEoBEICMAFSBXZhbHVlIioKDmJhbGFuY2Vfb2JqZWN0EhgKBXZhbHVlGAEgASgEQgIwAVIFdmFsdWViBnByb3RvMw==",
+  "types": "CqEOCgxmb2dhdGEucHJvdG8SBmZvZ2F0YRoUa29pbm9zL29wdGlvbnMucHJvdG8idAoKc3Rha2VfYXJncxIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50EiMKC2tvaW5fYW1vdW50GAIgASgEQgIwAVIKa29pbkFtb3VudBIhCgp2aHBfYW1vdW50GAMgASgEQgIwAVIJdmhwQW1vdW50Io8BCgtzdGFrZV9ldmVudBIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50EiMKC2tvaW5fYW1vdW50GAIgASgEQgIwAVIKa29pbkFtb3VudBIhCgp2aHBfYW1vdW50GAMgASgEQgIwAVIJdmhwQW1vdW50EhgKBXN0YWtlGAQgASgEQgIwAVIFc3Rha2UisQEKDnNuYXBzaG90X3N0YWtlEhgKBXN0YWtlGAEgASgEQgIwAVIFc3Rha2USLQoQY3VycmVudF9zbmFwc2hvdBgCIAEoBEICMAFSD2N1cnJlbnRTbmFwc2hvdBIpCg5rb2luX3dpdGhkcmF3bhgDIAEoBEICMAFSDWtvaW5XaXRoZHJhd24SKwoPdmFwb3Jfd2l0aGRyYXduGAQgASgEQgIwAVIOdmFwb3JXaXRoZHJhd24ieAoHYmFsYW5jZRIjCgtrb2luX2Ftb3VudBgBIAEoBEICMAFSCmtvaW5BbW91bnQSIQoKdmhwX2Ftb3VudBgCIAEoBEICMAFSCXZocEFtb3VudBIlCgx2YXBvcl9hbW91bnQYAyABKARCAjABUgt2YXBvckFtb3VudCJTCgxrb2luX2FjY291bnQSHgoHYWNjb3VudBgBIAEoDEIEgLUYBlIHYWNjb3VudBIjCgtrb2luX2Ftb3VudBgCIAEoBEICMAFSCmtvaW5BbW91bnQilwEKGGNvbGxlY3Rfa29pbl9wcmVmZXJlbmNlcxIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50EisKD3BlcmNlbnRhZ2Vfa29pbhgCIAEoBEICMAFSDnBlcmNlbnRhZ2VLb2luEi4KEWFsbF9hZnRlcl92aXJ0dWFsGAMgASgEQgIwAVIPYWxsQWZ0ZXJWaXJ0dWFsInwKCWFsbG93YW5jZRIqCgR0eXBlGAEgASgOMhYuZm9nYXRhLmFsbG93YW5jZV90eXBlUgR0eXBlEiMKC2tvaW5fYW1vdW50GAIgASgEQgIwAVIKa29pbkFtb3VudBIeCgdhY2NvdW50GAMgASgMQgSAtRgGUgdhY2NvdW50Ik0KC2JlbmVmaWNpYXJ5Eh4KB2FkZHJlc3MYASABKAxCBIC1GAZSB2FkZHJlc3MSHgoKcGVyY2VudGFnZRgCIAEoDVIKcGVyY2VudGFnZSK/AQoLcG9vbF9wYXJhbXMSEgoEbmFtZRgBIAEoCVIEbmFtZRIUCgVpbWFnZRgCIAEoCVIFaW1hZ2USIAoLZGVzY3JpcHRpb24YAyABKAlSC2Rlc2NyaXB0aW9uEjkKDWJlbmVmaWNpYXJpZXMYBCADKAsyEy5mb2dhdGEuYmVuZWZpY2lhcnlSDWJlbmVmaWNpYXJpZXMSKQoOcGF5bWVudF9wZXJpb2QYBSABKARCAjABUg1wYXltZW50UGVyaW9kIvMDCgpwb29sX3N0YXRlEhgKBXN0YWtlGAEgASgEQgIwAVIFc3Rha2USHAoHdmlydHVhbBgCIAEoBEICMAFSB3ZpcnR1YWwSKQoOc25hcHNob3Rfc3Rha2UYAyABKARCAjABUg1zbmFwc2hvdFN0YWtlEicKDXNuYXBzaG90X2tvaW4YBCABKARCAjABUgxzbmFwc2hvdEtvaW4SKQoOc25hcHNob3RfdmFwb3IYCCABKARCAjABUg1zbmFwc2hvdFZhcG9yEi0KEGN1cnJlbnRfc25hcHNob3QYBSABKARCAjABUg9jdXJyZW50U25hcHNob3QSJwoNbmV4dF9zbmFwc2hvdBgGIAEoBEICMAFSDG5leHRTbmFwc2hvdBIpCg5rb2luX3dpdGhkcmF3bhgHIAEoBEICMAFSDWtvaW5XaXRoZHJhd24SKwoPdmFwb3Jfd2l0aGRyYXduGAkgASgEQgIwAVIOdmFwb3JXaXRoZHJhd24SIQoKdXNlcl9jb3VudBgKIAEoBEICMAFSCXVzZXJDb3VudBIYCgV2YXBvchgLIAEoBEICMAFSBXZhcG9yEicKDXZpcnR1YWxfdmFwb3IYDCABKARCAjABUgx2aXJ0dWFsVmFwb3ISGAoHdmVyc2lvbhgNIAEoCVIHdmVyc2lvbipBCg5hbGxvd2FuY2VfdHlwZRINCglVTkRFRklORUQQABIRCg1UUkFOU0ZFUl9LT0lOEAESDQoJQlVSTl9LT0lOEAJiBnByb3RvMwqqAwoMY29tbW9uLnByb3RvEgZjb21tb24aFGtvaW5vcy9vcHRpb25zLnByb3RvIhsKA3N0chIUCgV2YWx1ZRgBIAEoCVIFdmFsdWUiHgoGdWludDMyEhQKBXZhbHVlGAEgASgNUgV2YWx1ZSIiCgZ1aW50NjQSGAoFdmFsdWUYASABKARCAjABUgV2YWx1ZSIdCgVib29sZRIUCgV2YWx1ZRgBIAEoCFIFdmFsdWUiKQoHYWRkcmVzcxIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50Im4KCWxpc3RfYXJncxIaCgVzdGFydBgBIAEoDEIEgLUYBlIFc3RhcnQSFAoFbGltaXQYAiABKAVSBWxpbWl0Ei8KCWRpcmVjdGlvbhgDIAEoDjIRLmNvbW1vbi5kaXJlY3Rpb25SCWRpcmVjdGlvbiItCglhZGRyZXNzZXMSIAoIYWNjb3VudHMYASADKAxCBIC1GAZSCGFjY291bnRzKioKCWRpcmVjdGlvbhINCglhc2NlbmRpbmcQABIOCgpkZXNjZW5kaW5nEAFiBnByb3RvMwpfCg1vd25hYmxlLnByb3RvEgdvd25hYmxlGhRrb2lub3Mvb3B0aW9ucy5wcm90byInCgVvd25lchIeCgdhY2NvdW50GAEgASgMQgSAtRgGUgdhY2NvdW50YgZwcm90bzMK/QMKC3Rva2VuLnByb3RvEgV0b2tlbhoUa29pbm9zL29wdGlvbnMucHJvdG8iTgoEaW5mbxISCgRuYW1lGAEgASgJUgRuYW1lEhYKBnN5bWJvbBgCIAEoCVIGc3ltYm9sEhoKCGRlY2ltYWxzGAMgASgNUghkZWNpbWFscyItCg9iYWxhbmNlX29mX2FyZ3MSGgoFb3duZXIYASABKAxCBIC1GAZSBW93bmVyIlkKDXRyYW5zZmVyX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIUCgJ0bxgCIAEoDEIEgLUYBlICdG8SGAoFdmFsdWUYAyABKARCAjABUgV2YWx1ZSJFCg9jb250cmlidXRlX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIYCgV2YWx1ZRgCIAEoBEICMAFSBXZhbHVlIjsKCW1pbnRfYXJncxIUCgJ0bxgBIAEoDEIEgLUYBlICdG8SGAoFdmFsdWUYAiABKARCAjABUgV2YWx1ZSI/CglidXJuX2FyZ3MSGAoEZnJvbRgBIAEoDEIEgLUYBlIEZnJvbRIYCgV2YWx1ZRgCIAEoBEICMAFSBXZhbHVlIioKDmJhbGFuY2Vfb2JqZWN0EhgKBXZhbHVlGAEgASgEQgIwAVIFdmFsdWViBnByb3RvMw==",
   "koilib_types": {
     "nested": {
       "fogata": {
@@ -363,6 +408,31 @@
               }
             }
           },
+          "collect_koin_preferences": {
+            "fields": {
+              "account": {
+                "type": "bytes",
+                "id": 1,
+                "options": {
+                  "(koinos.btype)": "ADDRESS"
+                }
+              },
+              "percentage_koin": {
+                "type": "uint64",
+                "id": 2,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "all_after_virtual": {
+                "type": "uint64",
+                "id": 3,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              }
+            }
+          },
           "allowance_type": {
             "values": {
               "UNDEFINED": 0,
@@ -465,6 +535,13 @@
                   "jstype": "JS_STRING"
                 }
               },
+              "snapshot_vapor": {
+                "type": "uint64",
+                "id": 8,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
               "current_snapshot": {
                 "type": "uint64",
                 "id": 5,
@@ -486,19 +563,37 @@
                   "jstype": "JS_STRING"
                 }
               },
-              "snapshot_vapor": {
-                "type": "uint64",
-                "id": 8,
-                "options": {
-                  "jstype": "JS_STRING"
-                }
-              },
               "vapor_withdrawn": {
                 "type": "uint64",
                 "id": 9,
                 "options": {
                   "jstype": "JS_STRING"
                 }
+              },
+              "user_count": {
+                "type": "uint64",
+                "id": 10,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "vapor": {
+                "type": "uint64",
+                "id": 11,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "virtual_vapor": {
+                "type": "uint64",
+                "id": 12,
+                "options": {
+                  "jstype": "JS_STRING"
+                }
+              },
+              "version": {
+                "type": "string",
+                "id": 13
               }
             }
           }
@@ -745,10 +840,10 @@
     "fogata.set_pool_params": {
       "argument": "fogata.pool_params"
     },
-    "fogata.add_mana_delegation": {
+    "fogata.add_reserved_koin": {
       "argument": "fogata.koin_account"
     },
-    "fogata.remove_mana_delegation": {
+    "fogata.remove_reserved_koin": {
       "argument": "fogata.koin_account"
     },
     "pause": {
