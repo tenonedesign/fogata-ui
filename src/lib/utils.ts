@@ -117,6 +117,7 @@ export const poolWrite = async (address: string, methodName: string, args: any, 
 export const contractWriteWithToasts = async (address: string, abiJson: any, methodName: string, args: any, description: string) => {
   let timeout = 30000;
   return contractOperation(address, koilibAbi(abiJson), methodName, args).then((transaction: TransactionJsonWait) => {
+    if (!transaction) throw new Error("Undefined transaction");
     let toastId = infoToast("Transaction submitted", "The transaction containing your " + description + " is being processed.  This may take some time.", 0).id;
     transaction.wait("byBlock", timeout).then((blockInfo) => {
       removeToastWithId(toastId);
@@ -202,10 +203,18 @@ export const contractOperation = async (contractAddress: string, abi: any, metho
     result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id }).catch();
     if (result.transaction) {
       result = await provider.sendTransaction(result.transaction!);
-      return Promise.resolve(result.transaction);
+      if (result.transaction) {
+        return Promise.resolve(result.transaction);
+      } else {
+        return Promise.reject(`Undefined transaction in response: ${JSON.stringify(result)}`);
+      }
     }
     else {
-      return Promise.resolve(result.result);
+      if (result.result) {
+        return Promise.resolve(result.result);
+      } else {
+        return Promise.reject(`Undefined result in response: ${JSON.stringify(result)}`);
+      }
     }
   }
   catch (e) {
