@@ -46,7 +46,7 @@
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
       <div class="dropdown dropdown-end flex-none">
         <label tabindex="0" class="btn btn-outline m-1 ml-2">{activeToken} <CaretDownSharp class="ml-2" size="12" /></label>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
           <li><a on:click={() => (activeToken=TokenName.KOIN)}>KOIN</a></li>
           <li><a on:click={() => (activeToken=TokenName.VHP)}>VHP</a></li>
         </ul>

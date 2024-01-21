@@ -54,7 +54,7 @@
 		<div class="dropdown dropdown-end ">
 		<button class="btn btn-sm sm:btn-md">{$user?.address?.slice(0,5)+"..."+$user?.address?.slice(-5)}</button>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-		<div tabindex="0" class="dropdown-content menu mt-2 p-2 shadow bg-base-100 dark:bg-base-200 rounded-box w-52">
+		<div tabindex="0" class="dropdown-content z-[1] menu mt-2 p-2 shadow bg-base-100 dark:bg-base-200 rounded-box w-52">
 		  <li><button on:click={connect}>Open Kondor</button></li>
 		  <li><button on:click={disconnect}>Disconnect Kondor</button></li>
 		</div>

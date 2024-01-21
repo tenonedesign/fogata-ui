@@ -31,7 +31,7 @@
               <SettingsSharp size="24" />
             </button>
             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-            <div tabindex="0" class="dropdown-content menu mt-2 p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-[250px]">
+            <div tabindex="0" class="dropdown-content z-[1] menu mt-2 p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-[250px]">
               <!-- <li><button>Parent menu item</button></li> -->
               <div class="menu-title mt-4 mb-1 pl-4 text-xs font-bold opacity-30">RPC endpoint</div>
               <RpcControl rpcs={rpcs} user={user} />

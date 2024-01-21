@@ -92,7 +92,7 @@
 				About<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24"><path d="M5 11l7 7 7 -7"></path></svg>
 			</label>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<div tabindex="0" class="dropdown-content menu mt-8 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
+			<div tabindex="0" class="dropdown-content z-[1] menu mt-8 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
 				<p class="mt-4 whitespace-pre-wrap">{$pool?.parameters?.description}</p>
 			</div>
 		</div>

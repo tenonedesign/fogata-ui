@@ -65,7 +65,7 @@
 
       <!-- <div class="dropdown dropdown-end flex-none absolute right-4 top-4">
         <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
           <li><a on:click={collectVapor}>Collect vapor</a></li>
         </ul>
       </div> -->
@@ -88,7 +88,7 @@
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="btn btn-secondary px-2 h-6 min-h-0 opacity-75 ml-1">collect<CaretDownSharp class="ml-2" size="12" /></label>
             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-            <ul tabindex="0" class="dropdown-content menu p-2 mt-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 mt-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-52">
               <li><a on:click={collect}>Collect now</a></li>
               <li><a on:click={editCollectionPreferences}>Collection preferences...</a></li>
               <!-- {#if $pool.userBalanceKoin > 0}<li><a on:click={collectKoin}>Collect KOIN</a></li>{/if} -->

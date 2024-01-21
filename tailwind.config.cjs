@@ -48,7 +48,7 @@ const config = {
           "error": "#ff3050", // red
         },
         dark: {
-          ...require("daisyui/src/colors/themes")["[data-theme=dark]"],
+          ...require("daisyui/src/theming/themes")["[data-theme=dark]"],
 
           "base-100": "#2e3039",
           "base-200": "#1d1f25",

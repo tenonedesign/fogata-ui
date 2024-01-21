@@ -243,7 +243,7 @@
             </svg>
           </label>
           <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-          <div tabindex="0" class="dropdown-content menu mt-2 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
+          <div tabindex="0" class="dropdown-content z-[1] menu mt-2 p-6 shadow-xl bg-base-100 rounded-box w-screen max-w-[80vw] md:max-w-md">
             <h4 class="text-lg font-semibold">How to pick a pool, and why it matters</h4>
             <p class="mt-4">All fogata pools contribute to community development, so they’re all great choices.  Here are a few tips: </p>
             <div class="mt-4">

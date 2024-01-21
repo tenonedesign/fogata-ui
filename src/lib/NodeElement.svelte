@@ -14,7 +14,7 @@
   </div>
   <div class="dropdown dropdown-end flex-none">
     <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
-    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
       <li><a on:click={() => (editAction(node.publicKey))}>Edit node info</a></li>
       <li><a on:click={() => (removeAction(node.publicKey))}>Remove node</a></li>
     </ul>

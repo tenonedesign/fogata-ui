@@ -82,7 +82,7 @@
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
       <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
+      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
         <li><a href="/pools/{pool.address}">Open pool</a></li>
         <li><a on:click={() => statsAction(pool.address)}>Show pool stats</a></li>
         <li><a target="_blank" rel="noopener" href="https://koiner.app/addresses/{pool.address}/rewards">Recent blocks</a></li>
@@ -106,7 +106,7 @@
     </div>
       <!-- <div class="dropdown dropdown-end flex-none">
         <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-60">
 
         </ul>
       </div> -->

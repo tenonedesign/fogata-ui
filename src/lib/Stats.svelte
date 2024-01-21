@@ -52,7 +52,7 @@
       <!-- svelte-ignore a11y-label-has-associated-control -->
       <label tabindex="0" class="btn btn-circle btn-ghost"><EllipsisVertical class="" size="24" /></label>
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-80">
+      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 dark:bg-base-200 rounded-box w-80">
         <li><a on:click={payBeneficiaries}>Pay beneficiaries</a></li>
         {#if Date.now() > Number($pool.state?.next_snapshot)}
           <li><a on:click={reburnAndSnapshot}>Reburn KOIN</a></li>
