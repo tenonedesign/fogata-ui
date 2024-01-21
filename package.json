@@ -39,8 +39,8 @@
 	"type": "module",
 	"dependencies": {
 		"daisyui": "^2.40.1",
-		"koilib": "^5.3.0",
-		"kondor-js": "^0.3.2",
+		"koilib": "^5.6.1",
+		"kondor-js": "^0.4.3",
 		"lucide-svelte": "^0.101.0",
 		"svelte-local-storage-store": "^0.3.1"
 	}
