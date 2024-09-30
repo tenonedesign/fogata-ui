@@ -101,7 +101,7 @@
 
       <div class="flex justify-center gap-4 mt-8 flex-1">
 
-        {#if $wallet.balances.mana > 0}
+        {#if $wallet.balances.koin > 0 || $wallet.balances.vhp}
           <PoolActionButton 
             actionName="Deposit"
             title="Deposit KOIN or VHP"
