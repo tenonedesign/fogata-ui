@@ -101,25 +101,23 @@
 
       <div class="flex justify-center gap-4 mt-8 flex-1">
 
-        {#if $wallet.balances.koin > 0 || $wallet.balances.vhp}
-          <PoolActionButton 
-            actionName="Deposit"
-            title="Deposit KOIN or VHP"
-            message="Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time."
-            maximums={{koin: $wallet.balances.koin, vhp: $wallet.balances.vhp}}
-            burnWarning="Depositing KOIN will permanently convert it to VHP. You will only be able to withdraw it as VHP, or as small amounts of KOIN every {intervalDisplayFormat($pool.parameters?.payment_period)}."
-            buttonAction={initiateDeposit}
-            bind:activeToken={activeToken}
-            bind:value={depositValue}>Deposit</PoolActionButton>
-          <PoolActionButton
-            actionName="Withdraw"
-            title="Withdraw KOIN or VHP"
-            message="Enter the amount of KOIN or VHP to withdraw."
-            maximums={{koin: $pool.userBalanceKoin, vhp: $pool.userBalanceVhp}}
-            buttonAction={initiateWithdrawal}
-            bind:activeToken={activeToken}
-            bind:value={withdrawalValue}>Withdraw</PoolActionButton>
-        {/if}
+        <PoolActionButton 
+          actionName="Deposit"
+          title="Deposit KOIN or VHP"
+          message="Enter the amount of KOIN or VHP to deposit.  You may withdraw as VHP at any time."
+          maximums={{koin: $wallet.balances.koin, vhp: $wallet.balances.vhp}}
+          burnWarning="Depositing KOIN will permanently convert it to VHP. You will only be able to withdraw it as VHP, or as small amounts of KOIN every {intervalDisplayFormat($pool.parameters?.payment_period)}."
+          buttonAction={initiateDeposit}
+          bind:activeToken={activeToken}
+          bind:value={depositValue}>Deposit</PoolActionButton>
+        <PoolActionButton
+          actionName="Withdraw"
+          title="Withdraw KOIN or VHP"
+          message="Enter the amount of KOIN or VHP to withdraw."
+          maximums={{koin: $pool.userBalanceKoin, vhp: $pool.userBalanceVhp}}
+          buttonAction={initiateWithdrawal}
+          bind:activeToken={activeToken}
+          bind:value={withdrawalValue}>Withdraw</PoolActionButton>
 
       </div>
       <div class="flex justify-center mt-10">
