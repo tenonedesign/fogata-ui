@@ -9,10 +9,14 @@
   export let attributes: string[] = ["name", "logo", "description", "payment_period", "beneficiaries"];
 
   // init
+  console.log(JSON.stringify(poolParams.beneficiaries));
   let contributionBeneficiary: Beneficiary = poolParams.beneficiaries.find(x => x.address == $env.sponsors_address) ?? new Beneficiary($env.sponsors_address, 15000);
   let otherBeneficiaries: Beneficiary[] = poolParams.beneficiaries.filter(x => x.address != $env.sponsors_address);
   if (otherBeneficiaries.length == 1 && otherBeneficiaries[0].address == "") {
     otherBeneficiaries[0].address = $user.address;
+  }
+  if (otherBeneficiaries.length == 1 && otherBeneficiaries[0].percentage === undefined) {
+    otherBeneficiaries[0].percentage = 0;
   }
   let instanceId = Math.random().toString(36).substring(2);
 

@@ -16,6 +16,7 @@ export const submittedPools: Writable<Pool[]> = writable([]);
 export const toasts: Writable<Toast[]> = writable([]);
 export const poolsOwner = writable("");
 export const rcLimit = writable("5000000000");
+export const cachedAddresses: Writable<{koin: string | null, vhp: string | null, pob: string | null}> = writable({koin: null, vhp: null, pob: null});
 export const env = derived(
 	user,
 	$user => {
@@ -35,9 +36,9 @@ export const env = derived(
     }
     else {
       return {
-        "koin_address": "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
-        "vhp_address": "18tWNU7E4yuQzz7hMVpceb9ixmaWLVyQsr",
-        "pob_address": "159myq5YUhhoVWu3wsHKHiJYKPKGUrGiyv",
+        "koin_address": get(cachedAddresses).koin ?? "19GYjDBVXU7keLbYvMLazsGQn3GTWHjHkK",
+        "vhp_address": get(cachedAddresses).vhp ?? "12Y5vW6gk8GceH53YfRkRre2Rrcsgw7Naq",
+        "pob_address": get(cachedAddresses).pob ?? "159myq5YUhhoVWu3wsHKHiJYKPKGUrGiyv",
         "pools_address": "1MmV5nzSBVGnBrjTr3B8XtA4yPs8wcSpr",
         "pools_owner": "1EWf7YrKt8Yz153rxmVkhXcHPDhMBQcynU",
         "sponsors_address": "1KTasVrqvMBofMANKMCT3HMya16sfZPLFB",

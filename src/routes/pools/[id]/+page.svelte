@@ -5,7 +5,7 @@
 	import { approvedPools, wallet, pool, user, env, ownedPools, submittedPools } from '$lib/stores';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { hideConnectionToast, loadFogataPools, poolRead, populateOwnedPools, readPoolsOwner, showConnectionToast, updateStoredObjectFormats, updateUsers } from '$lib/utils';
+	import { cacheSystemContractAddresses, hideConnectionToast, loadFogataPools, poolRead, populateOwnedPools, readPoolsOwner, showConnectionToast, updateStoredObjectFormats, updateUsers } from '$lib/utils';
 	import { Pool, PoolState } from '$lib/types';
 
 	updateStoredObjectFormats();
@@ -20,6 +20,7 @@
 	
 	let timer: NodeJS.Timer;
 	onMount(async () => {
+    await cacheSystemContractAddresses();
     await loadFogataPools();
 		readPoolsOwner();
 		knownPool = Boolean($approvedPools.find(x => x.address == $page.params.id) || $ownedPools.find(x => x.address == $page.params.id));

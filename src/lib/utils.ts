@@ -1,14 +1,16 @@
 
-import { Signer, Contract, Provider, Serializer, utils } from "koilib";
+import { Signer, Contract, Provider, Serializer, utils, Transaction } from "koilib";
 import * as kondor from "kondor-js";
-import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools, poolsOwner } from "$lib/stores";
-import { Pool, PoolParams, Toast, User } from "$lib/types";
+import { env, ownedPools, rcLimit, toasts, user, users, approvedPools, submittedPools, poolsOwner, cachedAddresses } from "$lib/stores";
+import { Pool, PoolParams, Toast, TransactionAllowance, User } from "$lib/types";
 import { get } from "svelte/store";
 import poolAbiJson from "$lib/fogata-abi.json";
 import poolsAbiJson from "$lib/pools-abi.json";
 import pobAbiJson from "$lib/pob-proto.json";
 import sponsorsAbiJson from "$lib/sponsors-proto.json";
-import type { Abi, TransactionJson, TransactionJsonWait } from "koilib/lib/interface";
+import type { Abi, TransactionJson, TransactionJsonWait, TransactionReceipt } from "koilib";
+
+
 
 // this starts with a new User object that may have new properties, then fills in properties from the existing stored object
 export const updateStoredObjectFormats = () => {
@@ -30,6 +32,13 @@ export const readPoolsOwner = () => {
 }
 export function userIsPoolsOwner() {
   return (get(user).address === get(poolsOwner));
+}
+export const cacheSystemContractAddresses = async () => {
+  const k = await addressOfContractNamed("koin");
+  const p = await addressOfContractNamed("pob");
+  const v = await addressOfContractNamed("vhp");
+  cachedAddresses.set({koin: k, pob: p, vhp: v});
+  user.set(get(user));  // cause an update in the env since it’s derived from user (this could be cleaner)
 }
 export const loadFogataPools = () => {
   return Promise.all([
@@ -62,7 +71,7 @@ export const updateUsers = (user: User) => {
 }
 
 export const poolsRead = async (methodName: string, args = {}): Promise<any> => {
-  return contractOperation(get(env).pools_address, koilibAbi(poolsAbiJson), methodName, args).then((result) => {
+  return contractOperation(get(env).pools_address, koilibAbi(poolsAbiJson), methodName, args, []).then((result) => {
     return Promise.resolve(result);
   }, (error) => {});
 }
@@ -71,7 +80,7 @@ export const poolsWrite = async (methodName: string, args: any, description: str
 }
 
 export const pobRead = async (methodName: string, args = {}): Promise<any> => {
-  return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, args).then((result) => {
+  return contractOperation(get(env).pob_address, koilibAbi(pobAbiJson), methodName, args, []).then((result) => {
     return Promise.resolve(result?.value);
   }, (error) => {});
 }
@@ -86,44 +95,60 @@ export const vaporBalanceOf = async (address: string): Promise<bigint> => {
   });
 }
 export const sponsorsRead = async (methodName: string, args = {}): Promise<any> => {
-  return contractOperation(get(env).sponsors_address, koilibAbi(sponsorsAbiJson), methodName, args).then((result) => {
+  return contractOperation(get(env).sponsors_address, koilibAbi(sponsorsAbiJson), methodName, args, []).then((result) => {
     return Promise.resolve(result);
   });
 }
 export const sponsorsWrite = async (methodName: string, args: any, description: string) => {
   return contractWriteWithToasts(get(env).sponsors_address, sponsorsAbiJson, methodName, args, description);
 }
-
-
+export const addressOfContractNamed = async (name: string) => {
+  const storedUser = get(user);
+  const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
+  const provider = new Provider([addHttps(rpc)]);
+  const result = await provider.invokeGetContractAddress(name);
+  return result.value.address;
+}
 export const poolOperation = async (pool: Pool, methodName: string, koinAmount: bigint, vhpAmount: bigint) => {
-  let opName = (methodName.substring(0, 5) == "stake") ? "deposit" : "withdrawal";
+  let staking = (methodName.substring(0, 5) == "stake");
+  let opName = staking ? "deposit" : "withdrawal";
   let tokenName = "KOIN";
   if (koinAmount > BigInt(0) && vhpAmount > BigInt(0)) { tokenName = "KOIN and VHP"; }
   if (koinAmount > BigInt(0) && vhpAmount == BigInt(0)) { tokenName = "KOIN"; }
   if (vhpAmount > BigInt(0) && koinAmount == BigInt(0)) { tokenName = "VHP"; }
-  return poolWrite(pool.address, methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }, tokenName + " " + opName);
+  var allowances: TransactionAllowance[] = [];
+  if (staking) {
+    allowances = [
+      new TransactionAllowance().forToken(get(env).koin_address, get(env).pob_address, koinAmount),
+      new TransactionAllowance().forToken(get(env).vhp_address, pool.address, koinAmount + vhpAmount),
+    ];
+  }
+  return contractOperationWithToasts(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }, allowances, tokenName + " " + opName);
 }
 export const poolRead = async (address: string, methodName: string, args: any) => {
-  return contractOperation(address, koilibAbi(poolAbiJson), methodName, args).then((result) => {
+  return contractOperation(address, koilibAbi(poolAbiJson), methodName, args, []).then((result) => {
     return Promise.resolve(result);
+  }).catch((error) => {
+    console.log("Error in poolRead: "+error);
   });
 }
-export const poolWrite = async (address: string, methodName: string, args: any, description: string) => {
-  return contractWriteWithToasts(address, poolAbiJson, methodName, args, description);
+export const poolWrite = async (address: string, methodName: string, args: any, description: string, allowances: TransactionAllowance[] = []) => {
+  return contractOperationWithToasts(address, poolAbiJson, methodName, args, allowances ,description);
 }
 
 
-
-export const contractWriteWithToasts = async (address: string, abiJson: any, methodName: string, args: any, description: string) => {
+  // wait to be mined
+export const contractOperationWithToasts = async (address: string, abi: any, methodName: string, args: any, allowances: TransactionAllowance[], description: string) => {
   let timeout = 30000;
-  return contractOperation(address, koilibAbi(abiJson), methodName, args).then((transaction: TransactionJsonWait) => {
+  return contractOperation(address, abi, methodName, args, allowances).then((transaction: TransactionJsonWait) => {
     if (!transaction) throw new Error("Undefined transaction");
     let toastId = infoToast("Transaction submitted", "The transaction containing your " + description + " is being processed.  This may take some time.", 0).id;
     transaction.wait("byBlock", timeout).then((blockInfo) => {
       removeToastWithId(toastId);
-      successToast("Transaction is complete","This transaction was completed successfully. View transaction on <a style=\"text-decoration: underline;\" target=\"_blank\" rel=\"noopener\" href=\"https://koinosblocks.com/tx/"+transaction.id+"\">Koinos Blocks</a>.", 10000);
+      successToast("Transaction is complete","This transaction was completed successfully. View transaction on <a style=\"text-decoration: underline;\" target=\"_blank\" rel=\"noopener\" href=\"https://koinosblocks.com/block/"+blockInfo.blockId+"\">Koinos Blocks</a>.", 10000);
     })
     .catch((error) => {
+      console.log(error);
       removeToastWithId(toastId);
       warningToast("The transaction is taking a while", "The transaction was not included in a block after "+timeout / 1000+" seconds.  It may yet complete, but you will not be further notified.")
     });
@@ -135,13 +160,17 @@ export const contractWriteWithToasts = async (address: string, abiJson: any, met
   });
 }
 
+export const contractWriteWithToasts = async (address: string, abiJson: any, methodName: string, args: any, description: string) => {
+  return contractOperationWithToasts(address, koilibAbi(abiJson), methodName, args, [], description);
+}
+
 export const tokenBalanceOf = async (contractAddress: string, address: string): Promise<bigint> => {
-  return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}).then((result) => {
+  return contractOperation(contractAddress, utils.tokenAbi, "balanceOf", {owner: address}, []).then((result) => {
     return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
 export const tokenTotalSupply = async (contractAddress: string): Promise<bigint> => {
-  return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}).then((result) => {
+  return contractOperation(contractAddress, utils.tokenAbi, "totalSupply", {}, []).then((result) => {
     return Promise.resolve(BigInt(result?.value || 0) || BigInt(0));
   });
 }
@@ -169,56 +198,57 @@ export const koilibAbi = (abiJson: {methods: any, types: any}): Abi => {
     ...abiJson
   }
 }
-export const contractOperation = async (contractAddress: string, abi: any, methodName: string, args: any): Promise<any> => {
+export const contractOperation = async (contractAddress: string, abi: Abi, methodName: string, args: any, allowances: TransactionAllowance[]): Promise<any> => {
   const storedUser = get(user);
   const rpc = storedUser.selectedRpcUrl || storedUser.customRpc.url;
   if (!rpc) { return Promise.reject(new Error("No rpc")); }
   const provider = new Provider([addHttps(rpc)]);
   const signerAddress = storedUser.address;
   const signer = signerAddress ? kondor.getSigner(signerAddress, {
-    providerPrepareTransaction: provider,
-  }) as Signer : undefined;
-
-  const contract = new Contract({
-    id: contractAddress,
-    abi: abi,
     provider: provider,
-    signer: signer,
-  });
+  }) as Signer : undefined;
 
   let rcLimitString = "0";
   let nextNonce = "";
-  if (abi.methods[methodName]?.read_only === false) {
+  const contract = new Contract({
+    id: contractAddress,
+    abi: abi,
+  });
+  let readOnly = abi.methods[methodName]?.read_only;
+  if (!readOnly) {
     const availableRc = await provider.getAccountRc(storedUser.address);
     rcLimitString = Math.min(parseFloat(get(rcLimit)), parseFloat(availableRc)).toString();
     nextNonce = await provider.getNextNonce(storedUser.address);
-  }
-
-  // console.log(methodName);
-  // console.log(args);
-  // console.log(contract.functions);
-
-  try {
-    let result;
-    result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id }).catch();
-    if (result.transaction) {
-      result = await provider.sendTransaction(result.transaction!);
-      if (result.transaction) {
-        return Promise.resolve(result.transaction);
-      } else {
-        return Promise.reject(`Undefined transaction in response: ${JSON.stringify(result)}`);
-      }
+    const tx = new Transaction({
+      signer,
+      provider,
+      options: { rcLimit: rcLimitString }
+    });
+    for (const allowance of allowances) {
+      const allowanceContract = new Contract({
+        id: allowance.contractAddress,
+        abi: allowance.abi,
+      });
+      await tx.pushOperation(allowanceContract.functions[allowance.method], allowance.args);
     }
+    await tx.pushOperation(contract.functions[methodName], args);
+    const receipt = await tx.send().catch();
+    if (receipt) {
+      return Promise.resolve(tx);
+    } else {
+      return Promise.reject(`Undefined transaction in response: ${JSON.stringify(receipt)}`);
+    }
+  } 
+  else {
+    contract.provider = provider;
+    contract.signer = signer;
+    let result = await contract.functions[methodName](args, { sendTransaction: false, rcLimit: rcLimitString, nonce: nextNonce, chainId: get(env).chain_id }).catch();
+    if (result.result) {
+      return Promise.resolve(result.result);
+    } 
     else {
-      if (result.result) {
-        return Promise.resolve(result.result);
-      } else {
-        return Promise.reject(`Undefined result in response: ${JSON.stringify(result)}`);
-      }
+      return Promise.reject(`Undefined result in response: ${JSON.stringify(result)}`);
     }
-  }
-  catch (e) {
-    Promise.reject(e);
   }
 }
 
@@ -231,7 +261,7 @@ export const uploadUserContract = async (contractWasmBase64: string, abi: any): 
     return Promise.reject(new Error("No wallet connected."));
   }
   const signer = kondor.getSigner(storedUser.address, {
-    providerPrepareTransaction: provider,
+    provider: provider,
   }) as Signer;
   signer.provider = provider;
 
@@ -280,7 +310,7 @@ export const uploadPoolContract = async (contractWasmBase64: string, abi: any, p
     return Promise.reject(new Error("No wallet connected."));
   }
   const signer = kondor.getSigner(storedUser.address, {
-    providerPrepareTransaction: provider,
+    provider: provider,
   });
   signer.provider = provider;
 

@@ -1,7 +1,7 @@
 import { balanceToFloat, getAccountRc, pobRead, poolRead, tokenBalanceOf, tokenTotalSupply, vaporBalanceOf } from "$lib/utils";
 import { env, user } from "$lib/stores";
 import { get } from "svelte/store";
-import { utils } from "koilib";
+import { utils, type Abi } from "koilib";
 
 export enum PoolListingState {
   Unknown,
@@ -141,7 +141,29 @@ export class Pool {
     }
   }
 }
-
+export class TransactionAllowanceArgs {
+  constructor(
+      public owner: string = "",
+      public spender: string = "",
+      public value: string = "0",
+  ) { }
+}
+export class TransactionAllowance {
+  constructor(
+      public contractAddress: string = "",
+      public abi: Abi = utils.tokenAbi,
+      public method: string = "",
+      public args = new TransactionAllowanceArgs(),
+  ) { }
+  public forToken = (tokenAddress: string, spenderAddress: string, amount: bigint): TransactionAllowance => {
+    return new TransactionAllowance(
+      tokenAddress,
+      utils.tokenAbi,
+      "approve",
+      new TransactionAllowanceArgs(get(user).address, spenderAddress, amount.toString()),
+    );
+  }
+}
 
 export enum TokenName {
   KOIN = "KOIN",

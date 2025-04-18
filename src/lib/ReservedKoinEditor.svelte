@@ -1,8 +1,8 @@
 <svelte:options accessors={true}/>
 <script lang="ts">
-	import { Pool } from '$lib/types';
+	import { Pool, TransactionAllowance } from '$lib/types';
 	import { balanceDisplayFormat, balanceTooltipFormat, poolWrite, warningToast } from '$lib/utils';
-	import { user, wallet } from '$lib/stores';
+	import { user, wallet, env } from '$lib/stores';
 	import BalanceInput from './BalanceInput.svelte';
 	import { WarningOutline } from 'svelte-ionicons';
 	import type { Writable } from 'svelte/store';
@@ -32,7 +32,7 @@
       account: $user.address,
       koin_amount: addAmount.toString(),
     }
-    poolWrite(pool.address, "add_reserved_koin", params, "reserved Koin deposit");
+    poolWrite(pool.address, "add_reserved_koin", params, "reserved Koin deposit", [new TransactionAllowance().forToken($env.koin_address, pool.address, addAmount)]);
   }
   const removeReservedKoin = async (): Promise<any> => {
     (document.getElementById("modal-"+instanceId) as HTMLInputElement).checked = false; // close modal
@@ -68,9 +68,9 @@
       </div>
     {/if}
 
-    <div class="btn-group mt-6">
-      <input type="radio" bind:group={operation} name="options" data-title="Add" class="btn btn-info" value="add" checked />
-      <input type="radio" bind:group={operation} name="options" data-title="Remove" value="remove" class="btn btn-info" />
+    <div class="join mt-6">
+      <input type="radio" bind:group={operation} name="options" aria-label="Add" class="join-item btn btn-info" value="add" checked />
+      <input type="radio" bind:group={operation} name="options" aria-label="Remove" value="remove" class="join-item btn btn-info" />
     </div>
 
     {#if operation == "add"}

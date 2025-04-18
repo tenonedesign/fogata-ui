@@ -3,10 +3,10 @@
 	import Header from '$lib/Header.svelte';
 	import Card from '$lib/Card.svelte';
 	import vaporLogo from '$lib/images/vapor-icon.svg?raw';
-	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user } from '$lib/stores.js';
+	import { approvedPools, connectedAddress, env, ownedPools, submittedPools, user, wallet } from '$lib/stores.js';
 	import { onDestroy, onMount } from 'svelte';
 	import PoolCreator from '$lib/PoolCreator.svelte';
-	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat, poolRead } from '$lib/utils';
+	import { pobWrite, populateOwnedPools, updateStoredObjectFormats, updateUsers, loadFogataPools, poolsWrite, readPoolsOwner, userIsPoolsOwner, intervalDisplayFormat, balanceTooltipFormat, poolRead, cacheSystemContractAddresses } from '$lib/utils';
 	import PoolListElement from '$lib/PoolListElement.svelte';
 	import type { KoinosNode } from '$lib/types';
 	import NodeElement from '$lib/NodeElement.svelte';
@@ -49,6 +49,7 @@
   }
 
 	onMount(async () => {
+    await cacheSystemContractAddresses();
     updateStoredObjectFormats();
     populateOwnedPools();
     readPoolsOwner();
@@ -71,9 +72,9 @@
 		});
     if (showSubmittedPools) {
       $submittedPools.forEach(pool => {
-			pool.refresh().then(() => {
-				$submittedPools = $submittedPools;
-			});
+        pool.refresh().then(() => {
+          $submittedPools = $submittedPools;
+        });
 		});
     }
     $ownedPools.forEach(pool => {
@@ -86,6 +87,12 @@
         }
 			});
     });
+		if ($user.address) {
+			$wallet.loadBalances($user.address).then(() => {
+				wallet.set($wallet);
+			}).catch(err => {
+			});
+		}
 	}
   function addPool(value: any) {
     if (!$user.ownedPools.includes(value.address)) {
@@ -108,7 +115,6 @@
     confirmModal.message = "Your node will be reviewed for efficacy and security. This transaction will consume mana.";
     confirmModal.buttonAction = () => {
       poolsWrite("submit_pool", {account: address}, "pool submission").then((transaction) => {
-        console.log(transaction);
         transaction?.wait("byBlock", 30000).then(() => { loadFogataPools(); });
       });
     }
