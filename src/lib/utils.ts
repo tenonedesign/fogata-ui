@@ -156,7 +156,7 @@ export const contractOperationWithToasts = async (address: string, abi: any, met
   })
   .catch((error) => {
     errorToast("Your "+ description + " transaction failed","The transaction will not be processed. "+error, 0);
-    Promise.reject(error);
+    return Promise.reject(error);
   });
 }
 
