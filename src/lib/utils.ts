@@ -118,10 +118,10 @@ export const poolOperation = async (pool: Pool, methodName: string, koinAmount: 
   if (vhpAmount > BigInt(0) && koinAmount == BigInt(0)) { tokenName = "VHP"; }
   var allowances: TransactionAllowance[] = [];
   if (staking) {
-    allowances = [
-      new TransactionAllowance().forToken(get(env).koin_address, get(env).pob_address, koinAmount),
-      new TransactionAllowance().forToken(get(env).vhp_address, pool.address, koinAmount + vhpAmount),
-    ];
+    if (koinAmount > BigInt(0)) {
+      allowances.push(new TransactionAllowance().forToken(get(env).koin_address, get(env).pob_address, koinAmount));
+    }
+    allowances.push(new TransactionAllowance().forToken(get(env).vhp_address, pool.address, koinAmount + vhpAmount));
   }
   return contractOperationWithToasts(pool.address, koilibAbi(poolAbiJson), methodName, { account: get(user).address, koin_amount: koinAmount.toString(), vhp_amount: vhpAmount.toString() }, allowances, tokenName + " " + opName);
 }
